@@ -7,7 +7,7 @@ interface NavbarProps {
   onStudentSignup?: () => void;
 }
 
-const TeacherIcon: React.FC<{ className?: string }> = ({ className }) => (
+const TeacherIcon: React.FC<{ className?: string }> = () => (
     <svg width="204" height="53" viewBox="0 0 204 53" fill="none" xmlns="http://www.w3.org/2000/svg">
     <mask id="path-1-outside-1_64_2771" maskUnits="userSpaceOnUse" x="0" y="0" width="204" height="53" fill="black">
     <rect fill="white" width="204" height="53"/>
@@ -20,7 +20,7 @@ const TeacherIcon: React.FC<{ className?: string }> = ({ className }) => (
     
 );
 
-const StudentIcon: React.FC<{ className?: string }> = ({ className }) => (
+const StudentIcon: React.FC<{ className?: string }> = () => (
     <svg width="218" height="51" viewBox="0 0 218 51" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M1 9C1 4.58172 4.58172 1 9 1H209C213.418 1 217 4.58172 217 9V41C217 45.4183 213.418 49 209 49H9C4.58172 49 1 45.4183 1 41V9Z" fill="#21B6F8"/>
     <path d="M0.5 9C0.5 4.30558 4.30558 0.5 9 0.5H209C213.694 0.5 217.5 4.30558 217.5 9H216.5C216.5 4.85786 213.142 1.5 209 1.5H9C4.85786 1.5 1.5 4.85786 1.5 9H0.5ZM217.5 42.5C217.5 47.1944 213.694 51 209 51H9C4.30558 51 0.5 47.1944 0.5 42.5L1.5 41C1.5 44.3137 4.85786 47 9 47H209C213.142 47 216.5 44.3137 216.5 41L217.5 42.5ZM9 51C4.30558 51 0.5 47.1944 0.5 42.5V9C0.5 4.30558 4.30558 0.5 9 0.5V1.5C4.85786 1.5 1.5 4.85786 1.5 9V41C1.5 44.3137 4.85786 47 9 47V51ZM209 0.5C213.694 0.5 217.5 4.30558 217.5 9V42.5C217.5 47.1944 213.694 51 209 51V47C213.142 47 216.5 44.3137 216.5 41V9C216.5 4.85786 213.142 1.5 209 1.5V0.5Z" fill="#009BD5"/>
