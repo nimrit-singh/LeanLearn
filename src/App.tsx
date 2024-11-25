@@ -1,5 +1,8 @@
 import Navbar from './components/layout/Navbar'
 import HeroSection from './components/home/HeroSection'
+import WhySection from './components/home/WhySection'
+import ComingSoon from './components/home/ComingSoon'
+import Footer from './components/layout/Footer'
 
 function App() {
   return (
@@ -7,7 +10,10 @@ function App() {
       <Navbar />
       <main>
       <HeroSection />
+      <WhySection />
+      <ComingSoon />
       </main>
+      <Footer />
     </div>
   )
 }

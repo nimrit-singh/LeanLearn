@@ -31,7 +31,6 @@ const HeroSection: React.FC = () => {
               </button>
             </div>
   
-            {/* Right Content - Image */}
             <div className="flex-1 flex justify-end">
               <img 
                 src={StudentImage}
