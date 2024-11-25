@@ -1,42 +1,63 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.slide-up {
+  animation: slideUp 0.5s ease-out;
 }
 
-@keyframes logo-spin {
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
-.card {
-  padding: 2em;
+.hover-scale {
+  transition: transform 0.2s ease;
 }
 
-.read-the-docs {
-  color: #888;
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.img-contain {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.section-container {
+  @apply max-w-[1408px] mx-auto px-6 lg:px-12;
+}
+
+.heading-1 {
+  @apply font-nunito font-bold text-[36px] leading-[44px];
+}
+
+.heading-2 {
+  @apply font-nunito font-bold text-[24px] leading-[32px];
+}
+
+.body-text {
+  @apply font-nunito font-normal text-[24px] leading-[32px];
+}
+
+.gradient-text {
+  @apply bg-clip-text text-transparent;
+  background-image: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
 }
