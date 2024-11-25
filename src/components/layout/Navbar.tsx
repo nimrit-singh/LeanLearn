@@ -36,7 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ onTeacherSignup, onStudentSignup }) => 
           <img 
             src={Logo}  
             alt="LeanLearn Logo"
-            className="h-8 md:h-10"
+            className="h-10 md:h-12"
           />
         </a>
 
