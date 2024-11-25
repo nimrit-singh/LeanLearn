@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'nunito': ['Nunito', 'sans-serif'],
+      },
       colors: {
         primary: {
           blue: '#00A6FF',
