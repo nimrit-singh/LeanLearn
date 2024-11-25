@@ -27,47 +27,50 @@ const WaitlistSVG: React.FC = () => (
 );
 
 const ComingSoon: React.FC = () => {
-  return (
-    <section className="bg-black py-24">
-      <div className="max-w-[1408px] mx-auto px-6 lg:px-12">
-        <div className="text-center mb-8">
-          <h2 className="font-nunito font-bold text-[36px] leading-[44px] text-white">
-            Coming Soon
-          </h2>
-        </div>
-
-        <div className="flex justify-center mb-16">
-          <ProgressBarSVG />
-        </div>
-
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
-          <div className="flex-1 flex justify-center lg:justify-end">
-            <img 
-              src={RobotImage}
-              alt="AI Tutor Robot"
-              className="w-full max-w-[400px]"
-            />
+    return (
+      <section className="bg-black py-16 sm:py-20 lg:py-24">
+        <div className="max-w-[1408px] mx-auto px-4 sm:px-6 lg:px-12">
+          {/* Title */}
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="font-nunito font-bold text-[28px] sm:text-[32px] lg:text-[36px] leading-tight sm:leading-[44px] text-white">
+              Coming Soon
+            </h2>
           </div>
-
-          <div className="flex-1 max-w-[594px]">
-            <h3 className="font-nunito font-bold text-[36px] leading-[44px] text-white mb-4">
-              Personalized AI Tutoring<br />
-              is Almost Here!
-            </h3>
-            
-            <p className="font-nunito font-normal text-[24px] leading-[32px] text-white/90 mb-8">
-              Your learning companion, designed to make<br />
-              assessments engaging and effective.
-            </p>
-
-            <button className="inline-block">
-              <WaitlistSVG />
-            </button>
+  
+          <div className="flex justify-center mb-12 sm:mb-16 px-4 sm:px-8 lg:px-0">
+            <ProgressBarSVG />
+          </div>
+  
+          <div className="flex flex-row lg:flex-row items-center justify-between gap-6 lg:gap-16">
+            <div className="w-2/5 lg:flex-1 flex justify-center lg:justify-end">
+              <img 
+                src={RobotImage}
+                alt="AI Tutor Robot"
+                className="w-full max-w-[180px] sm:max-w-[350px] lg:max-w-[400px] object-contain"
+              />
+            </div>
+  
+            <div className="w-3/5 lg:flex-1 lg:max-w-[594px] text-left lg:text-left">
+              <h3 className="font-nunito font-bold text-[20px] sm:text-[32px] lg:text-[36px] leading-tight sm:leading-[44px] text-white mb-3 sm:mb-6">
+                Personalized AI Tutoring
+                <br className="hidden sm:block" />
+                is Almost Here!
+              </h3>
+              
+              <p className="font-nunito font-normal text-[14px] sm:text-[20px] lg:text-[24px] leading-[20px] sm:leading-[32px] text-white/90 mb-4 sm:mb-8">
+                Your learning companion, designed to make
+                <br className="hidden lg:block" />
+                assessments engaging and effective.
+              </p>
+  
+              <button className="inline-block transform scale-50 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.48] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200 -ml-16 sm:ml-0">
+                <WaitlistSVG />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  );
-};
-
-export default ComingSoon;
+      </section>
+    );
+  };
+  
+  export default ComingSoon;

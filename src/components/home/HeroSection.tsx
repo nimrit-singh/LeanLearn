@@ -13,29 +13,31 @@ const SubmitIcon: React.FC<{ className?: string }> = ({ className }) => (
 const HeroSection: React.FC = () => {
     return (
       <section className="min-h-screen bg-black">
-        <div className="max-w-[1300px] mx-auto px-6 lg:px-5 pt-56">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-16">
-            <div className="flex-1 text-white max-w-[594px]">
-              <h1 className="font-nunito font-bold text-[36px] leading-[44px] mb-6">
+        <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-5 pt-32 sm:pt-40 lg:pt-56">
+          <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-16">
+            <div className="flex-1 text-white max-w-full lg:max-w-[594px] text-center lg:text-left">
+              <h1 className="font-nunito font-bold text-[28px] sm:text-[32px] lg:text-[36px] leading-tight sm:leading-[40px] lg:leading-[44px] mb-4 sm:mb-6">
                 Learn Physics the Fun Way!<br />
                 With Quiz That Makes You Smarter
               </h1>
               
-              <p className="font-nunito font-normal text-[24px] leading-[32px] mb-12 text-white/90">
-                Interactive quizzes that combine fun and education for<br />
+              <p className="font-nunito font-normal text-[18px] sm:text-[20px] lg:text-[24px] leading-[28px] sm:leading-[30px] lg:leading-[32px] mb-8 sm:mb-12 text-white/90 px-4 sm:px-0">
+                Interactive quizzes that combine fun and education for
+                <span className="hidden lg:inline"><br /></span>
+                <span className="lg:hidden"> </span>
                 students like you.
               </p>
   
-              <button className="inline-block">
+              <button className="inline-block transform scale-75 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.73] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200">
                 <SubmitIcon />
               </button>
             </div>
   
-            <div className="flex-1 flex justify-end">
+            <div className="flex-1 flex justify-center lg:justify-end w-full px-4 sm:px-0 mb-8 lg:mb-0">
               <img 
                 src={StudentImage}
                 alt="Students Learning Physics"
-                className="w-full max-w-[594px] object-contain"
+                className="w-full max-w-[280px] sm:max-w-[400px] lg:max-w-[594px] object-contain"
               />
             </div>
           </div>
