@@ -1,5 +1,6 @@
 import React from 'react';
 import StudentImage from '../../assets/images/student.png';
+import { Link } from 'react-router-dom';
 
 const SubmitIcon: React.FC<{ className?: string }> = () => (
     <svg width="283" height="67" viewBox="0 0 283 67" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -28,9 +29,11 @@ const HeroSection: React.FC = () => {
                 students like you.
               </p>
   
-              <button className="inline-block transform scale-75 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.73] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200">
+             <Link to={"/quiz-page"}>
+             <button className="inline-block transform scale-75 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.73] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200">
                 <SubmitIcon />
               </button>
+             </Link>
             </div>
   
             <div className="flex-1 flex justify-center lg:justify-end w-full px-4 sm:px-0 mb-8 lg:mb-0">
