@@ -1,3 +1,6 @@
+// App.tsx
+import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import HeroSection from './components/home/HeroSection';
 import WhySection from './components/home/WhySection';
@@ -6,8 +9,8 @@ import Footer from './components/layout/Footer';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import SelectingMentors from './components/home/selectingMentors';
+import QuizPage from './components/home/QuizPage';
 
 const HomePage = () => {
   return (
@@ -40,10 +43,8 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
-            
-            {/* Add SelectingMentors route */}
             <Route path="/select-mentor" element={<SelectingMentors />} />
-            
+            <Route path="/quiz-page" element={<QuizPage />} />
             <Route 
               path="/login" 
               element={
