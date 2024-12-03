@@ -1,9 +1,11 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import leanLearnLogo from '../../assets/images/Logo.png';
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get('role');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ const SignUp: React.FC = () => {
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-[400px] bg-[#111111] rounded-lg p-8">
           <h2 className="text-white text-2xl font-medium text-center mb-6">
-            Sign Up
+            Sign Up as {role === 'teacher' ? 'Teacher' : 'Student'}
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -37,6 +39,37 @@ const SignUp: React.FC = () => {
                 className="w-full bg-[#1A1A1A] text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
+
+            {role === 'teacher' && (
+              <>
+                <div className="space-y-2">
+                  <label className="block text-white text-sm">School Name</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your School Name"
+                    className="w-full bg-[#1A1A1A] text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-white text-sm">Subject</label>
+                  <input
+                    type="text"
+                    placeholder="Enter Subject you teach"
+                    className="w-full bg-[#1A1A1A] text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-white text-sm">City</label>
+                  <input
+                    type="text"
+                    placeholder="Enter your City"
+                    className="w-full bg-[#1A1A1A] text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </>
+            )}
 
             <div className="space-y-2">
               <label className="block text-white text-sm">Phone No.</label>

@@ -29,7 +29,7 @@ const HeroSection: React.FC = () => {
                 students like you.
               </p>
   
-             <Link to={"/quiz-page"}>
+             <Link to={"/select-mentor"}>
              <button className="inline-block transform scale-75 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.73] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200">
                 <SubmitIcon />
               </button>
