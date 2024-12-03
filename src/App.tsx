@@ -8,6 +8,7 @@ import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import SelectingMentors from './components/home/selectingMentors';
 
 const HomePage = () => {
   return (
@@ -67,6 +68,8 @@ function App() {
                 </AuthLayout>
               } 
             />
+            <Route path="/quiz-page" element={<Sidebar />} />
+            <Route path='/mentors' element={<SelectingMentors />} />
           </Routes>
         </main>
       </div>
