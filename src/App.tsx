@@ -3,7 +3,6 @@ import HeroSection from './components/home/HeroSection';
 import WhySection from './components/home/WhySection';
 import ComingSoon from './components/home/ComingSoon';
 import Footer from './components/layout/Footer';
-import Sidebar from './components/home/QuizPage';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
@@ -42,7 +41,8 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             
-            <Route path="/quiz-page" element={<Sidebar />} />
+            {/* Add SelectingMentors route */}
+            <Route path="/select-mentor" element={<SelectingMentors />} />
             
             <Route 
               path="/login" 
@@ -68,8 +68,6 @@ function App() {
                 </AuthLayout>
               } 
             />
-            <Route path="/quiz-page" element={<Sidebar />} />
-            <Route path='/mentors' element={<SelectingMentors />} />
           </Routes>
         </main>
       </div>
