@@ -37,6 +37,11 @@ const QuizPage: React.FC = () => {
     navigate('/select-mentor');
   };
 
+  const handleTopicClick = (topicId: number) => {
+    // Navigate to the topic details page, you can customize the path as needed
+    navigate(`/topic/${topicId}`, { state: { selectedCompanion } });
+  };
+
   return (
     <div className="flex min-h-screen">
       <div className="w-[280px] bg-[#101010] p-5 flex flex-col">
@@ -88,12 +93,13 @@ const QuizPage: React.FC = () => {
       <div className="flex-1 bg-black p-8">
         <div className="space-y-4 max-w-[600px]">
           {topics.map((topic) => (
-            <button
-              key={topic.id}
-              className="w-full bg-[#101010] text-white rounded-lg py-3 px-4 text-left hover:bg-[#181818] transition-colors"
-            >
-              {topic.name}
-            </button>
+           <button
+             key={topic.id}
+             onClick={() => handleTopicClick(topic.id)} // Add onClick handler
+             className="w-[590px] h-[72px] rounded-[16px] border-2 border-solid border-[#3A3B3D] border-t-2 border-r-2 border-b-8 border-l-2 py-[8px] px-[32px] bg-[#101010] text-white text-left hover:bg-[#181818] transition-colors"
+           >
+             {topic.name}
+           </button>
           ))}
         </div>
       </div>
