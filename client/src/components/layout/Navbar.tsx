@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../assets/images/Logo.png';
 
-interface NavbarProps {
-  onTeacherSignup?: () => void;
-  onStudentSignup?: () => void;
-}
 
 const TeacherIcon: React.FC<{ className?: string }> = () => (
     <svg width="204" height="53" viewBox="0 0 204 53" fill="none" xmlns="http://www.w3.org/2000/svg">
