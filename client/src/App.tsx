@@ -12,7 +12,7 @@ import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
 import Summary from './components/home/Summary';
-
+import Feedback from './components/home/Feedback';
 
 const HomePage = () => {
   return (
@@ -50,7 +50,7 @@ function App() {
             <Route path="/quiz-page" element={<QuizPage />} />
             <Route path="/topic/:topicId" element={<SelectedTopicPage />} />
             <Route path="/summary" element={<Summary />} />
-
+            <Route path="/feedback" element={<Feedback />} />
             
             <Route 
               path="/login" 
