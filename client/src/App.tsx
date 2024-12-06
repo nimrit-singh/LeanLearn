@@ -50,6 +50,7 @@ function App() {
             <Route path="/quiz-page" element={<QuizPage />} />
             <Route path="/topic/:topicId" element={<SelectedTopicPage />} />
             <Route path="/summary" element={<Summary />} />
+
             
             <Route 
               path="/login" 
