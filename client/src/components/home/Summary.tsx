@@ -1,52 +1,61 @@
-    import React from 'react';
-    import { useLocation, useNavigate } from 'react-router-dom';
-    import logo from '../../assets/images/Logo.png';
-    import einstein from "../../assets/images/einstein.png";
-    import newton from "../../assets/images/Newton.png";
-    import galileo from "../../assets/images/gae.png";
-    import raman from "../../assets/images/Raman.png";
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import logo from '../../assets/images/Logo.png';
+import einstein from "../../assets/images/einstein.png";
+import newton from "../../assets/images/Newton.png";
+import galileo from "../../assets/images/gae.png";
+import raman from "../../assets/images/Raman.png";
 
-    const companionImages = {
-    1: einstein,
-    2: newton,
-    3: galileo,
-    4: raman,
-    };
+const companionImages = {
+  1: einstein,
+  2: newton,
+  3: galileo,
+  4: raman,
+};
 
-    const Summary: React.FC = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { selectedCompanion, topicId } = location.state || {};
+const Summary: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { selectedCompanion, topicId } = location.state || {};
 
-    const topics = [
-        'Topic 1',
-        'Topic 2',
-        'Topic 3',
-        'Topic 4',
-        'Topic 5',
-        'Topic 6',
-        'Topic 7',
-    ];
-
-    const handleRetryQuiz = () => {
-        navigate('/quiz-page', { 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/feedback', { 
         state: { selectedCompanion, topicId } 
-        });
-    };
+      });
+    }, 3000);
 
-    const handleTakeAnotherQuiz = () => {
-        navigate('/quiz-page', { 
-        state: { selectedCompanion } 
-        });
-    };
+    return () => clearTimeout(timer);
+  }, [navigate, selectedCompanion, topicId]);
 
-    const handleChallengeClick = () => {
-        // Handle challenge friends functionality
-    };
+  const topics = [
+    'Topic 1',
+    'Topic 2',
+    'Topic 3',
+    'Topic 4',
+    'Topic 5',
+    'Topic 6',
+    'Topic 7',
+  ];
 
-    const handleGoBack = () => {
-        navigate('/');
-    };
+  const handleRetryQuiz = () => {
+    navigate('/quiz-page', { 
+      state: { selectedCompanion, topicId } 
+    });
+  };
+
+  const handleTakeAnotherQuiz = () => {
+    navigate('/quiz-page', { 
+      state: { selectedCompanion } 
+    });
+  };
+
+  const handleChallengeClick = () => {
+  };
+
+  const handleGoBack = () => {
+    navigate('/');
+  };
 
     return (
         <div className="flex flex-col md:flex-row h-screen bg-black overflow-hidden">
@@ -162,6 +171,10 @@
             <p className="text-gray-400 italic text-center px-4 md:px-0">
             Every attempt takes you closer to mastering physics!
             </p>
+
+            <div className="absolute bottom-4 text-gray-500 text-sm">
+          Redirecting to feedback...
+        </div>
         </div>
         </div>
     );
