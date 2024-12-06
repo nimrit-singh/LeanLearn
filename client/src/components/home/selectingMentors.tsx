@@ -50,7 +50,7 @@ const SelectingMentors: React.FC = () => {
 
         <div className="px-4 lg:px-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 w-full max-w-[1200px]">
-            {companions.map((companion, index) => (
+            {companions.map((companion) => (
               <div
                 key={companion.id}
                 onClick={() => handleCompanionSelect(companion.id)}

@@ -11,6 +11,8 @@ import VerifyOTP from './components/auth/VerifyOTP';
 import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
+import Summary from './components/home/Summary';
+
 
 const HomePage = () => {
   return (
@@ -43,9 +45,12 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            
             <Route path="/select-mentor" element={<SelectingMentors />} />
             <Route path="/quiz-page" element={<QuizPage />} />
             <Route path="/topic/:topicId" element={<SelectedTopicPage />} />
+            <Route path="/summary" element={<Summary />} />
+            
             <Route 
               path="/login" 
               element={
