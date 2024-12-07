@@ -46,12 +46,12 @@ const SelectedTopicPage: React.FC = () => {
       }, 1000);
     } else if (time >= 60) {
       setIsRunning(false);
-      navigate('/summary', { 
-        state: { 
+      navigate("/summary", {
+        state: {
           topicId,
           selectedCompanion,
-          timeSpent: time 
-        }
+          timeSpent: time,
+        },
       });
     }
 
@@ -59,14 +59,10 @@ const SelectedTopicPage: React.FC = () => {
   }, [isRunning, time, navigate, topicId, selectedCompanion]);
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate("/");
   };
 
-  const handleChangeTopicClick = () => {
-    navigate('/quiz-page', { 
-      state: { selectedCompanion } 
-    });
-  };
+
 
   const topic = topics.find((t) => t.id === Number(topicId));
 
@@ -75,39 +71,18 @@ const SelectedTopicPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen">
-      <div className="w-[280px] bg-[#101010] p-5 flex flex-col">
+    <div className="flex flex-col md:flex-row min-h-screen">
+      {/* Sidebar */}
+      <div className="md:w-[280px] bg-[#101010] p-5 flex flex-col items-center md:items-start">
         <img
           src={logo}
           alt="LeanLearn Logo"
-          className="w-[120px] mx-auto cursor-pointer mb-6"
+          className="w-[120px] cursor-pointer mb-6"
           onClick={handleLogoClick}
         />
-        
-        <button
-          onClick={handleChangeTopicClick}
-          className="flex items-center gap-2 bg-[#202020] text-white px-4 py-2 rounded hover:bg-[#303030] transition-colors mb-6"
-        >
-          <svg 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                d="M15 19l-7-7 7-7" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
-          Change Topic
-        </button>
 
         {selectedCompanion && (
-          <div className="flex-1 flex items-end relative ">
+          <div className="flex-1 flex items-end">
             <img
               src={
                 companionImages[
@@ -120,15 +95,21 @@ const SelectedTopicPage: React.FC = () => {
           </div>
         )}
       </div>
-      <div className="flex-1 p-8 bg-black">
-        <div className="text-white">
-          <h1 className="text-3xl mb-4">{topic.name}</h1>
-          <p>{topic.description}</p>
+
+      {/* Content Area */}
+      <div className="flex-1 p-4 md:p-8 bg-black">
+        <div className="text-white mb-6">
+          <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+            {topic.name}
+          </h1>
+          <p className="text-gray-400">{topic.description}</p>
         </div>
-        <div className="w-full flex items-center gap-3">
-          <span className="text-center text-lg text-white">{countdown} Sec</span>
+
+        {/* Timer and Slider */}
+        <div className="w-full flex items-center gap-4">
+          <span className="text-lg text-white">{countdown} Sec</span>
           <Slider value={time} onChange={setTime} />
-          <span className="text-center text-lg text-white">60 Sec</span>
+          <span className="text-lg text-white">60 Sec</span>
         </div>
       </div>
     </div>
