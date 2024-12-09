@@ -22,13 +22,10 @@ const ComingSoon: React.FC = () => {
             <h3 className="font-nunito font-bold text-[20px] sm:text-[32px] lg:text-[36px] leading-tight sm:leading-[44px] text-white mb-3 sm:mb-6">
               Personalized AI Tutoring
               <br className="hidden sm:block" />
-              is Almost Here!
             </h3>
             
             <p className="font-nunito font-normal text-[14px] sm:text-[20px] lg:text-[24px] leading-[20px] sm:leading-[32px] text-white/90">
-              Your learning companion, designed to make
-              <br className="hidden lg:block" />
-              assessments engaging and effective.
+            An AI tutor for every student, that would make learning and assessment more engaging and effective.
             </p>
           </div>
         </div>

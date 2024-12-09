@@ -1,19 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/Logo.png';
-import einstein from '../../assets/images/einstein.png';
-import newton from '../../assets/images/Newton.png';
-import galileo from '../../assets/images/gae.png';
-import raman from '../../assets/images/Raman.png';
+import einstein from '../../assets/Einstein.gif';
+import newton from '../../assets/Newton.gif';
+import galileo from '../../assets/Galileo.gif';
+import raman from '../../assets/CV Raman.gif';
 
 const SelectingMentors: React.FC = () => {
   const navigate = useNavigate();
 
   const companions = [
-    { id: 1, name: 'Prof Einstein', image: einstein },
-    { id: 2, name: 'Prof Newton', image: newton },
-    { id: 3, name: 'Prof Galileo', image: galileo },
-    { id: 4, name: 'Prof Raman', image: raman }
+    { id: 1, name: 'Prof Einstein', gif: einstein },
+    { id: 2, name: 'Prof Newton', gif: newton },
+    { id: 3, name: 'Prof Galileo', gif: galileo },
+    { id: 4, name: 'Prof Raman', gif: raman }
   ];
 
   const handleCompanionSelect = (companionId: number): void => {
@@ -57,8 +57,8 @@ const SelectingMentors: React.FC = () => {
                 className="bg-[#101010] rounded-lg p-4 cursor-pointer transition-all duration-300 hover:scale-105"
               >
                 <div className="flex items-center justify-center h-[100px] lg:h-[120px] mb-3">
-                  <img
-                    src={companion.image}
+                <img
+                    src={companion.gif}
                     alt={companion.name}
                     className="h-full object-contain"
                   />
