@@ -18,7 +18,7 @@ const HeroSection: React.FC = () => {
           <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-16">
             <div className="flex-1 text-white max-w-full lg:max-w-[594px] text-center lg:text-left">
               <h1 className="font-nunito font-bold text-[28px] sm:text-[32px] lg:text-[36px] leading-tight sm:leading-[40px] lg:leading-[44px] mb-4 sm:mb-6">
-              Get engaged to learning.
+              Get engaged to learning!
               </h1>
               
               <p className="font-nunito font-normal text-[18px] sm:text-[20px] lg:text-[24px] leading-[28px] sm:leading-[30px] lg:leading-[32px] mb-8 sm:mb-12 text-white/90 px-4 sm:px-0">
@@ -28,7 +28,7 @@ const HeroSection: React.FC = () => {
                 <span className="lg:hidden"> </span>
              
               </p>
-  
+
              <Link to={"/select-mentor"}>
              <button className="inline-block transform scale-75 sm:scale-90 lg:scale-100 transition-transform hover:scale-[0.73] sm:hover:scale-[0.88] lg:hover:scale-[0.98] duration-200">
                 <SubmitIcon />
