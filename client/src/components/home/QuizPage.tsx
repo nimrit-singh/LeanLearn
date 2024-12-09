@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import einstein from '../../assets/images/einstein.png';
-import newton from '../../assets/images/Newton.png';
-import galileo from '../../assets/images/gae.png';
-import raman from '../../assets/images/Raman.png';
+import einstein from '../../assets/Einstein.gif';
+import newton from '../../assets/Newton.gif';
+import galileo from '../../assets/Galileo.gif';
+import raman from '../../assets/CV Raman.gif';
 import logo from '../../assets/images/Logo.png';
 import choiceCloud from '../../assets/images/choose.png';
 
@@ -114,13 +114,13 @@ const QuizPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 bg-black p-8 pt-20 lg:pt-8">
+        <div className="flex-1 bg-black p-4 pt-20 lg:pt-8">
           <div className="space-y-4 max-w-[600px] pb-64 lg:pb-8">
             {topics.map((topic) => (
               <button
                 key={topic.id}
                 onClick={() => handleTopicClick(topic.id)} 
-                className="w-full lg:w-[590px] h-[72px] rounded-[16px] border-2 border-solid border-[#3A3B3D] border-t-2 border-r-2 border-b-8 border-l-2 py-[8px] px-[32px] bg-[#101010] text-white text-left hover:bg-[#181818] transition-colors"
+                className="w-full lg:w-[590px] lg:h-[72px] h-auto rounded-[16px] border-2 border-solid border-[#3A3B3D] border-t-2 border-r-2 border-b-8 border-l-2 py-[8px] px-[32px] bg-[#101010] text-white text-left hover:bg-[#181818] transition-colors"
               >
                 {topic.name}
               </button>
@@ -132,7 +132,7 @@ const QuizPage: React.FC = () => {
               <img 
                 src={choiceCloud}
                 alt="Choice Cloud"
-                className="w-64 mx-auto absolute -top-24 left-1/2 -translate-x-1/2"
+                className="w-60 mx-auto absolute -top-24 left-[55%] -translate-x-1/2"
               />
             </div>
             <img
