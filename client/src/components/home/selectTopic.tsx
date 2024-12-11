@@ -7,8 +7,6 @@ import galileo from "../../assets/images/gae.png";
 import raman from "../../assets/images/Raman.png";
 import { MCQQuestion, FillQuestion, TFQuestion } from "../../types/quiz";
 import { mcqQuestionApi, fillQuestionApi, tfQuestionApi } from "../../lib/api/questions";
-import QuestionCard from "../quiz/QuestionCard";
-import QuestionFeedback from "../quiz/QuestionFeedback";
 
 const companionImages = {
   1: einstein,
@@ -55,7 +53,6 @@ const SelectedTopicPage: React.FC = () => {
             break;
           }
           default: {
-            // Handle invalid question type
             setError('Invalid question type');
           }
         }
@@ -122,19 +119,21 @@ const SelectedTopicPage: React.FC = () => {
   };
 
   const handleSkip = () => {
-    setShowFeedback(false);
-    setSelectedAnswer(null);
-    setCompanionMessage("");
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setShowFeedback(false);
+      setCompanionMessage("");
     }
   };
 
   const handleSubmit = () => {
+    if (!selectedAnswer && !showFeedback) return;
+    
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setShowFeedback(false);
       setSelectedAnswer(null);
+      setShowFeedback(false);
       setCompanionMessage("");
     } else {
       navigate('/summary', {
@@ -149,8 +148,18 @@ const SelectedTopicPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        Loading...
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex gap-2">
+            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" 
+                 style={{ animationDelay: '0s' }} />
+            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" 
+                 style={{ animationDelay: '0.2s' }} />
+            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" 
+                 style={{ animationDelay: '0.4s' }} />
+          </div>
+          <span className="text-[#00A3FF] text-xl font-medium">Loading...</span>
+        </div>
       </div>
     );
   }
@@ -178,7 +187,6 @@ const SelectedTopicPage: React.FC = () => {
       <div className="w-[280px] bg-[#101010] p-5 flex flex-col relative">
         <div className="flex items-center gap-2 mb-4">
           <button onClick={() => navigate("/")} className="flex items-center">
-            <span className="text-[#00A3FF] text-2xl">←</span>
             <img src={logo} alt="LeanLearn Logo" className="w-[120px]" />
           </button>
         </div>
@@ -200,43 +208,115 @@ const SelectedTopicPage: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-1 px-8 py-6">
-        <QuestionCard
-          question={currentQuestion}
-          type={questionType}
-          onAnswer={handleAnswerSubmit}
-          showFeedback={showFeedback}
-          selectedAnswer={selectedAnswer}
-          isCorrect={isCorrect}
-        />
+      <div className="flex-1 p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-white text-xl mb-8">
+            {currentQuestion.question}
+          </div>
 
-        {showFeedback && (
-          <QuestionFeedback
-            isCorrect={isCorrect}
-            correctAnswer={
-              questionType === 'tf'
-                ? (currentQuestion as TFQuestion).answer
-                : (questionType === 'mcq' 
-                    ? (currentQuestion as MCQQuestion).answers[0]
-                    : (currentQuestion as FillQuestion).answers[0])
-            }
-            show={showFeedback}
-          />
-        )}
+          {questionType === 'mcq' && (
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              {(currentQuestion as MCQQuestion).options.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSubmit(option)}
+                  className={`
+                    p-6 rounded-lg border transition-all
+                    ${selectedAnswer === option
+                      ? (currentQuestion as MCQQuestion).answers[0] === option
+                        ? 'border-green-400 bg-green-600/20'
+                        : 'border-red-400 bg-red-600/20'
+                      : 'border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]'
+                    }
+                  `}
+                >
+                  <span className="text-white text-lg">{option}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
-        <div className="max-w-3xl mx-auto flex justify-end gap-4 mt-8">
-          <button
-            onClick={handleSkip}
-            className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
-          >
-            Skip
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors"
-          >
-            Submit
-          </button>
+          {questionType === 'fill' && (
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              {(currentQuestion as FillQuestion).choices.map((choice, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleAnswerSubmit(choice)}
+                  className={`
+                    p-6 rounded-lg border transition-all
+                    ${selectedAnswer === choice
+                      ? (currentQuestion as FillQuestion).answers[0] === choice
+                        ? 'border-green-400 bg-green-600/20'
+                        : 'border-red-400 bg-red-600/20'
+                      : 'border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]'
+                    }
+                  `}
+                >
+                  <span className="text-white text-lg">{choice}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {questionType === 'tf' && (
+            <div className="grid grid-cols-2 gap-6 mb-8">
+              {['True', 'False'].map((choice) => (
+                <button
+                  key={choice}
+                  onClick={() => handleAnswerSubmit(choice)}
+                  className={`
+                    p-6 rounded-lg border transition-all
+                    ${selectedAnswer === choice
+                      ? (currentQuestion as TFQuestion).answer === choice
+                        ? 'border-green-400 bg-green-600/20'
+                        : 'border-red-400 bg-red-600/20'
+                      : 'border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]'
+                    }
+                  `}
+                >
+                  <span className="text-white text-lg">{choice}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showFeedback && (
+            <div className="flex items-center gap-2 mb-6">
+              <span className={isCorrect ? 'text-green-500' : 'text-red-500'}>
+                {isCorrect ? '✓' : '✕'}
+              </span>
+              <span className={isCorrect ? 'text-green-500' : 'text-red-500'}>
+                {isCorrect 
+                  ? 'Correct!' 
+                  : `Incorrect. The correct answer was: ${
+                      questionType === 'tf'
+                        ? (currentQuestion as TFQuestion).answer
+                        : questionType === 'mcq'
+                          ? (currentQuestion as MCQQuestion).answers[0]
+                          : (currentQuestion as FillQuestion).answers[0]
+                    }`
+                }
+              </span>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-4">
+            {!showFeedback && (
+              <button
+                onClick={handleSkip}
+                className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
+              >
+                Skip
+              </button>
+            )}
+            <button
+              onClick={handleSubmit}
+              disabled={!selectedAnswer && !showFeedback}
+              className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
+            >
+              {showFeedback ? 'Next' : 'Submit'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

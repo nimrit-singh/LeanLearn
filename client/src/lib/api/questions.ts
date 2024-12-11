@@ -2,53 +2,48 @@ import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
 
 const BASE_URL = '';
 
-
 export const mcqQuestionApi = {
-    // Get all MCQ questions
-    getAll: async (): Promise<MCQQuestion[]> => {
-      try {
-        const response = await fetch(`${BASE_URL}/mcqquestion/`);
-        if (!response.ok) throw new Error('Failed to fetch MCQ questions');
-        return response.json();
-      } catch (error) {
-        console.error('Error fetching MCQ questions:', error);
-        throw error;
-      }
-    },
-  
-    // Get single MCQ question
-    getOne: async (id: string): Promise<MCQQuestion> => {
-      try {
-        const response = await fetch(`${BASE_URL}/mcqquestion/${id}`);
-        if (!response.ok) throw new Error('Failed to fetch MCQ question');
-        return response.json();
-      } catch (error) {
-        console.error('Error fetching MCQ question:', error);
-        throw error;
-      }
-    },
-  
-    // Update MCQ question
-    update: async (id: string, question: MCQQuestion): Promise<MCQQuestion> => {
-      try {
-        const response = await fetch(`${BASE_URL}/mcqquestion/${id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(question),
-        });
-        if (!response.ok) throw new Error('Failed to update MCQ question');
-        return response.json();
-      } catch (error) {
-        console.error('Error updating MCQ question:', error);
-        throw error;
-      }
-    },
-  };
-  // Fill in the Blanks API
+  getAll: async (): Promise<MCQQuestion[]> => {
+    try {
+      const response = await fetch(`${BASE_URL}/mcqquestion/`);
+      if (!response.ok) throw new Error('Failed to fetch MCQ questions');
+      return response.json();
+    } catch (error) {
+      console.error('Error fetching MCQ questions:', error);
+      throw error;
+    }
+  },
+
+  getOne: async (id: string): Promise<MCQQuestion> => {
+    try {
+      const response = await fetch(`${BASE_URL}/mcqquestion/${id}`);
+      if (!response.ok) throw new Error('Failed to fetch MCQ question');
+      return response.json();
+    } catch (error) {
+      console.error('Error fetching MCQ question:', error);
+      throw error;
+    }
+  },
+
+  update: async (id: string, question: MCQQuestion): Promise<MCQQuestion> => {
+    try {
+      const response = await fetch(`${BASE_URL}/mcqquestion/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(question),
+      });
+      if (!response.ok) throw new Error('Failed to update MCQ question');
+      return response.json();
+    } catch (error) {
+      console.error('Error updating MCQ question:', error);
+      throw error;
+    }
+  },
+};
+
 export const fillQuestionApi = {
-  // Get all fill questions
   getAll: async (): Promise<FillQuestion[]> => {
     try {
       const response = await fetch(`${BASE_URL}/fillquestion/`);
