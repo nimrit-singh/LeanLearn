@@ -1,6 +1,6 @@
 import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
 
-const BASE_URL = '';
+const BASE_URL = 'https://lean-learn-backend-ai.onrender.com';
 
 export const mcqQuestionApi = {
   getAll: async (): Promise<MCQQuestion[]> => {
