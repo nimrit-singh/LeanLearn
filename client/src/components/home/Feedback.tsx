@@ -2,23 +2,26 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface FeedbackProps {
-  onSubmit: (rating: number, feedback: string) => void;
-  onSkip: () => void;
+  onSubmit?: (rating: number, feedback: string) => void;
+  onSkip?: () => void;
 }
 
-const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
+const Feedback: React.FC<FeedbackProps> = ({ 
+  onSubmit = () => {}, 
+  onSkip = () => {} 
+}) => {
   const [rating, setRating] = useState(3);
   const [feedback, setFeedback] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = () => {
-    onSubmit(rating, feedback);
-    navigate('/select-mentor');
+    onSubmit?.(rating, feedback);
+    navigate('/');
   };
 
   const handleSkip = () => {
-    onSkip();
-    navigate('/select-mentor');
+    onSkip?.();
+    navigate('/');
   };
 
   return (
@@ -31,6 +34,7 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
           We're always striving to improve - share your thoughts with us!
         </p>
 
+        {/* Star Rating */}
         <div className="flex justify-center gap-2 mb-6">
           {[1, 2, 3, 4, 5].map((star) => (
             <button

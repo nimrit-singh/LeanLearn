@@ -101,28 +101,23 @@ const SelectedTopicPage: React.FC = () => {
     try {
       const requestData = {
         question: currentQuestion.question,
-        topic: currentQuestion.topic || currentQuestion.subject || "physics",
+        topic: currentQuestion.topic || "physics",
         answer: correctAnswer,
         chosen_answer: answer
       };
   
-      console.log('Sending request with data:', requestData);
+      const explanation = await aiApi.explainAnswer(requestData);
   
-      const aiResponse = await aiApi.explainAnswer(requestData);
-  
-      setCompanionMessage(aiResponse || (correct ? 
-        "Well done! Your understanding is spot on!" : 
-        `Let's review this concept. The correct answer was: ${correctAnswer}`
-      ));
+      const formattedExplanation = formatExplanation(explanation, correct, correctAnswer);
+      setCompanionMessage(formattedExplanation);
   
     } catch (error) {
-      console.error('AI explanation error:', error);
-      setCompanionMessage(correct ? 
-        "Excellent! You've got the right answer!" : 
-        `The correct answer was: ${correctAnswer}. Let's keep learning together!`
+      console.error('Failed to get AI explanation:', error);
+      setCompanionMessage(correct 
+        ? `Well done! You got it right.` 
+        : `Not quite right. The correct answer was: ${correctAnswer}.`
       );
     }
-  
     try {
       switch (questionType) {
         case "mcq":
@@ -146,6 +141,30 @@ const SelectedTopicPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Failed to update question status:", error);
+    }
+  };
+
+  const formatExplanation = (explanation: string, isCorrect: boolean, correctAnswer: string): string => {
+    let cleanText = explanation.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+    
+    cleanText = cleanText.replace(/\d+\.\s*/g, '');
+    
+    cleanText = cleanText
+      .replace('Correct Answer:', '')
+      .replace('Evaluation:', '')
+      .replace('Explanation:', '')
+      .replace('Analysis:', '')
+      .replace('Summary:', '');
+    
+    const points = cleanText
+      .split('.')
+      .map(point => point.trim())
+      .filter(point => point.length > 0);
+  
+    if (isCorrect) {
+      return `✓ ${points.join('.\n\n')}`;
+    } else {
+      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join('.\n\n')}`;
     }
   };
 
@@ -230,155 +249,178 @@ const SelectedTopicPage: React.FC = () => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black">
-      <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col relative">
+      <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col h-screen overflow-hidden">
         <div className="flex items-center gap-2 mb-4">
           <button onClick={() => navigate("/")} className="flex items-center">
             <img src={logo} alt="LeanLearn Logo" className="w-[120px]" />
           </button>
         </div>
 
-        {companionMessage && (
-          <div className="bg-[#141414] rounded-lg p-4 mb-4 text-gray-300 text-sm">
-            {companionMessage}
-          </div>
-        )}
+        <div className="flex flex-col flex-grow overflow-hidden">
+          {companionMessage && (
+  <div 
+    className="bg-[#141414] rounded-lg p-6 mb-4 overflow-y-auto max-h-[50vh] custom-scrollbar"
+    style={{
+      '--scrollbar-width': '8px',
+      '--scrollbar-thumb-color': 'rgba(255, 255, 255, 0.2)',
+      '--scrollbar-track-color': 'rgba(0, 0, 0, 0.2)'
+    } as React.CSSProperties}
+  >
+    <div className="space-y-4">
+      {companionMessage.split('.').map((sentence, index) => {
+        const trimmedSentence = sentence.trim();
+        if (trimmedSentence) {
+          return (
+            <p 
+              key={index} 
+              className="text-gray-300 leading-relaxed text-sm tracking-wide"
+            >
+              {trimmedSentence}.
+            </p>
+          );
+        }
+        return null;
+      })}
+    </div>
+  </div>
+)}
 
-        {selectedCompanion && (
-          <div className="mt-auto">
-            <img
-              src={
-                companionImages[
-                  selectedCompanion as keyof typeof companionImages
-                ]
-              }
-              alt="Selected Companion"
-              className="w-full object-contain max-h-[300px]"
-            />
-          </div>
-        )}
+          {selectedCompanion && (
+            <div className="mt-auto">
+              <img
+                src={companionImages[selectedCompanion as keyof typeof companionImages]}
+                alt="Selected Companion"
+                className="w-full object-contain max-h-[300px]"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="flex-1 p-8 flex items-center">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-white text-xl mb-8">
-            {currentQuestion.question}
-          </div>
-
-          {questionType === "mcq" && (
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              {(currentQuestion as MCQQuestion).options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleAnswerSubmit(option)}
-                  className={`
-                    p-6 rounded-lg border transition-all
-                    ${
-                      selectedAnswer === option
-                        ? (currentQuestion as MCQQuestion).answers[0] === option
-                          ? "border-green-400 bg-green-600/20"
-                          : "border-red-400 bg-red-600/20"
-                        : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
-                    }
-                  `}
-                >
-                  <span className="text-white text-lg">{option}</span>
-                </button>
-              ))}
+      <div className="flex-1 overflow-y-auto">
+        <div className="h-screen flex items-center p-8">
+          <div className="max-w-4xl mx-auto w-full">
+            <div className="mb-8">
+              <div className="text-white text-xl">
+                {currentQuestion.question}
+              </div>
             </div>
-          )}
 
-          {questionType === "fill" && (
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              {(currentQuestion as FillQuestion).choices.map(
-                (choice, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleAnswerSubmit(choice)}
-                    className={`
-                    p-6 rounded-lg border transition-all
-                    ${
-                      selectedAnswer === choice
-                        ? (currentQuestion as FillQuestion).answers[0] ===
-                          choice
-                          ? "border-green-400 bg-green-600/20"
-                          : "border-red-400 bg-red-600/20"
-                        : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
-                    }
-                  `}
-                  >
-                    <span className="text-white text-lg">{choice}</span>
-                  </button>
-                )
+            <div className="mb-8">
+              {questionType === "mcq" && (
+                <div className="grid grid-cols-2 gap-6">
+                  {(currentQuestion as MCQQuestion).options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswerSubmit(option)}
+                      className={`
+                        p-6 rounded-lg border transition-all
+                        ${
+                          selectedAnswer === option
+                            ? (currentQuestion as MCQQuestion).answers[0] === option
+                              ? "border-green-400 bg-green-600/20"
+                              : "border-red-400 bg-red-600/20"
+                            : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
+                        }
+                      `}
+                    >
+                      <span className="text-white text-lg">{option}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {questionType === "fill" && (
+                <div className="grid grid-cols-2 gap-6">
+                  {(currentQuestion as FillQuestion).choices.map((choice, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswerSubmit(choice)}
+                      className={`
+                        p-6 rounded-lg border transition-all
+                        ${
+                          selectedAnswer === choice
+                            ? (currentQuestion as FillQuestion).answers[0] === choice
+                              ? "border-green-400 bg-green-600/20"
+                              : "border-red-400 bg-red-600/20"
+                            : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
+                        }
+                      `}
+                    >
+                      <span className="text-white text-lg">{choice}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {questionType === "tf" && (
+                <div className="grid grid-cols-2 gap-6">
+                  {["True", "False"].map((choice) => (
+                    <button
+                      key={choice}
+                      onClick={() => handleAnswerSubmit(choice)}
+                      className={`
+                        p-6 rounded-lg border transition-all
+                        ${
+                          selectedAnswer === choice
+                            ? (currentQuestion as TFQuestion).answer === choice
+                              ? "border-green-400 bg-green-600/20"
+                              : "border-red-400 bg-red-600/20"
+                            : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
+                        }
+                      `}
+                    >
+                      <span className="text-white text-lg">{choice}</span>
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-          )}
 
-          {questionType === "tf" && (
-            <div className="grid grid-cols-2 gap-6 mb-8">
-              {["True", "False"].map((choice) => (
-                <button
-                  key={choice}
-                  onClick={() => handleAnswerSubmit(choice)}
-                  className={`
-                    p-6 rounded-lg border transition-all
-                    ${
-                      selectedAnswer === choice
-                        ? (currentQuestion as TFQuestion).answer === choice
-                          ? "border-green-400 bg-green-600/20"
-                          : "border-red-400 bg-red-600/20"
-                        : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
-                    }
-                  `}
-                >
-                  <span className="text-white text-lg">{choice}</span>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="flex justify-between gap-4 items-center mt-[100px]">
-          <div>
-          {showFeedback && (
-              <div className="flex items-center gap-2 mb-6">
-                <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-                  {isCorrect ? (
-                    <FaCheckCircle style={styles.success} size={36} />
-                  ) : (
-                    <FaTimesCircle style={styles.error} size={36} />
-                  )}
-                </span>
-                <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-                  {isCorrect
-                    ? "Correct!"
-                    : `Incorrect. The correct answer was: ${
-                        questionType === "tf"
-                          ? (currentQuestion as TFQuestion).answer
-                          : questionType === "mcq"
-                          ? (currentQuestion as MCQQuestion).answers[0]
-                          : (currentQuestion as FillQuestion).answers[0]
-                      }`}
-                </span>
+            <div className="flex justify-between items-center">
+              <div>
+                {showFeedback && (
+                  <div className="flex items-center gap-2">
+                    <span className={isCorrect ? "text-green-500" : "text-red-500"}>
+                      {isCorrect ? (
+                        <FaCheckCircle style={styles.success} size={36} />
+                      ) : (
+                        <FaTimesCircle style={styles.error} size={36} />
+                      )}
+                    </span>
+                    <span className={isCorrect ? "text-green-500" : "text-red-500"}>
+                      {isCorrect
+                        ? "Correct!"
+                        : `Incorrect. The correct answer was: ${
+                            questionType === "tf"
+                              ? (currentQuestion as TFQuestion).answer
+                              : questionType === "mcq"
+                                ? (currentQuestion as MCQQuestion).answers[0]
+                                : (currentQuestion as FillQuestion).answers[0]
+                          }`}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
 
-          </div>
-          <div className="flex gap-3">
-          {!showFeedback && (
-              <button
-                onClick={handleSkip}
-                className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
-              >
-                Skip
-              </button>
-            )}
-            <button
-              onClick={handleSubmit}
-              disabled={!selectedAnswer && !showFeedback}
-              className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
-            >
-              {showFeedback ? "Next" : "Submit"}
-            </button>
-          </div>
+              <div className="flex gap-3">
+                {!showFeedback && (
+                  <button
+                    onClick={handleSkip}
+                    className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
+                  >
+                    Skip
+                  </button>
+                )}
+                <button
+                  onClick={handleSubmit}
+                  disabled={!selectedAnswer && !showFeedback}
+                  className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
+                >
+                  {showFeedback ? "Next" : "Submit"}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
