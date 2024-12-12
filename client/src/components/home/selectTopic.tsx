@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa"; // Import icons
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa"; 
 import logo from "../../assets/images/Logo.png";
 import einstein from "../../assets/images/einstein.png";
 import newton from "../../assets/images/Newton.png";
@@ -10,7 +10,7 @@ import { MCQQuestion, FillQuestion, TFQuestion } from "../../types/quiz";
 import {
   mcqQuestionApi,
   fillQuestionApi,
-  tfQuestionApi,
+  tfQuestionApi,aiApi
 } from "../../lib/api/questions";
 
 const companionImages = {
@@ -74,31 +74,55 @@ const SelectedTopicPage: React.FC = () => {
 
   const handleAnswerSubmit = async (answer: string) => {
     if (showFeedback) return;
-
+  
     const currentQuestion = questions[currentQuestionIndex];
     let correct = false;
-
+    let correctAnswer = '';
+  
     switch (questionType) {
       case "mcq":
+        correctAnswer = (currentQuestion as MCQQuestion).answers[0];
         correct = (currentQuestion as MCQQuestion).answers.includes(answer);
         break;
       case "fill":
+        correctAnswer = (currentQuestion as FillQuestion).answers[0];
         correct = (currentQuestion as FillQuestion).answers.includes(answer);
         break;
       case "tf":
+        correctAnswer = (currentQuestion as TFQuestion).answer;
         correct = (currentQuestion as TFQuestion).answer === answer;
         break;
     }
-
+  
     setSelectedAnswer(answer);
     setIsCorrect(correct);
     setShowFeedback(true);
-    setCompanionMessage(
-      correct
-        ? "Great job! You're understanding this well!"
-        : "Don't worry! Learning from mistakes helps us improve."
-    );
-
+  
+    try {
+      const requestData = {
+        question: currentQuestion.question,
+        topic: currentQuestion.topic || currentQuestion.subject || "physics",
+        answer: correctAnswer,
+        chosen_answer: answer
+      };
+  
+      console.log('Sending request with data:', requestData);
+  
+      const aiResponse = await aiApi.explainAnswer(requestData);
+  
+      setCompanionMessage(aiResponse || (correct ? 
+        "Well done! Your understanding is spot on!" : 
+        `Let's review this concept. The correct answer was: ${correctAnswer}`
+      ));
+  
+    } catch (error) {
+      console.error('AI explanation error:', error);
+      setCompanionMessage(correct ? 
+        "Excellent! You've got the right answer!" : 
+        `The correct answer was: ${correctAnswer}. Let's keep learning together!`
+      );
+    }
+  
     try {
       switch (questionType) {
         case "mcq":

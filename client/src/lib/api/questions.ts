@@ -2,6 +2,48 @@ import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
 
 const BASE_URL = 'https://lean-learn-backend-ai.onrender.com';
 
+export const aiApi = {
+  explainAnswer: async (data: {
+    question: string;
+    topic: string;
+    answer: string;
+    chosen_answer: string;
+  }): Promise<string> => {
+    try {
+      const requestBody = {
+        question: data.question,
+        topic: data.topic,
+        answer: data.answer,
+        chosen_answer: data.chosen_answer
+      };
+
+      console.log('Request data:', JSON.stringify(requestBody, null, 2));
+
+      const response = await fetch(`${BASE_URL}/ai/explain`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Error response:', errorData);
+        throw new Error(JSON.stringify(errorData));
+      }
+
+      const result = await response.json();
+      return result.explanation || result.text || '';
+
+    } catch (error) {
+      console.error('AI explanation error:', error);
+      throw error;
+    }
+  },
+};
 export const mcqQuestionApi = {
   getAll: async (): Promise<MCQQuestion[]> => {
     try {
