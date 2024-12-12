@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface FeedbackProps {
   onSubmit: (rating: number, feedback: string) => void;
@@ -8,9 +9,16 @@ interface FeedbackProps {
 const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
   const [rating, setRating] = useState(3);
   const [feedback, setFeedback] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = () => {
     onSubmit(rating, feedback);
+    navigate('/select-mentor');
+  };
+
+  const handleSkip = () => {
+    onSkip();
+    navigate('/select-mentor');
   };
 
   return (
@@ -23,7 +31,6 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
           We're always striving to improve - share your thoughts with us!
         </p>
 
-        {/* Star Rating */}
         <div className="flex justify-center gap-2 mb-6">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -64,7 +71,6 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
           ))}
         </div>
 
-        {/* Feedback Textarea */}
         <div className="mb-6">
           <textarea
             value={feedback}
@@ -74,10 +80,9 @@ const Feedback: React.FC<FeedbackProps> = ({ onSubmit, onSkip }) => {
           />
         </div>
 
-        {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
           <button
-            onClick={onSkip}
+            onClick={handleSkip}
             className="flex-1 py-3 px-6 bg-[#101113] text-white rounded-lg hover:bg-[#1A1A1A] transition-colors"
           >
             Skip for later

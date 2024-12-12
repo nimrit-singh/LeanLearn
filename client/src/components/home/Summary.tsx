@@ -45,23 +45,16 @@ const Summary: React.FC = () => {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-black overflow-hidden">
-      <div className="w-full md:w-[280px] bg-[#101010] p-5 flex flex-col order-2 md:order-1">
-        <div className="flex items-center gap-2 mb-8">
-          <button 
-            onClick={handleGoBack}
-            className="text-white hover:opacity-80"
-          >
-            </button>
-            <img
-                src={logo}
-                alt="LeanLearn Logo"
-                className="w-[120px]"
-            />
-            </div>
+      <div className="w-full h-auto md:w-[280px] bg-[#101010] p-5 flex flex-col order-2 md:order-1">
+        <div className="flex items-center gap-2 mb-4 md:mb-8">
+          <button onClick={handleGoBack}>
+            <img src={logo} alt="LeanLearn Logo" className="w-[100px] md:w-[120px]" />
+          </button>
+        </div>
 
-            <div className="bg-[#1A1A1A] rounded-lg p-4 mb-6">
-          <h3 className="text-white mb-2">Topics you have to improve on</h3>
-          <ul className="text-gray-300 space-y-1">
+        <div className="bg-[#1A1A1A] rounded-lg p-3 md:p-4 mb-4 md:mb-6">
+          <h3 className="text-white text-sm md:text-base mb-2">Topics you have to improve on</h3>
+          <ul className="text-gray-300 space-y-1 text-sm md:text-base">
             {[
               'Topic 1',
               'Topic 2',
@@ -77,32 +70,30 @@ const Summary: React.FC = () => {
         </div>
 
         {selectedCompanion && (
-          <div className="flex-1 flex items-end h-[200px] md:h-auto">
+          <div className="mt-auto flex justify-center md:justify-start">
             <img
               src={companionImages[selectedCompanion as keyof typeof companionImages]}
               alt="Selected Companion"
-              className="w-full object-contain max-h-[200px] md:max-h-[300px]"
+              className="w-[200px] md:w-full object-contain max-h-[150px] md:max-h-[300px]"
             />
           </div>
         )}
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 order-1 md:order-2 min-h-[60vh] md:min-h-full relative">
-        {/* Exit Button */}
+      <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 order-1 md:order-2 min-h-[60vh] md:min-h-full">
         <button
           onClick={handleExit}
-          className="absolute top-6 right-6 px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 border border-blue-400"
+          className="absolute top-4 right-4 md:top-6 md:right-6 px-4 py-1 md:px-6 md:py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md font-bold shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 border border-blue-400 text-sm md:text-base"
         >
           Exit
         </button>
 
-        <div className="text-center mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#00A3FF] mb-2 md:mb-3">Quiz Complete!</h1>
-          <p className="text-[#00A3FF] text-base md:text-lg">You're 70% closer to mastering this topic!</p>
+        <div className="text-center mb-6 md:mb-12">
+          <h1 className="text-2xl md:text-4xl font-bold text-[#00A3FF] mb-2 md:mb-3">Quiz Complete!</h1>
+          <p className="text-[#00A3FF] text-sm md:text-lg">You're 70% closer to mastering this topic!</p>
         </div>
 
-        <div className="space-y-3 mb-8 md:mb-12 text-white w-full max-w-md px-4 md:px-0">
+        <div className="space-y-2 md:space-y-3 mb-6 md:mb-12 text-white w-full max-w-md px-4 md:px-0 text-sm md:text-base">
           <div className="flex justify-between">
             <span>Total Quiz Questions:</span>
             <span>10</span>
@@ -115,14 +106,17 @@ const Summary: React.FC = () => {
             <span>Incorrectly Answered:</span>
             <span>3</span>
           </div>
-          <div className="flex justify-between border-t border-gray-700 pt-3 mt-3">
+          <div className="flex justify-between border-t border-gray-700 pt-2 md:pt-3 mt-2 md:mt-3">
             <span>Total Score:</span>
             <span>7/10</span>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6 md:mb-8 w-full md:w-auto px-4 md:px-0">
-          <button onClick={handleRetryQuiz} className="w-full md:w-auto">
+        <div className="flex flex-col md:flex-row gap-3 md:gap-4 mb-4 md:mb-8 w-full md:w-auto px-4 md:px-0">
+          <button 
+            onClick={handleRetryQuiz}
+            className="w-full md:w-auto text-[#ABABAD] py-3 px-6 rounded-lg transition-colors"
+          >
             <svg width="170" height="54" viewBox="0 0 170 54" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="path-1-outside-1_64_2590" maskUnits="userSpaceOnUse" x="0" y="0.5" width="170" height="53" fill="black">
                     <rect fill="white" y="0.5" width="170" height="53"/>
@@ -135,9 +129,9 @@ const Summary: React.FC = () => {
 
             </button>
             <button
-                onClick={handleChallengeClick}
-                className="w-full md:w-auto"
-            >
+            onClick={handleChallengeClick}
+            className="w-full md:w-auto  text-[#ABABAD] py-3 px-6 rounded-lg transition-colors"
+          >
                 <svg width="170" height="54" viewBox="0 0 170 54" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="path-1-outside-1_140_867" maskUnits="userSpaceOnUse" x="0.333496" y="0.5" width="170" height="53" fill="black">
                     <rect fill="white" x="0.333496" y="0.5" width="170" height="53"/>
@@ -150,9 +144,9 @@ const Summary: React.FC = () => {
 
             </button>
             <button
-                onClick={handleTakeAnotherQuiz}
-                className="w-full md:w-auto"
-            >
+            onClick={handleTakeAnotherQuiz}
+            className="w-full md:w-auto text-[#181818] py-3 px-6 rounded-lg transition-colors"
+          >
                 <svg width="168" height="49" viewBox="0 0 168 49" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <mask id="path-1-inside-1_64_2592" fill="white">
                     <path d="M0.666504 8.5C0.666504 4.08172 4.24823 0.5 8.6665 0.5H160C164.418 0.5 168 4.08172 168 8.5V40.5C168 44.9183 164.418 48.5 160 48.5H8.66649C4.24822 48.5 0.666504 44.9183 0.666504 40.5V8.5Z"/>
@@ -165,7 +159,7 @@ const Summary: React.FC = () => {
             </button>
             </div>
 
-            <p className="text-gray-400 italic text-center px-4 md:px-0">
+            <p className="text-gray-400 italic text-center px-4 md:px-0 text-sm md:text-base">
           Every attempt takes you closer to mastering physics!
         </p>
       </div>
