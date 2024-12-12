@@ -14,35 +14,47 @@ export const aiApi = {
         question: data.question,
         topic: data.topic,
         answer: data.answer,
-        chosen_answer: data.chosen_answer
+        choosen_answer: data.chosen_answer 
       };
 
-      console.log('Request data:', JSON.stringify(requestBody, null, 2));
+      console.log('Sending request with data:', requestBody);
 
       const response = await fetch(`${BASE_URL}/ai/explain`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestBody)
       });
 
-      console.log('Response status:', response.status);
+      console.log('Raw response:', response);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Error response:', errorData);
-        throw new Error(JSON.stringify(errorData));
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+
+      let result;
+      try {
+        result = JSON.parse(responseText);
+      } catch (e) {
+        console.error('Failed to parse response as JSON:', e);
+        return responseText || 'Failed to get explanation';
       }
 
-      const result = await response.json();
-      return result.explanation || result.text || '';
+      console.log('Parsed response:', result);
+
+      if (!response.ok) {
+        console.error('API Error:', result);
+        throw new Error(JSON.stringify(result));
+      }
+
+      return result.explanation || result.message || result || 'No explanation available';
 
     } catch (error) {
-      console.error('AI explanation error:', error);
+      console.error('Error in explainAnswer:', error);
       throw error;
     }
-  },
+  }
 };
 export const mcqQuestionApi = {
   getAll: async (): Promise<MCQQuestion[]> => {
