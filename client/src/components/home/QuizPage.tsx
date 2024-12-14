@@ -8,11 +8,11 @@ import logo from '../../assets/images/Logo.png';
 import choiceCloud from '../../assets/images/choose.png';
 
 const topics = [
-  { id: 1, name: 'Topic 1' },
-  { id: 2, name: 'Topic 2' },
-  { id: 3, name: 'Topic 3' },
-  { id: 4, name: 'Topic 4' },
-  { id: 5, name: 'Topic 5' }
+  { id: 1, name: 'Gravitation', enabled: true },
+  { id: 2, name: 'Topic 2', enabled: false },
+  { id: 3, name: 'Topic 3', enabled: false },
+  { id: 4, name: 'Topic 4', enabled: false },
+  { id: 5, name: 'Topic 5', enabled: false }
 ];
 
 const companionImages = {
@@ -38,17 +38,19 @@ const QuizPage: React.FC = () => {
     navigate('/select-mentor');
   };
 
-  const handleTopicClick = (topicId: number) => {
-    navigate(`/topic/${topicId}`, { state: { selectedCompanion } });
+  const handleTopicClick = (topicId: number, enabled: boolean) => {
+    if (enabled) {
+      navigate(`/topic/${topicId}`, { state: { selectedCompanion } });
+    }
   };
 
   return (
     <>
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#181818] flex items-center justify-between px-4 z-50">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[#181818] flex items-center justify-center px-4 z-50">
         <img
           src={logo}
           alt="LeanLearn Logo"
-          className="h-8 absolute left-1/2 -translate-x-1/2"
+          className="h-8"
         />
         <button 
           className="absolute right-4 p-2"
@@ -72,12 +74,14 @@ const QuizPage: React.FC = () => {
 
       <div className="flex flex-col lg:flex-row min-h-screen">
         <div className="w-[280px] bg-[#101010] p-5 hidden lg:flex flex-col">
-          <img
-            src={logo}
-            alt="LeanLearn Logo"
-            className="w-[120px] cursor-pointer ml-10 mx-auto lg:mx-0 fade-in"
-            onClick={() => navigate('/')}
-          />
+          <div className="flex justify-center w-full mb-6">
+            <img
+              src={logo}
+              alt="LeanLearn Logo"
+              className="w-[120px] cursor-pointer fade-in"
+              onClick={() => navigate('/')}
+            />
+          </div>
           
           <button
             onClick={handleChangeMentor}
@@ -119,8 +123,11 @@ const QuizPage: React.FC = () => {
             {topics.map((topic) => (
               <button
                 key={topic.id}
-                onClick={() => handleTopicClick(topic.id)} 
-                className="w-full lg:w-[590px] lg:h-[72px] h-auto rounded-[16px] border-2 border-solid border-[#3A3B3D] border-t-2 border-r-2 border-b-8 border-l-2 py-[8px] px-[32px] bg-[#101010] text-white text-left hover:bg-[#181818] transition-colors"
+                onClick={() => handleTopicClick(topic.id, topic.enabled)}
+                className={`w-full lg:w-[590px] lg:h-[72px] h-auto rounded-[16px] border-2 border-solid border-[#3A3B3D] border-t-2 border-r-2 border-b-8 border-l-2 py-[8px] px-[32px] bg-[#101010] text-white text-left transition-colors ${
+                  topic.enabled ? 'hover:bg-[#181818]' : 'opacity-50 cursor-not-allowed'
+                }`}
+                disabled={!topic.enabled}
               >
                 {topic.name}
               </button>

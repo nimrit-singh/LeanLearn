@@ -10,7 +10,8 @@ import { MCQQuestion, FillQuestion, TFQuestion } from "../../types/quiz";
 import {
   mcqQuestionApi,
   fillQuestionApi,
-  tfQuestionApi,aiApi
+  tfQuestionApi,
+  aiApi
 } from "../../lib/api/questions";
 
 const companionImages = {
@@ -72,8 +73,12 @@ const SelectedTopicPage: React.FC = () => {
     fetchQuestions();
   }, [questionType]);
 
-  const handleAnswerSubmit = async (answer: string) => {
-    if (showFeedback) return;
+  const handleOptionSelect = (answer: string) => {
+    setSelectedAnswer(answer);
+  };
+
+  const handleAnswerSubmit = async () => {
+    if (!selectedAnswer) return;
   
     const currentQuestion = questions[currentQuestionIndex];
     let correct = false;
@@ -82,19 +87,18 @@ const SelectedTopicPage: React.FC = () => {
     switch (questionType) {
       case "mcq":
         correctAnswer = (currentQuestion as MCQQuestion).answers[0];
-        correct = (currentQuestion as MCQQuestion).answers.includes(answer);
+        correct = (currentQuestion as MCQQuestion).answers.includes(selectedAnswer);
         break;
       case "fill":
         correctAnswer = (currentQuestion as FillQuestion).answers[0];
-        correct = (currentQuestion as FillQuestion).answers.includes(answer);
+        correct = (currentQuestion as FillQuestion).answers.includes(selectedAnswer);
         break;
       case "tf":
         correctAnswer = (currentQuestion as TFQuestion).answer;
-        correct = (currentQuestion as TFQuestion).answer === answer;
+        correct = (currentQuestion as TFQuestion).answer === selectedAnswer;
         break;
     }
   
-    setSelectedAnswer(answer);
     setIsCorrect(correct);
     setShowFeedback(true);
   
@@ -103,11 +107,10 @@ const SelectedTopicPage: React.FC = () => {
         question: currentQuestion.question,
         topic: currentQuestion.topic || "physics",
         answer: correctAnswer,
-        chosen_answer: answer
+        chosen_answer: selectedAnswer
       };
   
       const explanation = await aiApi.explainAnswer(requestData);
-  
       const formattedExplanation = formatExplanation(explanation, correct, correctAnswer);
       setCompanionMessage(formattedExplanation);
   
@@ -118,6 +121,7 @@ const SelectedTopicPage: React.FC = () => {
         : `Not quite right. The correct answer was: ${correctAnswer}.`
       );
     }
+
     try {
       switch (questionType) {
         case "mcq":
@@ -146,16 +150,14 @@ const SelectedTopicPage: React.FC = () => {
 
   const formatExplanation = (explanation: string, isCorrect: boolean, correctAnswer: string): string => {
     let cleanText = explanation.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
-    
     cleanText = cleanText.replace(/\d+\.\s*/g, '');
-    
     cleanText = cleanText
       .replace('Correct Answer:', '')
       .replace('Evaluation:', '')
       .replace('Explanation:', '')
       .replace('Analysis:', '')
       .replace('Summary:', '');
-    
+  
     const points = cleanText
       .split('.')
       .map(point => point.trim())
@@ -177,9 +179,7 @@ const SelectedTopicPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = () => {
-    if (!selectedAnswer && !showFeedback) return;
-
+  const handleNext = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedAnswer(null);
@@ -195,16 +195,7 @@ const SelectedTopicPage: React.FC = () => {
       });
     }
   };
-  const styles = {
-    success: {
-      animation: "bounce 0.5s",
-      color: "green",
-    },
-    error: {
-      animation: "shake 0.5s",
-      color: "red",
-    },
-  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center">
@@ -249,50 +240,62 @@ const SelectedTopicPage: React.FC = () => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black">
-      <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col h-screen overflow-hidden">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col min-h-0 md:h-screen overflow-hidden">
+        <div className="flex items-center justify-center gap-2 mb-4 md:mt-8">
           <button onClick={() => navigate("/")} className="flex items-center">
             <img src={logo} alt="LeanLearn Logo" className="w-[120px]" />
           </button>
         </div>
 
-        <div className="flex flex-col flex-grow overflow-hidden">
-          {companionMessage && (
-  <div 
-    className="bg-[#141414] rounded-lg p-6 mb-4 overflow-y-auto max-h-[50vh] custom-scrollbar"
-    style={{
-      '--scrollbar-width': '8px',
-      '--scrollbar-thumb-color': 'rgba(255, 255, 255, 0.2)',
-      '--scrollbar-track-color': 'rgba(0, 0, 0, 0.2)'
-    } as React.CSSProperties}
-  >
-    <div className="space-y-4">
-      {companionMessage.split('.').map((sentence, index) => {
-        const trimmedSentence = sentence.trim();
-        if (trimmedSentence) {
-          return (
-            <p 
-              key={index} 
-              className="text-gray-300 leading-relaxed text-sm tracking-wide"
-            >
-              {trimmedSentence}.
-            </p>
-          );
-        }
-        return null;
-      })}
-    </div>
-  </div>
-)}
+        <div className="flex flex-col min-h-0 md:flex-grow overflow-hidden md:justify-between">
+          {companionMessage ? (
+            <>
+              <div 
+                className="bg-[#141414] rounded-lg p-6 mb-4 overflow-y-auto max-h-[50vh] custom-scrollbar"
+                style={{
+                  '--scrollbar-width': '8px',
+                  '--scrollbar-thumb-color': 'rgba(255, 255, 255, 0.2)',
+                  '--scrollbar-track-color': 'rgba(0, 0, 0, 0.2)'
+                } as React.CSSProperties}
+              >
+                <div className="space-y-4">
+                  {companionMessage.split('.').map((sentence, index) => {
+                    const trimmedSentence = sentence.trim();
+                    if (trimmedSentence) {
+                      return (
+                        <p 
+                          key={index} 
+                          className="text-gray-300 leading-relaxed text-sm tracking-wide"
+                        >
+                          {trimmedSentence}.
+                        </p>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
 
-          {selectedCompanion && (
-            <div className="mt-auto">
-              <img
-                src={companionImages[selectedCompanion as keyof typeof companionImages]}
-                alt="Selected Companion"
-                className="w-full object-contain max-h-[300px]"
-              />
-            </div>
+              {selectedCompanion && (
+                <div className="mt-4 md:mt-0 flex-shrink-0 flex justify-center">
+                  <img
+                    src={companionImages[selectedCompanion as keyof typeof companionImages]}
+                    alt="Selected Companion"
+                    className="w-[180px] md:w-full h-auto object-contain md:max-h-[300px]"
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            selectedCompanion && (
+              <div className="flex-shrink-0 flex justify-center md:mt-auto">
+                <img
+                  src={companionImages[selectedCompanion as keyof typeof companionImages]}
+                  alt="Selected Companion"
+                  className="w-[180px] md:w-full h-auto object-contain md:max-h-[300px]"
+                />
+              </div>
+            )
           )}
         </div>
       </div>
@@ -312,14 +315,16 @@ const SelectedTopicPage: React.FC = () => {
                   {(currentQuestion as MCQQuestion).options.map((option, index) => (
                     <button
                       key={index}
-                      onClick={() => handleAnswerSubmit(option)}
+                      onClick={() => handleOptionSelect(option)}
                       className={`
                         p-6 rounded-lg border transition-all
                         ${
                           selectedAnswer === option
-                            ? (currentQuestion as MCQQuestion).answers[0] === option
-                              ? "border-green-400 bg-green-600/20"
-                              : "border-red-400 bg-red-600/20"
+                            ? showFeedback
+                              ? (currentQuestion as MCQQuestion).answers[0] === option
+                                ? "border-green-400 bg-green-600/20"
+                                : "border-red-400 bg-red-600/20"
+                              : "border-[#00A3FF] bg-[#00A3FF]/20"
                             : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
                         }
                       `}
@@ -335,14 +340,16 @@ const SelectedTopicPage: React.FC = () => {
                   {(currentQuestion as FillQuestion).choices.map((choice, index) => (
                     <button
                       key={index}
-                      onClick={() => handleAnswerSubmit(choice)}
+                      onClick={() => handleOptionSelect(choice)}
                       className={`
                         p-6 rounded-lg border transition-all
                         ${
                           selectedAnswer === choice
-                            ? (currentQuestion as FillQuestion).answers[0] === choice
-                              ? "border-green-400 bg-green-600/20"
-                              : "border-red-400 bg-red-600/20"
+                            ? showFeedback
+                              ? (currentQuestion as FillQuestion).answers[0] === choice
+                                ? "border-green-400 bg-green-600/20"
+                                : "border-red-400 bg-red-600/20"
+                              : "border-[#00A3FF] bg-[#00A3FF]/20"
                             : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
                         }
                       `}
@@ -358,14 +365,16 @@ const SelectedTopicPage: React.FC = () => {
                   {["True", "False"].map((choice) => (
                     <button
                       key={choice}
-                      onClick={() => handleAnswerSubmit(choice)}
+                      onClick={() => handleOptionSelect(choice)}
                       className={`
                         p-6 rounded-lg border transition-all
                         ${
                           selectedAnswer === choice
-                            ? (currentQuestion as TFQuestion).answer === choice
-                              ? "border-green-400 bg-green-600/20"
-                              : "border-red-400 bg-red-600/20"
+                            ? showFeedback
+                              ? (currentQuestion as TFQuestion).answer === choice
+                                ? "border-green-400 bg-green-600/20"
+                                : "border-red-400 bg-red-600/20"
+                              : "border-[#00A3FF] bg-[#00A3FF]/20"
                             : "border-[#3A3B3D] bg-[#101113] hover:bg-[#1A1A1A]"
                         }
                       `}
@@ -383,49 +392,58 @@ const SelectedTopicPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span className={isCorrect ? "text-green-500" : "text-red-500"}>
                       {isCorrect ? (
-                        <FaCheckCircle style={styles.success} size={36} />
+                        <FaCheckCircle size={36} />
                       ) : (
-                        <FaTimesCircle style={styles.error} size={36} />
+                        <FaTimesCircle size={36} />
                       )}
                     </span>
                     <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-                      {isCorrect
-                        ? "Correct!"
-                        : `Incorrect. The correct answer was: ${
-                            questionType === "tf"
-                              ? (currentQuestion as TFQuestion).answer
-                              : questionType === "mcq"
-                                ? (currentQuestion as MCQQuestion).answers[0]
-                                : (currentQuestion as FillQuestion).answers[0]
-                          }`}
-                    </span>
+                        {isCorrect
+                              ? "Correct!"
+                              : `Incorrect. The correct answer was: ${
+                                  questionType === "tf"
+                                    ? (currentQuestion as TFQuestion).answer
+                                    : questionType === "mcq"
+                                      ? (currentQuestion as MCQQuestion).answers[0]
+                                      : (currentQuestion as FillQuestion).answers[0]
+                                }`}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+      
+                    <div className="flex gap-3">
+                      {!showFeedback && (
+                        <button
+                          onClick={handleSkip}
+                          className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
+                        >
+                          Skip
+                        </button>
+                      )}
+                      {!showFeedback ? (
+                        <button
+                          onClick={handleAnswerSubmit}
+                          disabled={!selectedAnswer}
+                          className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
+                        >
+                          Submit
+                        </button>
+                      ) : (
+                        <button
+                          onClick={handleNext}
+                          className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors"
+                        >
+                          Next
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              <div className="flex gap-3">
-                {!showFeedback && (
-                  <button
-                    onClick={handleSkip}
-                    className="px-6 py-2 rounded-lg bg-[#101113] text-white hover:bg-[#1A1A1A] transition-colors"
-                  >
-                    Skip
-                  </button>
-                )}
-                <button
-                  onClick={handleSubmit}
-                  disabled={!selectedAnswer && !showFeedback}
-                  className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
-                >
-                  {showFeedback ? "Next" : "Submit"}
-                </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default SelectedTopicPage;
+        );
+      };
+      
+      export default SelectedTopicPage;
