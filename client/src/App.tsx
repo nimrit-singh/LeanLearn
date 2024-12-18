@@ -13,7 +13,7 @@ import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
 
 import TeacherDashboard from './components/teacher/TeacherDashboard';
-
+import CreateQuiz from './components/teacher/CreateQuiz'
 
 import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
@@ -56,6 +56,7 @@ function App() {
             <Route path="/verify-otp" element={<AuthLayout><VerifyOTP /></AuthLayout>} />
 
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+            <Route path="/create-quiz" element={<CreateQuiz />} />
             <Route
               path="/select-mentor"
               element={<QuizLayout><SelectingMentors /></QuizLayout>}
