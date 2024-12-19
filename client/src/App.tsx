@@ -17,6 +17,7 @@ import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
 import Summary from './components/home/Summary';
 import Feedback from './components/home/Feedback';
+import NotFound from './components/layout/PageNotFound';
 
 const HomePage = () => (
   <>
@@ -72,6 +73,7 @@ function App() {
               path="/feedback"
               element={<QuizLayout><Feedback /></QuizLayout>}
             />
+            <Route path="*" element={<NotFound />} /> 
           </Routes>
         </main>
       </div>
