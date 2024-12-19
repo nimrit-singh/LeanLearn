@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa"; 
 import logo from "../../assets/images/Logo.png";
-import einstein from "../../assets/images/einstein.png";
-import newton from "../../assets/images/Newton.png";
-import galileo from "../../assets/images/gae.png";
-import raman from "../../assets/images/Raman.png";
+import einstein from "../../assets/Einstein.gif";
+import newton from "../../assets/Newton.gif";
+import galileo from "../../assets/Galileo.gif";
+import raman from "../../assets/CV Raman.gif";
 import { MCQQuestion, FillQuestion, TFQuestion } from "../../types/quiz";
 import {
   mcqQuestionApi,
