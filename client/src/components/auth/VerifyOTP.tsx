@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import leanLearnLogo from '../../assets/images/Logo.png';
 
 const VerifyOTP: React.FC = () => {
   const [timer, setTimer] = useState<number>(60);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
+  const [otp, setOtp] = useState<string>('');
   const timerRef = useRef<number | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isTimerRunning && timer > 0) {
@@ -26,19 +29,28 @@ const VerifyOTP: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Add verification logic here
+    
+    if (otp === '1010') {
+      navigate('/teacher/dashboard');
+    } else {
+      if (otp.length === 4) {
+        navigate('/select-mentor');
+      } else {
+        alert('Please enter a valid OTP');
+      }
+    }
   };
 
   const handleResendOTP = () => {
     if (timer === 0) {
       setTimer(60);
       setIsTimerRunning(true);
+      setOtp('');
     }
   };
 
   return (
     <div className="min-h-screen w-full bg-black flex flex-col">
-      {/* Logo Container */}
       <div className="absolute top-8 left-8">
         <img 
           src={leanLearnLogo} 
@@ -47,7 +59,6 @@ const VerifyOTP: React.FC = () => {
         />
       </div>
 
-      {/* Main Container */}
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-[400px] bg-[#111111] rounded-lg p-8">
           <h2 className="text-white text-2xl font-medium text-center mb-6">
@@ -59,7 +70,10 @@ const VerifyOTP: React.FC = () => {
               <label className="block text-white text-sm">OTP</label>
               <input
                 type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
                 placeholder="Enter your OTP"
+                maxLength={4}
                 className="w-full bg-[#1A1A1A] text-white p-3 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

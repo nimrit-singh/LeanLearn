@@ -9,16 +9,18 @@ const SignUp: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/verify-otp');
+    navigate('/verify-otp', { 
+      state: { isTeacher: role === 'teacher' }
+    });
   };
 
   return (
     <div className="min-h-screen w-full bg-black flex flex-col">
       {/* Logo Container */}
       <div className="absolute top-8 left-8">
-        <img 
-          src={leanLearnLogo} 
-          alt="LeanLearn" 
+        <img
+          src={leanLearnLogo}
+          alt="LeanLearn"
           className="h-6 w-auto object-contain"
         />
       </div>
@@ -89,8 +91,8 @@ const SignUp: React.FC = () => {
           </form>
         </div>
 
-        <Link 
-          to="/login"
+        <Link
+          to={role === 'teacher' ? "/login?role=teacher" : "/login"}
           className="text-white text-sm mt-4 hover:text-gray-300 transition-colors text-decoration-line: underline"
         >
           I ALREADY HAVE AN ACCOUNT
