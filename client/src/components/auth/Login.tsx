@@ -1,21 +1,25 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import leanLearnLogo from '../../assets/images/Logo.png';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get('role');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/verify-otp');
+    navigate('/verify-otp', { 
+      state: { isTeacher: role === 'teacher' }
+    });
   };
 
   return (
     <div className="min-h-screen w-full bg-black flex flex-col">
       <div className="absolute top-8 left-8">
-        <img 
-          src={leanLearnLogo} 
-          alt="LeanLearn" 
+        <img
+          src={leanLearnLogo}
+          alt="LeanLearn"
           className="h-6 w-auto object-contain"
         />
       </div>
@@ -23,7 +27,7 @@ const Login: React.FC = () => {
       <div className="flex-1 flex flex-col items-center justify-center">
         <div className="w-[400px] bg-[#111111] rounded-lg p-8">
           <h2 className="text-white text-2xl font-medium text-center mb-6">
-            Login
+            {role === 'teacher' ? 'Teacher Login' : 'Login'}
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -45,8 +49,8 @@ const Login: React.FC = () => {
           </form>
         </div>
 
-        <Link 
-          to="/"
+        <Link
+          to={role === 'teacher' ? "/signup?role=teacher" : "/signup"}
           className="text-white text-sm mt-4 hover:text-gray-300 transition-colors text-decoration-line: underline"
         >
           CREATE AN ACCOUNT
@@ -55,5 +59,6 @@ const Login: React.FC = () => {
     </div>
   );
 };
+
 
 export default Login;
