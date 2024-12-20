@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import leanLearnLogo from '../../assets/images/Logo.png';
 
 const CreateQuiz: React.FC = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [selectedClass, setSelectedClass] = useState('Class 6');
+  const [selectedTopic, setSelectedTopic] = useState('Topic 1');
   const navigate = useNavigate();
-  const location = useLocation();
-const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  
 
   const navigationItems = [
     { 
@@ -16,7 +16,6 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
         <svg width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M13.0919 3.49605C13.9146 2.83595 15.0854 2.83595 15.9081 3.49605L23.6581 9.71438C24.1903 10.1414 24.5 10.7869 24.5 11.4693V22.7497C24.5 23.9923 23.4926 24.9997 22.25 24.9997H19.25C18.0074 24.9997 17 23.9923 17 22.7497V16.7497C17 16.3355 16.6642 15.9997 16.25 15.9997H12.75C12.3358 15.9997 12 16.3355 12 16.7497V22.7497C12 23.9923 10.9926 24.9997 9.75 24.9997H6.75C5.50736 24.9997 4.5 23.9923 4.5 22.7497V11.4693C4.5 10.7869 4.80967 10.1414 5.34191 9.71438L13.0919 3.49605ZM14.9694 4.666C14.6951 4.44597 14.3049 4.44597 14.0306 4.666L6.28064 10.8843C6.10322 11.0267 6 11.2418 6 11.4693V22.7497C6 23.1639 6.33579 23.4997 6.75 23.4997H9.75C10.1642 23.4997 10.5 23.1639 10.5 22.7497V16.7497C10.5 15.5071 11.5074 14.4997 12.75 14.4997H16.25C17.4926 14.4997 18.5 15.5071 18.5 16.7497V22.7497C18.5 23.1639 18.8358 23.4997 19.25 23.4997H22.25C22.6642 23.4997 23 23.1639 23 22.7497V11.4693C23 11.2418 22.8968 11.0267 22.7194 10.8843L14.9694 4.666Z" fill="white"/>
         </svg>
-
       ),
       path: '/teacher/home'
     },
@@ -27,9 +26,8 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
         <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.5 2.75C0.5 1.23122 1.73122 0 3.25 0H19.75C21.2688 0 22.5 1.23122 22.5 2.75V11.4995C22.0384 11.1527 21.5355 10.858 21 10.6241V2.75C21 2.05964 20.4404 1.5 19.75 1.5H3.25C2.55964 1.5 2 2.05964 2 2.75V19.25C2 19.9404 2.55964 20.5 3.25 20.5H11.1241C11.358 21.0355 11.6527 21.5384 11.9995 22H3.25C1.73122 22 0.5 20.7688 0.5 19.25V2.75ZM4.25 12.9981L12.0009 12.9981C11.654 13.4596 11.3591 13.9625 11.1249 14.4981L4.25 14.4981C3.83579 14.4981 3.5 14.1623 3.5 13.7481C3.5 13.3339 3.83579 12.9981 4.25 12.9981ZM3.5 17.7511C3.5 17.3369 3.83579 17.0011 4.25 17.0011L9.75231 17.0011C10.1665 17.0011 10.5023 17.3369 10.5023 17.7511C10.5023 18.1653 10.1665 18.5011 9.75231 18.5011L4.25 18.5011C3.83578 18.5011 3.5 18.1653 3.5 17.7511ZM9.00167 2.99966C9.303 2.99972 9.57504 3.18012 9.69235 3.45768L12.4408 9.96057C12.6021 10.3421 12.4235 10.7821 12.042 10.9434C11.6605 11.1046 11.2204 10.9261 11.0592 10.5445L10.6184 9.50171H7.38208L6.94073 10.5448C6.77932 10.9263 6.33923 11.1047 5.95775 10.9433C5.57628 10.7819 5.39789 10.3418 5.5593 9.96029L8.31081 3.45741C8.42823 3.1799 8.70034 2.9996 9.00167 2.99966ZM8.01677 8.00171H9.98444L9.00114 5.67524L8.01677 8.00171ZM15.25 2.99991C15.6642 2.99991 16 3.33569 16 3.74991V5H17.2501C17.6643 5 18.0001 5.33579 18.0001 5.75C18.0001 6.16421 17.6643 6.5 17.2501 6.5H16V7.7476C16 8.16181 15.6642 8.4976 15.25 8.4976C14.8358 8.4976 14.5 8.16181 14.5 7.7476V6.5H13.2524C12.8382 6.5 12.5024 6.16421 12.5024 5.75C12.5024 5.33579 12.8382 5 13.2524 5H14.5V3.74991C14.5 3.33569 14.8358 2.99991 15.25 2.99991ZM24.5 17.5C24.5 21.0899 21.5899 24 18 24C14.4101 24 11.5 21.0899 11.5 17.5C11.5 13.9101 14.4101 11 18 11C21.5899 11 24.5 13.9101 24.5 17.5ZM18.5 13.5C18.5 13.2239 18.2761 13 18 13C17.7239 13 17.5 13.2239 17.5 13.5V17H14C13.7239 17 13.5 17.2239 13.5 17.5C13.5 17.7761 13.7239 18 14 18H17.5V21.5C17.5 21.7761 17.7239 22 18 22C18.2761 22 18.5 21.7761 18.5 21.5V18H22C22.2761 18 22.5 17.7761 22.5 17.5C22.5 17.2239 22.2761 17 22 17H18.5V13.5Z" fill="white"/>
         </svg>
-
       ),
-      path: '/teacher/dashboard'
+      path: '/create-quiz'
     },
     { 
       id: 'reports',
@@ -38,19 +36,17 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
         <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.5 3C0.5 1.34314 1.84315 0 3.5 0C5.15685 0 6.5 1.34315 6.5 3V21C6.5 22.6569 5.15685 24 3.5 24C1.84315 24 0.5 22.6569 0.5 21V3ZM3.5 2C2.94771 2 2.5 2.44772 2.5 3V21C2.5 21.5523 2.94772 22 3.5 22C4.05229 22 4.5 21.5523 4.5 21V3C4.5 2.44772 4.05228 2 3.5 2ZM8.5 9C8.5 7.34315 9.84315 6 11.5 6C13.1569 6 14.5 7.34315 14.5 9V21C14.5 22.6569 13.1569 24 11.5 24C9.84315 24 8.5 22.6569 8.5 21V9ZM11.5 8C10.9477 8 10.5 8.44772 10.5 9V21C10.5 21.5523 10.9477 22 11.5 22C12.0523 22 12.5 21.5523 12.5 21V9C12.5 8.44772 12.0523 8 11.5 8ZM19.5 12C17.8431 12 16.5 13.3431 16.5 15V21C16.5 22.6569 17.8431 24 19.5 24C21.1569 24 22.5 22.6569 22.5 21V15C22.5 13.3431 21.1569 12 19.5 12ZM18.5 15C18.5 14.4477 18.9477 14 19.5 14C20.0523 14 20.5 14.4477 20.5 15V21C20.5 21.5523 20.0523 22 19.5 22C18.9477 22 18.5 21.5523 18.5 21V15Z" fill="white"/>
         </svg>
-
       ),
       path: '/teacher/reports'
     }
   ];
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-black">
+    <div className="flex min-h-screen bg-black">
+      {/* Sidebar */}
       <div className={`${
-        isSidebarOpen ? 'w-full md:w-64' : 'w-full md:w-20'
-      } bg-[#111111] transition-all duration-300 ease-in-out flex flex-col ${
-        isSidebarOpen ? 'h-screen md:h-auto fixed md:relative z-50' : 'h-auto'
-      }`}>
+        isSidebarOpen ? 'w-64' : 'w-20'
+      } bg-[#111111] transition-all duration-300 ease-in-out`}>
         <div className={`p-4 flex ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -60,7 +56,7 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
-          {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8 pl-4 md:pl-12" />}
+          {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8" />}
         </div>
 
         <nav className="mt-8 flex flex-col gap-2 px-3">
@@ -71,8 +67,8 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
               className={`flex items-center ${
                 isSidebarOpen ? 'gap-3 px-4' : 'justify-center'
               } py-2 rounded-md ${
-                location.pathname === item.path
-                  ? 'bg-sky-900 text-white'
+                item.id === 'quiz'
+                  ? 'bg-[#21B6F8] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'
               }`}
             >
@@ -83,28 +79,30 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
         </nav>
       </div>
 
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-full max-w-lg px-8">
-          <div className="mb-12">
-            <h1 className="text-white text-2xl mb-1">Hello There!</h1>
-            <p className="text-gray-400">Let's Create an Engaging Quiz for Your Students!</p>
+      {/* Main Content */}
+      <div className="flex-1 p-16">
+        <div className="max-w-3xl mx-auto">
+          <div className="mb-16">
+            <h1 className="text-white text-2xl mb-2">Hello There!</h1>
+            <p className="text-[#8C8C8C]">Let's Create an Engaging Quiz for Your Students!</p>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-12">
             <div>
               <label className="block text-white mb-4">
                 Choose the class you're creating this quiz for.
               </label>
-              <div className="relative w-full">
+              <div className="relative">
                 <select 
-                  className="w-full bg-[#111111] text-white px-4 py-2.5 rounded-lg focus:outline-none appearance-none pr-10"
-                  defaultValue="Class 6"
+                  value={selectedClass}
+                  onChange={(e) => setSelectedClass(e.target.value)}
+                  className="w-full bg-[#111111] text-white px-4 py-3 rounded-lg focus:outline-none appearance-none border border-[#1A1A1A]"
                 >
                   {[...Array(12)].map((_, i) => (
                     <option key={i + 1}>Class {i + 1}</option>
                   ))}
                 </select>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
                     <path d="M1 1L6 6L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
@@ -116,16 +114,17 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
               <label className="block text-white mb-4">
                 Select the topic you'd like to create questions for.
               </label>
-              <div className="relative w-full">
+              <div className="relative">
                 <select 
-                  className="w-full bg-[#111111] text-white px-4 py-2.5 rounded-lg focus:outline-none appearance-none pr-10"
-                  defaultValue="Topic 1"
+                  value={selectedTopic}
+                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  className="w-full bg-[#111111] text-white px-4 py-3 rounded-lg focus:outline-none appearance-none border border-[#1A1A1A]"
                 >
                   <option>Topic 1</option>
                   <option>Topic 2</option>
                   <option>Topic 3</option>
                 </select>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
                   <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
                     <path d="M1 1L6 6L11 1" stroke="white" strokeWidth="2" strokeLinecap="round"/>
                   </svg>
@@ -133,19 +132,14 @@ const [isSidebarOpen, setIsSidebarOpen] = useState(true);
               </div>
             </div>
 
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-end">
               <button
                 onClick={() => navigate('/create-quiz/questions')}
-                className="inline-flex items-center gap-2 "
+                className="flex items-center gap-2 bg-[#21B6F8] hover:bg-[#1CA1E3] text-black px-6 py-2 rounded-lg transition-colors"
               >
-                <svg width="140" height="48" viewBox="0 0 164 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <mask id="path-1-inside-1_168_1837" fill="white">
-                <path d="M0.5 8C0.5 3.58172 4.08172 0 8.5 0H155.5C159.918 0 163.5 3.58172 163.5 8V40C163.5 44.4183 159.918 48 155.5 48H8.5C4.08173 48 0.5 44.4183 0.5 40V8Z"/>
-                </mask>
-                <path d="M0.5 8C0.5 3.58172 4.08172 0 8.5 0H155.5C159.918 0 163.5 3.58172 163.5 8V40C163.5 44.4183 159.918 48 155.5 48H8.5C4.08173 48 0.5 44.4183 0.5 40V8Z" fill="#2AACE2"/>
-                <path d="M0.5 0H163.5H0.5ZM163.5 40C163.5 46.6274 158.127 52 151.5 52H12.5C5.87258 52 0.5 46.6274 0.5 40C0.5 42.2091 4.08172 44 8.5 44H155.5C159.918 44 163.5 42.2091 163.5 40ZM0.5 48V0V48ZM163.5 0V48V0Z" fill="#008AC4" mask="url(#path-1-inside-1_168_1837)"/>
-                <path d="M25.41 31.22C23.7967 31.22 22.4107 30.8973 21.252 30.252C20.108 29.592 19.228 28.668 18.612 27.48C17.996 26.2773 17.688 24.862 17.688 23.234C17.688 21.606 17.996 20.198 18.612 19.01C19.228 17.822 20.108 16.9053 21.252 16.26C22.4107 15.6 23.7967 15.27 25.41 15.27C26.4513 15.27 27.434 15.4313 28.358 15.754C29.2967 16.0767 30.0667 16.5387 30.668 17.14L29.744 19.384C29.084 18.8267 28.4093 18.4233 27.72 18.174C27.0307 17.91 26.29 17.778 25.498 17.778C23.9287 17.778 22.7333 18.2547 21.912 19.208C21.0907 20.1467 20.68 21.4887 20.68 23.234C20.68 24.9793 21.0907 26.3287 21.912 27.282C22.7333 28.2353 23.9287 28.712 25.498 28.712C26.29 28.712 27.0307 28.5873 27.72 28.338C28.4093 28.074 29.084 27.6633 29.744 27.106L30.668 29.35C30.0667 29.9367 29.2967 30.3987 28.358 30.736C27.434 31.0587 26.4513 31.22 25.41 31.22ZM36.9942 31.22C35.8795 31.22 34.9115 30.9927 34.0902 30.538C33.2689 30.0833 32.6309 29.438 32.1762 28.602C31.7215 27.7513 31.4942 26.754 31.4942 25.61C31.4942 24.466 31.7215 23.476 32.1762 22.64C32.6309 21.804 33.2689 21.1587 34.0902 20.704C34.9115 20.2493 35.8795 20.022 36.9942 20.022C38.1089 20.022 39.0769 20.2493 39.8982 20.704C40.7195 21.1587 41.3575 21.804 41.8122 22.64C42.2669 23.476 42.4942 24.466 42.4942 25.61C42.4942 26.754 42.2669 27.7513 41.8122 28.602C41.3575 29.438 40.7195 30.0833 39.8982 30.538C39.0769 30.9927 38.1089 31.22 36.9942 31.22ZM36.9942 29.13C37.8155 29.13 38.4755 28.8367 38.9742 28.25C39.4729 27.6487 39.7222 26.7687 39.7222 25.61C39.7222 24.4367 39.4729 23.564 38.9742 22.992C38.4755 22.4053 37.8155 22.112 36.9942 22.112C36.1729 22.112 35.5129 22.4053 35.0142 22.992C34.5155 23.564 34.2662 24.4367 34.2662 25.61C34.2662 26.7687 34.5155 27.6487 35.0142 28.25C35.5129 28.8367 36.1729 29.13 36.9942 29.13ZM44.764 31V20.242H47.448V22.398H47.206C47.5287 21.6207 48.0273 21.034 48.702 20.638C49.3913 20.2273 50.1687 20.022 51.034 20.022C51.8993 20.022 52.6107 20.1833 53.168 20.506C53.7253 20.8287 54.1433 21.32 54.422 21.98C54.7007 22.6253 54.84 23.4467 54.84 24.444V31H52.09V24.576C52.09 24.0187 52.0167 23.564 51.87 23.212C51.738 22.86 51.5253 22.6033 51.232 22.442C50.9533 22.266 50.594 22.178 50.154 22.178C49.626 22.178 49.164 22.2953 48.768 22.53C48.372 22.75 48.064 23.0727 47.844 23.498C47.624 23.9087 47.514 24.3927 47.514 24.95V31H44.764ZM62.5611 31.22C61.1238 31.22 60.0531 30.8607 59.3491 30.142C58.6451 29.4233 58.2931 28.3747 58.2931 26.996V22.31H56.2251V20.242H58.2931V17.03H61.0431V20.242H64.2991V22.31H61.0431V26.842C61.0431 27.546 61.1971 28.074 61.5051 28.426C61.8131 28.778 62.3118 28.954 63.0011 28.954C63.2065 28.954 63.4191 28.932 63.6391 28.888C63.8591 28.8293 64.0865 28.7707 64.3211 28.712L64.7391 30.736C64.4751 30.8827 64.1378 31 63.7271 31.088C63.3311 31.176 62.9425 31.22 62.5611 31.22ZM65.9005 17.932V15.248H68.9805V17.932H65.9005ZM66.0765 31V20.242H68.8265V31H66.0765ZM71.6839 31V20.242H74.3679V22.398H74.1259C74.4486 21.6207 74.9472 21.034 75.6219 20.638C76.3112 20.2273 77.0886 20.022 77.9539 20.022C78.8192 20.022 79.5306 20.1833 80.0879 20.506C80.6452 20.8287 81.0632 21.32 81.3419 21.98C81.6206 22.6253 81.7599 23.4467 81.7599 24.444V31H79.0099V24.576C79.0099 24.0187 78.9366 23.564 78.7899 23.212C78.6579 22.86 78.4452 22.6033 78.1519 22.442C77.8732 22.266 77.5139 22.178 77.0739 22.178C76.5459 22.178 76.0839 22.2953 75.6879 22.53C75.2919 22.75 74.9839 23.0727 74.7639 23.498C74.5439 23.9087 74.4339 24.3927 74.4339 24.95V31H71.6839ZM89.855 31.22C88.6377 31.22 87.589 30.9927 86.709 30.538C85.829 30.0833 85.147 29.438 84.663 28.602C84.1937 27.766 83.959 26.776 83.959 25.632C83.959 24.5173 84.1864 23.542 84.641 22.706C85.1104 21.87 85.7484 21.2173 86.555 20.748C87.3764 20.264 88.3077 20.022 89.349 20.022C90.3757 20.022 91.2557 20.242 91.989 20.682C92.7224 21.122 93.287 21.7453 93.683 22.552C94.0937 23.3587 94.299 24.3193 94.299 25.434V26.248H86.181V24.664H92.363L92.011 24.994C92.011 23.9967 91.791 23.234 91.351 22.706C90.911 22.1633 90.2804 21.892 89.459 21.892C88.843 21.892 88.315 22.0387 87.875 22.332C87.4497 22.6107 87.1197 23.014 86.885 23.542C86.665 24.0553 86.555 24.6713 86.555 25.39V25.544C86.555 26.3507 86.6797 27.018 86.929 27.546C87.1784 28.074 87.5524 28.47 88.051 28.734C88.5497 28.998 89.1657 29.13 89.899 29.13C90.5004 29.13 91.1017 29.042 91.703 28.866C92.3044 28.6753 92.8544 28.382 93.353 27.986L94.123 29.834C93.6097 30.2593 92.9644 30.5967 92.187 30.846C91.4097 31.0953 90.6324 31.22 89.855 31.22Z" fill="#181818"/>
-                <path d="M137.205 16.2838C136.811 15.8961 136.178 15.9008 135.79 16.2942C135.403 16.6876 135.407 17.3208 135.801 17.7084L141.171 22.9998H127.5C126.948 22.9998 126.5 23.4475 126.5 23.9998C126.5 24.5521 126.948 24.9998 127.5 24.9998H141.165L135.801 30.2847C135.407 30.6723 135.403 31.3055 135.79 31.6989C136.178 32.0923 136.811 32.097 137.205 31.7094L144.129 24.887C144.626 24.3974 144.626 23.5958 144.129 23.1062L137.205 16.2838Z" fill="#0F1113"/>
+                Continue
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor">
+                  <path d="M3 8h10M13 8L9 4M13 8L9 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
             </div>
