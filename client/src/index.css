@@ -27,6 +27,15 @@ input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px #1A1A1A inset !important;
   -webkit-text-fill-color: white !important;
 }
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.loading {
+  animation: blink 1s infinite;
+}
 
 @layer base {
   :root {

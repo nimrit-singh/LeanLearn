@@ -35,11 +35,14 @@ const SelectedTopicPage: React.FC = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false); // New state for loading companion message
   const [companionMessage, setCompanionMessage] = useState<string>("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
   });
+
+  const borderColor = isCorrect ? 'border-green-500' : 'border-red-500';
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -121,6 +124,7 @@ const SelectedTopicPage: React.FC = () => {
 
     setIsCorrect(correct);
     setShowFeedback(true);
+    setLoadingCompanionMessage(true);
 
     try {
       const requestData = {
@@ -146,6 +150,8 @@ const SelectedTopicPage: React.FC = () => {
               ", "
             )}.`
       );
+    } finally {
+      setLoadingCompanionMessage(false);
     }
 
     try {
@@ -210,13 +216,16 @@ const SelectedTopicPage: React.FC = () => {
       setCompanionMessage("");
     }
   };
+  useEffect(() => {
+    // Reset companion message when the current question index changes
+    setCompanionMessage("");
+  }, [currentQuestionIndex]);
 
   const handleNext = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedAnswers([]);
       setShowFeedback(false);
-      setCompanionMessage("");
     } else {
       navigate("/summary", {
         state: {
@@ -273,11 +282,17 @@ const SelectedTopicPage: React.FC = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col min-h-0 md:h-screen overflow-hidden">
-        <div className="flex items-center justify-center gap-2 mb-4 md:mt-8">
-          <button onClick={() => navigate("/")} className="flex items-center">
+        <div className="flex items-center justify-start lg:justify-center gap-2 mb-4 md:mt-8">
+          <button onClick={() => navigate("/")} className="flex  items-start ">
             <img src={logo} alt="LeanLearn Logo" className="w-[120px]" />
           </button>
         </div>
+
+        {loadingCompanionMessage && (
+          <p className="text-gray-300 leading-relaxed text-sm tracking-wide loading text-center mt-11">
+            Loading Solution...
+          </p>
+        )}
 
         <div
           className={`flex ${
@@ -287,10 +302,10 @@ const SelectedTopicPage: React.FC = () => {
           {companionMessage ? (
             <>
               <div
-                className="bg-[#141414] rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar"
+                className={ `bg-[#141414] border-2 ${borderColor}  rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
                 style={
                   {
-                    "--scrollbar-width": "8px",
+                    "--scrollbar-width": "1px",
                     "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
                     "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
                   } as React.CSSProperties
@@ -323,7 +338,7 @@ const SelectedTopicPage: React.FC = () => {
                       ]
                     }
                     alt="Selected Companion"
-                    className="w-[180px] md:w-full h-[180px] lg:h-auto object-contain md:max-h-[300px]"
+                    className="md:w-full h-[180px] lg:h-auto object-contain md:max-h-[300px]"
                   />
                 </div>
               )}
@@ -338,7 +353,7 @@ const SelectedTopicPage: React.FC = () => {
                     ]
                   }
                   alt="Selected Companion"
-                  className="w-[180px] md:w-full h-[180px] object-contain  lg:h-auto md:max-h-[300px]"
+                  className=" md:w-full h-[180px] object-contain  lg:h-auto md:max-h-[300px]"
                 />
               </div>
             )
@@ -495,6 +510,7 @@ const SelectedTopicPage: React.FC = () => {
                   </button>
                 ) : (
                   <button
+                    disabled={loadingCompanionMessage}
                     onClick={handleNext}
                     className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors"
                   >

@@ -19,15 +19,18 @@ const Summary: React.FC = () => {
   const { selectedCompanion, topicId } = location.state || {};
 
   const handleRetryQuiz = () => {
+   
     navigate('/quiz-page', { 
       state: { selectedCompanion, topicId } 
     });
+    localStorage.removeItem("currentQuestionIndex");
   };
 
   const handleTakeAnotherQuiz = () => {
     navigate('/quiz-page', { 
       state: { selectedCompanion } 
     });
+    localStorage.removeItem("currentQuestionIndex");
   };
 
   const handleChallengeClick = () => {
