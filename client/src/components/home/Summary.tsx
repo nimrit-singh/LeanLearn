@@ -1,10 +1,10 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/Logo.png';
-import einstein from "../../assets/images/einstein.png";
-import newton from "../../assets/images/Newton.png";
-import galileo from "../../assets/images/gae.png";
-import raman from "../../assets/images/Raman.png";
+import einstein from "../../assets/Einstein.gif";
+import newton from "../../assets/Newton.gif";
+import galileo from "../../assets/Galileo.gif";
+import raman from "../../assets/CV Raman.gif";
 
 const companionImages = {
   1: einstein,

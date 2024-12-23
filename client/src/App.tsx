@@ -13,13 +13,14 @@ import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
 
 import TeacherDashboard from './components/teacher/TeacherDashboard';
-import CreateQuiz from './components/teacher/CreateQuiz'
-
+import CreateQuiz from './components/teacher/CreateQuiz';
+import QuestionSelection from './components/teacher/QuestionSelection';
 import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
 import Summary from './components/home/Summary';
 import Feedback from './components/home/Feedback';
+import NotFound from './components/layout/PageNotFound';
 
 const HomePage = () => (
   <>
@@ -57,6 +58,8 @@ function App() {
 
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
             <Route path="/create-quiz" element={<CreateQuiz />} />
+            <Route path="/create-quiz/questions" element={<QuizLayout><QuestionSelection /></QuizLayout>} />
+
             <Route
               path="/select-mentor"
               element={<QuizLayout><SelectingMentors /></QuizLayout>}
@@ -77,6 +80,7 @@ function App() {
               path="/feedback"
               element={<QuizLayout><Feedback /></QuizLayout>}
             />
+            <Route path="*" element={<NotFound />} /> 
           </Routes>
         </main>
       </div>

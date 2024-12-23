@@ -13,7 +13,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: true,
-    target: 'es2018'
-  }
+    minify: false,
+    target: 'es2018',
+  },
 })
