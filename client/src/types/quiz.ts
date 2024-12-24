@@ -1,5 +1,6 @@
 interface BaseQuestion {
   id: string;
+  class_: string;
   subject: string;
   topic: string;
   question: string;

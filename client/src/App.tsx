@@ -15,6 +15,8 @@ import VerifyOTP from './components/auth/VerifyOTP';
 import TeacherDashboard from './components/teacher/TeacherDashboard';
 import CreateQuiz from './components/teacher/CreateQuiz';
 import QuestionSelection from './components/teacher/QuestionSelection';
+import QuestionBank from './components/teacher/QuestionBank';
+import ClassQuestions from './components/teacher/ClassQuestions'; // New import
 import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
@@ -59,6 +61,10 @@ function App() {
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
             <Route path="/create-quiz" element={<CreateQuiz />} />
             <Route path="/create-quiz/questions" element={<QuizLayout><QuestionSelection /></QuizLayout>} />
+            
+            {/* Question Bank routes */}
+            <Route path="/teacher/question-bank" element={<QuizLayout><QuestionBank /></QuizLayout>} />
+            <Route path="/teacher/question-bank/:classId" element={<QuizLayout><ClassQuestions /></QuizLayout>} />
 
             <Route
               path="/select-mentor"
