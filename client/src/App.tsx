@@ -11,12 +11,13 @@ import ComingSoon from './components/home/ComingSoon';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
+import AddQuestion from './components/teacher/AddQuestion'; 
 
 import TeacherDashboard from './components/teacher/TeacherDashboard';
 import CreateQuiz from './components/teacher/CreateQuiz';
 import QuestionSelection from './components/teacher/QuestionSelection';
 import QuestionBank from './components/teacher/QuestionBank';
-import ClassQuestions from './components/teacher/ClassQuestions'; // New import
+import ClassQuestions from './components/teacher/ClassQuestions';
 import SelectingMentors from './components/home/selectingMentors';
 import QuizPage from './components/home/QuizPage';
 import SelectedTopicPage from './components/home/selectTopic';
@@ -65,6 +66,7 @@ function App() {
             {/* Question Bank routes */}
             <Route path="/teacher/question-bank" element={<QuizLayout><QuestionBank /></QuizLayout>} />
             <Route path="/teacher/question-bank/:classId" element={<QuizLayout><ClassQuestions /></QuizLayout>} />
+            <Route path="/teacher/question-bank/add" element={<AddQuestion />} />
 
             <Route
               path="/select-mentor"

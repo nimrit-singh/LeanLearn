@@ -365,7 +365,9 @@ const ClassQuestions: React.FC = () => {
                 </svg>
 
                 </button>
-                <button className=" px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
+                <button onClick={() => navigate('/teacher/question-bank/add')}
+                 className=" px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors">
+        
                 <svg width="146" height="53" viewBox="0 0 146 53" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <mask id="path-1-outside-1_223_2619" maskUnits="userSpaceOnUse" x="0" y="0" width="146" height="53" fill="black">
                 <rect fill="white" width="146" height="53"/>
