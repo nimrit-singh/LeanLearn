@@ -39,6 +39,8 @@ const QuizPage: React.FC = () => {
   };
 
   const handleTopicClick = (topicId: number, enabled: boolean) => {
+    localStorage.removeItem("currentQuestionIndex");
+    
     if (enabled) {
       navigate(`/topic/${topicId}`, { state: { selectedCompanion } });
     }
