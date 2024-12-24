@@ -290,7 +290,7 @@ const SelectedTopicPage: React.FC = () => {
 
         {loadingCompanionMessage && (
           <p className="text-gray-300 leading-relaxed text-sm tracking-wide loading text-center mt-11">
-            Loading Solution...
+            Loading Explanation...
           </p>
         )}
 
@@ -305,12 +305,11 @@ const SelectedTopicPage: React.FC = () => {
                 className={ `bg-[#141414] border-2 ${borderColor}  rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
                 style={
                   {
-                    "--scrollbar-width": "1px",
-                    "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
-                    "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
+                    
                   } as React.CSSProperties
                 }
               >
+                
                 <div className="space-y-4">
                   {companionMessage.split(".").map((sentence, index) => {
                     const trimmedSentence = sentence.trim();
