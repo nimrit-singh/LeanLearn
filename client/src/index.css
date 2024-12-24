@@ -36,6 +36,23 @@ input:-webkit-autofill:active {
 .loading {
   animation: blink 1s infinite;
 }
+.custom-scrollbar {
+  scrollbar-width: thin; 
+  scrollbar-color: rgb(0 163 255 / var(--tw-bg-opacity, 1)) transparent !important; 
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: blue;
+  border-radius: 10px; 
+}
 
 @layer base {
   :root {
