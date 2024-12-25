@@ -41,8 +41,10 @@ const AddQuestion: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [questionType, setQuestionType] = useState<'MCQs' | 'Fill in the blank'>('MCQs');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-
+  const [imageUrls, setImageUrls] = useState<string[]>(() => {
+    const savedImages = localStorage.getItem('imageUrls');
+    return savedImages ? JSON.parse(savedImages) : [];
+  });
   const [questionData, setQuestionData] = useState({
     question: '',
     topic: 'gravitation',
@@ -98,7 +100,9 @@ const AddQuestion: React.FC = () => {
         reader.onloadend = () => {
           if (newImageUrls.length + imageUrls.length < 5) {
             newImageUrls.push(reader.result as string);
-            setImageUrls(prev => [...prev, reader.result as string]);
+            const updatedImageUrls = [...imageUrls, reader.result as string];
+            setImageUrls(updatedImageUrls);
+            localStorage.setItem('imageUrls', JSON.stringify(updatedImageUrls));
           } else {
             alert('You can only upload a maximum of 5 images.');
           }
@@ -107,6 +111,13 @@ const AddQuestion: React.FC = () => {
       }
     }
   };
+
+  const removeImage = (index: number) => {
+    const updatedImageUrls = imageUrls.filter((_, i) => i !== index);
+    setImageUrls(updatedImageUrls);
+    localStorage.setItem('imageUrls', JSON.stringify(updatedImageUrls));
+  };
+
 
   const handleChoiceChange = (id: number, text: string) => {
     setChoices(choices.map(choice => 
@@ -308,23 +319,32 @@ const AddQuestion: React.FC = () => {
                   </div>
                 </div>
               )}
-             <button className="text-[#21B6F8] text-sm hover:underline ml-6 mt-2">
+             <button className="text-[#21B6F8] text-sm hover:underline ml-6 mt-2 ">
   <input
     type="file"
     accept="image/*"
     onChange={handleImageUpload}
-    style={{ display: 'none' }} // Hide the default file input
+    style={{ display: 'none' }} 
     id="image-upload"
-    multiple // Allow multiple file selection
+    multiple 
   />
-  <label htmlFor="image-upload">Add Image</label>
+  <label htmlFor="image-upload" className='cursor-pointer'>Add Image</label>
 </button>
 
 <div className="mt-4 flex flex-wrap gap-4">
-  {imageUrls.map((url, index) => (
-    <img key={index} src={url} alt={`Uploaded ${index + 1}`} className="max-w-full h-auto w-32" />
-  ))}
-</div>
+          {imageUrls.map((url, index) => (
+            <div key={index} className="relative">
+              <img src={url} alt={`Uploaded ${index + 1}`} className="max-w-full h-32 w-32 p-3 object-cover" />
+              <button
+                onClick={() => removeImage(index)}
+                className="absolute -top-3 right-0 text-red-500 rounded-full p-1"
+                title="Remove Image"
+              >
+                &times;
+              </button>
+            </div>
+          ))}
+        </div>
             </div>
 
             {questionType === 'MCQs' && (
