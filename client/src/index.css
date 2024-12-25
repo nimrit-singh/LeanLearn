@@ -38,7 +38,7 @@ input:-webkit-autofill:active {
 }
 .custom-scrollbar {
   scrollbar-width: thin; 
-  scrollbar-color: rgb(0 163 255 / var(--tw-bg-opacity, 1)) transparent !important; 
+  scrollbar-color: rgb(102, 102, 102) transparent !important; 
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -50,7 +50,7 @@ input:-webkit-autofill:active {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: blue;
+  background-color: rgb(102, 102, 102);
   border-radius: 10px; 
 }
 
@@ -133,3 +133,14 @@ input:-webkit-autofill:active {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
 }
+
+.main-icon{
+  opacity: 0 ;
+}
+
+@media (max-width: 576px) {
+  .main-icon{
+    opacity: 1;
+    }
+}
+
