@@ -41,6 +41,8 @@ const AddQuestion: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [questionType, setQuestionType] = useState<'MCQs' | 'Fill in the blank'>('MCQs');
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+
   const [questionData, setQuestionData] = useState({
     question: '',
     topic: 'gravitation',
@@ -86,6 +88,26 @@ const AddQuestion: React.FC = () => {
     setFillBlankParts([...fillBlankParts, { option: '', continuation: '' }]);
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImageUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          if (newImageUrls.length + imageUrls.length < 5) {
+            newImageUrls.push(reader.result as string);
+            setImageUrls(prev => [...prev, reader.result as string]);
+          } else {
+            alert('You can only upload a maximum of 5 images.');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   const handleChoiceChange = (id: number, text: string) => {
     setChoices(choices.map(choice => 
       choice.id === id ? { ...choice, text } : choice
@@ -122,7 +144,7 @@ const AddQuestion: React.FC = () => {
           question: questionData.question,
           options: choices.map(c => c.text),
           answers: [choices.find(c => c.id === selectedAnswer)?.text || ""],
-          resource: [""],
+          resource: imageUrls.length > 0 ? imageUrls : ["", ""],
           used: true
         };
 
@@ -286,9 +308,23 @@ const AddQuestion: React.FC = () => {
                   </div>
                 </div>
               )}
-              <button className="text-[#21B6F8] text-sm hover:underline ml-6 mt-2">
-                Add Image
-              </button>
+             <button className="text-[#21B6F8] text-sm hover:underline ml-6 mt-2">
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleImageUpload}
+    style={{ display: 'none' }} // Hide the default file input
+    id="image-upload"
+    multiple // Allow multiple file selection
+  />
+  <label htmlFor="image-upload">Add Image</label>
+</button>
+
+<div className="mt-4 flex flex-wrap gap-4">
+  {imageUrls.map((url, index) => (
+    <img key={index} src={url} alt={`Uploaded ${index + 1}`} className="max-w-full h-auto w-32" />
+  ))}
+</div>
             </div>
 
             {questionType === 'MCQs' && (
