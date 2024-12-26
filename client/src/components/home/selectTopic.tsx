@@ -35,7 +35,7 @@ const SelectedTopicPage: React.FC = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false); // New state for loading companion message
+  const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false); 
   const [companionMessage, setCompanionMessage] = useState<string>("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
@@ -48,36 +48,47 @@ const SelectedTopicPage: React.FC = () => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        switch (questionType) {
-          case "mcq": {
-            const mcqData = await mcqQuestionApi.getAll();
-            setQuestions(mcqData);
-            break;
-          }
-          case "fill": {
-            const fillData = await fillQuestionApi.getAll();
-            setQuestions(fillData);
-            break;
-          }
-          case "tf": {
-            const tfData = await tfQuestionApi.getAll();
-            setQuestions(tfData);
-            break;
-          }
-          default: {
-            setError("Invalid question type");
-          }
+        const [mcqData, fillData] = await Promise.all([
+          mcqQuestionApi.getAll(),
+          fillQuestionApi.getAll()
+        ]);
+  
+        console.log('MCQ Questions:', mcqData.length);
+        console.log('Fill Questions:', fillData.length);
+  
+        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData];
+        
+        console.log('Before filter - Combined Questions:', combinedQuestions.length);
+  
+        console.log('Current topicId:', topicId);
+        
+        const filteredQuestions = topicId 
+          ? combinedQuestions.filter(q => {
+              console.log('Question topic:', q.topic, 'Comparing with:', topicId);
+              return q.topic?.toLowerCase() === topicId?.toLowerCase();
+            })
+          : combinedQuestions;
+  
+        console.log('After filter - Filtered Questions:', filteredQuestions.length);
+  
+        if (filteredQuestions.length > 0) {
+          const shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
+          setQuestions(shuffledQuestions);
+        } else {
+          const shuffledAll = combinedQuestions.sort(() => Math.random() - 0.5);
+          setQuestions(shuffledAll);
         }
+  
       } catch (err) {
+        console.error('Error in fetchQuestions:', err);
         setError("Failed to load questions");
-        console.log(err);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchQuestions();
-  }, [questionType]);
+  }, [topicId]);
 
   const handleOptionSelect = (answer: string) => {
     setSelectedAnswers((prev) => {
@@ -290,7 +301,7 @@ const SelectedTopicPage: React.FC = () => {
 
         {loadingCompanionMessage && (
           <p className="text-gray-300 leading-relaxed text-sm tracking-wide loading text-center mt-11">
-            Loading Explanation...
+            Loading Solution...
           </p>
         )}
 
@@ -305,11 +316,12 @@ const SelectedTopicPage: React.FC = () => {
                 className={ `bg-[#141414] border-2 ${borderColor}  rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
                 style={
                   {
-                    
+                    "--scrollbar-width": "1px",
+                    "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
+                    "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
                   } as React.CSSProperties
                 }
               >
-                
                 <div className="space-y-4">
                   {companionMessage.split(".").map((sentence, index) => {
                     const trimmedSentence = sentence.trim();

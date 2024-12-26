@@ -76,10 +76,8 @@ const QuestionBank: React.FC = () => {
           tfQuestionApi.getAll()
         ]);
 
-        // Combine all questions
         const allQuestions = [...mcqQuestions, ...fillQuestions, ...tfQuestions];
 
-        // Count questions by class
         const counts = allQuestions.reduce((acc: { [key: string]: number }, question: MCQQuestion | FillQuestion | TFQuestion) => {
           if (question.class_) {
             const classNumber = question.class_.toString();

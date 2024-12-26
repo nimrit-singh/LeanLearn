@@ -63,7 +63,6 @@ function App() {
             <Route path="/create-quiz" element={<CreateQuiz />} />
             <Route path="/create-quiz/questions" element={<QuizLayout><QuestionSelection /></QuizLayout>} />
             
-            {/* Question Bank routes */}
             <Route path="/teacher/question-bank" element={<QuizLayout><QuestionBank /></QuizLayout>} />
             <Route path="/teacher/question-bank/:classId" element={<QuizLayout><ClassQuestions /></QuizLayout>} />
             <Route path="/teacher/question-bank/add" element={<AddQuestion />} />

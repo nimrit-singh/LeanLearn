@@ -7,10 +7,6 @@ interface Choice {
   text: string;
 }
 
-interface FillBlankPart {
-  option: string;
-  continuation: string;
-}
 
 interface MCQQuestionData {
   id: string;
@@ -60,9 +56,6 @@ const AddQuestion: React.FC = () => {
     { id: 2, text: '' }
   ]);
   const [isRandomized, setIsRandomized] = useState(false);
-  const [fillBlankParts, setFillBlankParts] = useState<FillBlankPart[]>([
-    { option: '', continuation: '' }
-  ]);
 
   const topics = [
     { value: 'gravitation', label: 'Gravitation' },
@@ -85,11 +78,6 @@ const AddQuestion: React.FC = () => {
       setChoices([...choices, { id: newId, text: '' }]);
     }
   };
-
-  const addFillBlankPart = () => {
-    setFillBlankParts([...fillBlankParts, { option: '', continuation: '' }]);
-  };
-
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
@@ -171,29 +159,34 @@ const AddQuestion: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
       } else {
-        if (fillBlankParts.some(part => !part.option || !part.continuation)) {
-          alert('Please fill in all fields');
+        if (!questionData.question.includes('_____')) {
+          alert('Please add at least one blank in your question');
           return;
         }
-
-        const fullQuestion = fillBlankParts.reduce((acc, part, idx) => {
-          if (idx === 0) {
-            return `${questionData.question} ${part.option} ${part.continuation}`;
-          }
-          return `${acc} ${part.option} ${part.continuation}`;
-        }, '');
-
+      
+        if (choices.some(c => !c.text.trim())) {
+          alert('Please fill in all options');
+          return;
+        }
+      
+        if (selectedAnswer === null) {
+          alert('Please select the correct answer');
+          return;
+        }
+      
         const fillBlankData: FillBlankQuestionData = {
           id: String(Date.now()),
           class_: "8",
           subject: "Physics",
           topic: questionData.topic,
-          question: fullQuestion,
-          choices: fillBlankParts.map(part => part.option),
-          answers: fillBlankParts.map(part => part.option),
-          resource: [""],
+          question: questionData.question,
+          choices: choices.map(c => c.text),
+          answers: [choices.find(c => c.id === selectedAnswer)?.text || ""],
+          resource: imageUrls.length > 0 ? imageUrls : [""],
           used: true
         };
+      
+      
 
         const response = await fetch('https://lean-learn-backend-ai.onrender.com/fillquestion', {
           method: 'POST',
@@ -273,63 +266,74 @@ const AddQuestion: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-start gap-2">
-                    <span className="text-white">1.</span>
-                    <input
-                      type="text"
-                      placeholder="Your question here"
-                      value={questionData.question}
-                      onChange={(e) => setQuestionData({...questionData, question: e.target.value})}
-                      className="flex-1 bg-transparent text-white border-none focus:outline-none text-lg"
-                    />
-                  </div>
-                  {fillBlankParts.map((part, index) => (
-                    <div key={index} className="flex items-center gap-4 ml-6">
-                      <input
-                        type="text"
-                        placeholder={`Option ${index + 1}`}
-                        value={part.option}
-                        onChange={(e) => {
-                          const newParts = [...fillBlankParts];
-                          newParts[index].option = e.target.value;
-                          setFillBlankParts(newParts);
-                        }}
-                        className="bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8] w-32"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Continue here"
-                        value={part.continuation}
-                        onChange={(e) => {
-                          const newParts = [...fillBlankParts];
-                          newParts[index].continuation = e.target.value;
-                          setFillBlankParts(newParts);
-                        }}
-                        className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
-                      />
-                    </div>
-                  ))}
-                  <div className="ml-6">
-                    <button
-                      onClick={addFillBlankPart}
-                      className="text-[#21B6F8] text-sm hover:underline"
-                    >
-                      Add Option
-                    </button>
-                  </div>
-                </div>
-              )}
+    <div className="flex items-start gap-2">
+      <span className="text-white">1.</span>
+      <div className="flex-1 space-y-4">
+        <div className="relative">
+          <textarea
+            placeholder="Start your question here"
+            value={questionData.question}
+            onChange={(e) => setQuestionData({...questionData, question: e.target.value})}
+            className="w-full bg-transparent text-white border border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:border-[#21B6F8] min-h-[100px] resize-none"
+          />
+          <button
+            onClick={() => {
+              const textarea = document.querySelector('textarea');
+              const cursorPosition = textarea?.selectionStart || 0;
+              const currentText = questionData.question;
+              const newText = `${currentText.slice(0, cursorPosition)} _____ ${currentText.slice(cursorPosition)}`;
+              setQuestionData({...questionData, question: newText});
+            }}
+            className="absolute bottom-2 right-2 text-[#21B6F8] text-sm hover:underline"
+            type="button"
+          >
+            Add Blank
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {choices.map((choice) => (
+            <div key={choice.id} className="flex items-center gap-3">
+              <input
+                type="radio"
+                name="answer"
+                checked={selectedAnswer === choice.id}
+                onChange={() => setSelectedAnswer(choice.id)}
+                className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
+              />
+              <input
+                type="text"
+                value={choice.text}
+                onChange={(e) => handleChoiceChange(choice.id, e.target.value)}
+                placeholder="Your Option here"
+                className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+              />
+            </div>
+          ))}
+          {choices.length < 4 && (
+            <button
+              onClick={addChoice}
+              className="text-[#21B6F8] text-sm hover:underline"
+            >
+              Add Option
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
              <button className="text-[#21B6F8] text-sm hover:underline ml-6 mt-2 ">
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleImageUpload}
-    style={{ display: 'none' }} 
-    id="image-upload"
-    multiple 
-  />
-  <label htmlFor="image-upload" className='cursor-pointer'>Add Image</label>
-</button>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }} 
+              id="image-upload"
+              multiple 
+            />
+              <label htmlFor="image-upload" className='cursor-pointer'>Add Image</label>
+            </button>
 
 <div className="mt-4 flex flex-wrap gap-4">
           {imageUrls.map((url, index) => (
