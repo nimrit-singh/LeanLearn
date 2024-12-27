@@ -55,12 +55,13 @@ const SelectedTopicPage: React.FC = () => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        const [mcqData, fillData] = await Promise.all([
+        const [mcqData, fillData, tfData] = await Promise.all([
           mcqQuestionApi.getAll(),
-          fillQuestionApi.getAll()
+          fillQuestionApi.getAll(),
+          tfQuestionApi.getAll()
         ]);
 
-        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData];
+        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData, ...tfData];
         
         const filteredQuestions = topicId 
           ? combinedQuestions.filter(q => q.topic?.toLowerCase() === topicId?.toLowerCase())
@@ -168,7 +169,7 @@ const SelectedTopicPage: React.FC = () => {
       setCompanionMessage(
         correct
           ? "Well done! You got it right."
-          : `Not quite right. The correct answer(s) were: ${
+          : `Not quite right. The correct answer was: ${
               isTFQuestion(currentQuestion)
                 ? currentQuestion.answer
                 : currentQuestion.answers.join(", ")
@@ -404,7 +405,7 @@ const SelectedTopicPage: React.FC = () => {
                       {isCorrect ? (
                         "Correct!"
                       ) : (
-                        `Incorrect. The correct answer(s) were: ${
+                        `Incorrect. The correct answer was: ${
                           isTFQuestion(currentQuestion)
                             ? currentQuestion.answer
                             : currentQuestion.answers.join(", ")
