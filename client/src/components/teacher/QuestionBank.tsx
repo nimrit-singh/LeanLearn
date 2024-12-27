@@ -85,6 +85,7 @@ const QuestionBank: React.FC = () => {
   }, []);
 
   const handleClassSelect = (classId: number) => {
+    localStorage.removeItem('imageUrls');
     navigate(`/teacher/question-bank/class/${classId}/add-question`);
   };
 

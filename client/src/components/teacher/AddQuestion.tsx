@@ -408,8 +408,9 @@ const AddQuestion: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
       }
-
+      localStorage.removeItem('imageUrls');
       navigate('/teacher/question-bank');
+
     } catch (error) {
       console.error('Error saving question:', error);
       if (error instanceof Error) {
