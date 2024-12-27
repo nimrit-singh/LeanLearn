@@ -2,13 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import leanLearnLogo from '../../assets/images/Logo.png';
 import { mcqQuestionApi, fillQuestionApi, tfQuestionApi } from '../../lib/api/questions';
-import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
 
-interface ClassData {
-  id: number;
-  name: string;
-  questionCount: number;
-}
+
 
 const QuestionBank: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
@@ -20,46 +15,38 @@ const QuestionBank: React.FC = () => {
     { 
       id: 'home',
       label: 'Home',
-      icon: (
-        <svg width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M13.0919 3.49605C13.9146 2.83595 15.0854 2.83595 15.9081 3.49605L23.6581 9.71438C24.1903 10.1414 24.5 10.7869 24.5 11.4693V22.7497C24.5 23.9923 23.4926 24.9997 22.25 24.9997H19.25C18.0074 24.9997 17 23.9923 17 22.7497V16.7497C17 16.3355 16.6642 15.9997 16.25 15.9997H12.75C12.3358 15.9997 12 16.3355 12 16.7497V22.7497C12 23.9923 10.9926 24.9997 9.75 24.9997H6.75C5.50736 24.9997 4.5 23.9923 4.5 22.7497V11.4693C4.5 10.7869 4.80967 10.1414 5.34191 9.71438L13.0919 3.49605Z" fill="white"/>
-        </svg>
-      ),
+      icon: <svg width="29" height="28" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13.0919 3.49605C13.9146 2.83595 15.0854 2.83595 15.9081 3.49605L23.6581 9.71438C24.1903 10.1414 24.5 10.7869 24.5 11.4693V22.7497C24.5 23.9923 23.4926 24.9997 22.25 24.9997H19.25C18.0074 24.9997 17 23.9923 17 22.7497V16.7497C17 16.3355 16.6642 15.9997 16.25 15.9997H12.75C12.3358 15.9997 12 16.3355 12 16.7497V22.7497C12 23.9923 10.9926 24.9997 9.75 24.9997H6.75C5.50736 24.9997 4.5 23.9923 4.5 22.7497V11.4693C4.5 10.7869 4.80967 10.1414 5.34191 9.71438L13.0919 3.49605Z" fill="white"/>
+      </svg>,
       path: '/teacher/home'
     },
     { 
       id: 'quiz',
       label: 'Quiz',
-      icon: (
-        <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0.5 2.75C0.5 1.23122 1.73122 0 3.25 0H19.75C21.2688 0 22.5 1.23122 22.5 2.75V11.4995C22.0384 11.1527 21.5355 10.858 21 10.6241V2.75C21 2.05964 20.4404 1.5 19.75 1.5H3.25C2.55964 1.5 2 2.05964 2 2.75V19.25C2 19.9404 2.55964 20.5 3.25 20.5H11.1241C11.358 21.0355 11.6527 21.5384 11.9995 22H3.25C1.73122 22 0.5 20.7688 0.5 19.25V2.75Z" fill="white"/>
-        </svg>
-      ),
+      icon: <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.5 2.75C0.5 1.23122 1.73122 0 3.25 0H19.75C21.2688 0 22.5 1.23122 22.5 2.75V11.4995C22.0384 11.1527 21.5355 10.858 21 10.6241V2.75C21 2.05964 20.4404 1.5 19.75 1.5H3.25C2.55964 1.5 2 2.05964 2 2.75V19.25C2 19.9404 2.55964 20.5 3.25 20.5H11.1241C11.358 21.0355 11.6527 21.5384 11.9995 22H3.25C1.73122 22 0.5 20.7688 0.5 19.25V2.75Z" fill="white"/>
+      </svg>,
       path: '/teacher/dashboard'
     },
     {
       id: 'question-bank',
       label: 'Question Bank',
-      icon: (
-        <svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M6.49951 5H8.48951C9.54333 5 10.4076 5.8164 10.484 6.85081L10.4895 7V25C10.4895 26.0538 9.67311 26.9181 8.6387 26.9945L8.48951 27H6.49951C5.44569 27 4.5814 26.1836 4.505 25.1492L4.49951 25V7C4.49951 5.94618 5.31591 5.08188 6.35032 5.00549L6.49951 5ZM13.4945 5H15.4895C16.5433 5 17.4076 5.8164 17.484 6.85081L17.4895 7V25C17.4895 26.0538 16.6731 26.9181 15.6387 26.9945L15.4895 27H13.4945C12.4397 27 11.5763 26.1836 11.5 25.1492L11.4945 25V7C11.4945 5.94618 12.31 5.08188 13.3452 5.00549L13.4945 5Z" fill="white"/>
-        </svg>
-      ),
+      icon: <svg width="33" height="32" viewBox="0 0 33 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6.49951 5H8.48951C9.54333 5 10.4076 5.8164 10.484 6.85081L10.4895 7V25C10.4895 26.0538 9.67311 26.9181 8.6387 26.9945L8.48951 27H6.49951C5.44569 27 4.5814 26.1836 4.505 25.1492L4.49951 25V7C4.49951 5.94618 5.31591 5.08188 6.35032 5.00549L6.49951 5Z" fill="white"/>
+      </svg>,
       path: '/teacher/question-bank'
     },
     { 
       id: 'reports',
       label: 'Reports',
-      icon: (
-        <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0.5 3C0.5 1.34314 1.84315 0 3.5 0C5.15685 0 6.5 1.34315 6.5 3V21C6.5 22.6569 5.15685 24 3.5 24C1.84315 24 0.5 22.6569 0.5 21V3Z" fill="white"/>
-        </svg>
-      ),
+      icon: <svg width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.5 3C0.5 1.34314 1.84315 0 3.5 0C5.15685 0 6.5 1.34315 6.5 3V21C6.5 22.6569 5.15685 24 3.5 24C1.84315 24 0.5 22.6569 0.5 21V3Z" fill="white"/>
+      </svg>,
       path: '/teacher/reports'
     }
   ];
 
-  const classes: ClassData[] = [
+  const classes = [
     { id: 8, name: 'Class 8', questionCount: 0 },
     { id: 9, name: 'Class 9', questionCount: 0 },
     { id: 10, name: 'Class 10', questionCount: 0 },
@@ -76,11 +63,9 @@ const QuestionBank: React.FC = () => {
           tfQuestionApi.getAll()
         ]);
 
-        // Combine all questions
         const allQuestions = [...mcqQuestions, ...fillQuestions, ...tfQuestions];
 
-        // Count questions by class
-        const counts = allQuestions.reduce((acc: { [key: string]: number }, question: MCQQuestion | FillQuestion | TFQuestion) => {
+        const counts = allQuestions.reduce((acc: { [key: string]: number }, question) => {
           if (question.class_) {
             const classNumber = question.class_.toString();
             acc[classNumber] = (acc[classNumber] || 0) + 1;
@@ -100,15 +85,12 @@ const QuestionBank: React.FC = () => {
   }, []);
 
   const handleClassSelect = (classId: number) => {
-    navigate(`/teacher/question-bank/${classId}`);
+    navigate(`/teacher/question-bank/class/${classId}/add-question`);
   };
 
   return (
     <div className="flex min-h-screen bg-black">
-      {/* Sidebar */}
-      <div className={`${
-        isSidebarOpen ? 'w-64' : 'w-20'
-      } bg-[#111111] transition-all duration-300 ease-in-out`}>
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#111111] transition-all duration-300 ease-in-out`}>
         <div className={`p-4 flex ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
