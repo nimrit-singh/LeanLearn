@@ -11,7 +11,7 @@ import ComingSoon from './components/home/ComingSoon';
 import Login from './components/auth/Login';
 import SignUp from './components/auth/SignUp';
 import VerifyOTP from './components/auth/VerifyOTP';
-import AddQuestion from './components/teacher/AddQuestion'; 
+import AddQuestion from './components/teacher/AddQuestion';
 
 import TeacherDashboard from './components/teacher/TeacherDashboard';
 import CreateQuiz from './components/teacher/CreateQuiz';
@@ -64,30 +64,30 @@ function App() {
             <Route path="/create-quiz/questions" element={<QuizLayout><QuestionSelection /></QuizLayout>} />
             
             <Route path="/teacher/question-bank" element={<QuizLayout><QuestionBank /></QuizLayout>} />
-            <Route path="/teacher/question-bank/:classId" element={<QuizLayout><ClassQuestions /></QuizLayout>} />
-            <Route path="/teacher/question-bank/add" element={<AddQuestion />} />
+            <Route path="/teacher/question-bank/class/:classId" element={<QuizLayout><ClassQuestions /></QuizLayout>} />
+            <Route path="/teacher/question-bank/class/:classId/add-question" element={<QuizLayout><AddQuestion /></QuizLayout>} />
 
-            <Route
-              path="/select-mentor"
+            <Route 
+              path="/select-mentor" 
               element={<QuizLayout><SelectingMentors /></QuizLayout>}
             />
-            <Route
-              path="/quiz-page"
+            <Route 
+              path="/quiz-page" 
               element={<QuizLayout><QuizPage /></QuizLayout>}
             />
-            <Route
-              path="/topic/:topicId"
+            <Route 
+              path="/topic/:topicId" 
               element={<QuizLayout><SelectedTopicPage /></QuizLayout>}
             />
-            <Route
-              path="/summary"
+            <Route 
+              path="/summary" 
               element={<QuizLayout><Summary /></QuizLayout>}
             />
-            <Route
-              path="/feedback"
+            <Route 
+              path="/feedback" 
               element={<QuizLayout><Feedback /></QuizLayout>}
             />
-            <Route path="*" element={<NotFound />} /> 
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>
