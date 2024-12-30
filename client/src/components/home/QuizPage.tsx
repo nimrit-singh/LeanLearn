@@ -7,6 +7,7 @@ import raman from "../../assets/CV Raman.gif";
 import logo from "../../assets/images/Logo.png";
 import choiceCloud from "../../assets/images/choose.png";
 import choiceCloud1 from "../../assets/Frame 193.svg";
+import selectsound from '../../assets/sound/sound1.aac'
 
 const classes = [
   { value: "8", label: "Class 8" },
@@ -30,6 +31,10 @@ const companionImages = {
   3: galileo,
   4: raman,
 };
+const playCommonSound = () => {
+  const audio = new Audio(selectsound);
+  audio.play();
+};
 
 const QuizPage: React.FC = () => {
   const navigate = useNavigate();
@@ -52,6 +57,7 @@ const QuizPage: React.FC = () => {
   const handleContinue = () => {
     if (selectedClass && selectedTopic) {
       localStorage.removeItem("currentQuestionIndex");
+      playCommonSound();
       navigate(`/topic/${selectedTopic}`, {
         state: {
           selectedCompanion,
@@ -151,7 +157,10 @@ const QuizPage: React.FC = () => {
                 </label>
                 <select
                   value={selectedClass}
-                  onChange={(e) => setSelectedClass(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedClass(e.target.value);
+                    playCommonSound(); 
+                  }}
                   className="w-full bg-[#111111] text-white px-4 py-3 rounded-lg border border-[#3A3B3D] focus:border-[#21B6F8] focus:outline-none"
                 >
                   <option value="">Select Class</option>
@@ -169,7 +178,10 @@ const QuizPage: React.FC = () => {
                 </label>
                 <select
                   value={selectedTopic}
-                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedTopic(e.target.value);
+                    playCommonSound(); // Play common sound on topic selection
+                  }}
                   className="w-full bg-[#111111] text-white px-4 py-3 rounded-lg border border-[#3A3B3D] focus:border-[#21B6F8] focus:outline-none"
                 >
                   <option value="">Select Topic</option>
