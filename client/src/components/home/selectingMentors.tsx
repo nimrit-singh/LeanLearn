@@ -5,6 +5,7 @@ import einstein from '../../assets/Einstein.gif';
 import newton from '../../assets/Newton.gif';
 import galileo from '../../assets/Galileo.gif';
 import raman from '../../assets/CV Raman.gif';
+import selectSound from '../../assets/sound/sound1.aac'; 
 
 const SelectingMentors: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ const SelectingMentors: React.FC = () => {
   ];
 
   const handleCompanionSelect = (companionId: number): void => {
+    const audio = new Audio(selectSound);
+    audio.play();
     localStorage.setItem('selectedCompanion', companionId.toString());
     navigate('/quiz-page');
   };
