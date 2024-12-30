@@ -151,19 +151,50 @@ const ClassQuestions: React.FC = () => {
   const filteredQuestions = selectedTopic === 'all' ? questions : questions.filter(q => q.topic === selectedTopic);
 
   return (
+    <>    <div className="md:hidden flex items-center absolute p-4 pl-8 z-20">
+    {!isSidebarOpen && ( // Only show the icon when the sidebar is closed
+      <button 
+        onClick={() => setIsSidebarOpen(true)} // Open sidebar on click
+        className="text-white hover:text-gray-300 focus:outline-none"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    )}
+  </div>
     <div className="flex min-h-screen bg-black">
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#111111] transition-all duration-300 ease-in-out`}>
-        <div className={`p-4 flex ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
-          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-white hover:text-gray-300 focus:outline-none">
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#111111] transition-all duration-300 sidebar-main ease-in-out ${isSidebarOpen ? 'block' : 'hidden md:block'}`}>
+        <div className={`p-4 flex side-bar-header ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}> 
+          <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="text-white hover:text-gray-300 focus:outline-none hidden md:block">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
           {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8 pl-4 md:pl-12" onClick={() => navigate('/')} />}
+          <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="text-white hover:text-gray-300 focus:outline-none block md:hidden"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
         </div>
         <nav className="mt-8 flex flex-col gap-2 px-3">
           {navigationItems.map((item) => (
-            <a key={item.id} href={item.path} className={`flex items-center ${isSidebarOpen ? 'gap-3 px-4' : 'justify-center'} py-2 rounded-md ${
+            <a key={item.id} href={item.path} className={`flex items-center  ${isSidebarOpen ? 'gap-3 px-4' : 'justify-center'} py-2 rounded-md ${
               item.id === 'question-bank' ? 'bg-[#21B6F8] text-black' : 'text-gray-400 hover:text-white hover:bg-[#1A1A1A]'}`}>
               {item.icon}
               {isSidebarOpen && <span>{item.label}</span>}
@@ -172,10 +203,10 @@ const ClassQuestions: React.FC = () => {
         </nav>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 page-content">
         <div className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <button onClick={() => navigate('/teacher/question-bank')} className="p-2 hover:bg-[#1A1A1A] rounded-lg transition-colors">
+          <div className="flex items-center gap-4 mb-6 justify-center md:justify-start">
+            <button onClick={() => navigate('/teacher/question-bank')} className="p-2 hover:bg-[#1A1A1A] rounded-lg hidden md:block transition-colors">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
@@ -342,6 +373,7 @@ const ClassQuestions: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

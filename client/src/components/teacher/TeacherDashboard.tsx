@@ -122,25 +122,48 @@ const TeacherDashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
-      {/* Sidebar */}
-      <div className={`${
-        isSidebarOpen ? 'w-64' : 'w-20'
-      } bg-[#111111] transition-all duration-300 ease-in-out`}>
-        <div className={`p-4 flex ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
+    <>
+    
+    <div className="md:hidden flex items-center absolute p-4 z-20">
+        {!isSidebarOpen && ( // Only show the icon when the sidebar is closed
           <button 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onClick={() => setIsSidebarOpen(true)} // Open sidebar on click
             className="text-white hover:text-gray-300 focus:outline-none"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
-          {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8 pl-4 md:pl-12" onClick={() => navigate('/')} />}
+        )}
+      </div>
+    <div className="block md:flex min-h-screen bg-black ">
+      {/* Sidebar */}
+      <div className={`${
+        isSidebarOpen ? 'w-64' : 'w-20'
+      } bg-[#111111] transition-all duration-300 sidebar-main ease-in-out ${isSidebarOpen ? 'block' : 'hidden md:block'}`}>
+        <div className={`p-4 flex side-bar-header ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-white hover:text-gray-300 focus:outline-none hidden md:block"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+          
 
+          {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8 pl-4 md:pl-12" onClick={() => navigate('/')} />}
+          <button 
+    onClick={() => setIsSidebarOpen(false)}
+    className="text-white hover:text-gray-300 focus:outline-none block md:hidden"
+>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+</button>
         </div>
 
-        <nav className="mt-8 flex flex-col gap-2 px-3">
+        <nav className="mt-8 flex flex-col gap-2 px-3 ">
           {navigationItems.map((item) => (
             <Link
               key={item.id}
@@ -160,7 +183,7 @@ const TeacherDashboard: React.FC = () => {
         </nav>
       </div>
 
-      <div className="flex-1 p-4 md:p-8">
+      <div className="flex-1 p-4 md:p-8 page-content-quiz">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div className="relative w-full md:w-auto">
             <select 
@@ -364,6 +387,7 @@ const TeacherDashboard: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
