@@ -39,6 +39,25 @@ const SelectedTopicPage: React.FC = () => {
 
   const borderColor = isCorrect ? 'border-green-500' : 'border-red-500';
 
+  const isValidOption = (option: string): boolean => {
+    return option !== 'd' && option.trim().length > 0;
+  };
+
+  const validateQuestion = (question: QuestionType): boolean => {
+    if (isMCQQuestion(question)) {
+      return question.options.some(isValidOption) && 
+             question.answers.every(isValidOption);
+    }
+    if (isFillQuestion(question)) {
+      return question.choices.some(isValidOption) && 
+             question.answers.every(isValidOption);
+    }
+    if (isTFQuestion(question)) {
+      return question.answer === 'True' || question.answer === 'False';
+    }
+    return false;
+  };
+
   const isMCQQuestion = (question: QuestionType): question is MCQQuestion => {
     return 'options' in question;
   };
@@ -60,13 +79,14 @@ const SelectedTopicPage: React.FC = () => {
           fillQuestionApi.getAll(),
           tfQuestionApi.getAll()
         ]);
-
-        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData, ...tfData];
+    
+        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData, ...tfData]
+          .filter(validateQuestion);  // Add this validation
         
         const filteredQuestions = topicId 
           ? combinedQuestions.filter(q => q.topic?.toLowerCase() === topicId?.toLowerCase())
           : combinedQuestions;
-
+    
         if (filteredQuestions.length > 0) {
           const shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
           setQuestions(shuffledQuestions);
@@ -229,7 +249,7 @@ const SelectedTopicPage: React.FC = () => {
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return null;
-
+  
     const renderButton = (choice: string, isCorrect: boolean) => (
       <button
         key={choice}
@@ -250,27 +270,29 @@ const SelectedTopicPage: React.FC = () => {
         <span className="text-white text-sm lg:text-lg">{choice}</span>
       </button>
     );
-
+  
     if (isMCQQuestion(currentQuestion)) {
+      const validOptions = currentQuestion.options.filter(isValidOption);
       return (
         <div className="grid grid-cols-2 gap-6">
-          {currentQuestion.options.map((option) => 
+          {validOptions.map((option) => 
             renderButton(option, currentQuestion.answers.includes(option))
           )}
         </div>
       );
     }
-
+  
     if (isFillQuestion(currentQuestion)) {
+      const validChoices = currentQuestion.choices.filter(isValidOption);
       return (
         <div className="grid grid-cols-2 gap-6">
-          {currentQuestion.choices.map((choice) =>
+          {validChoices.map((choice) =>
             renderButton(choice, currentQuestion.answers.includes(choice))
           )}
         </div>
       );
     }
-
+  
     if (isTFQuestion(currentQuestion)) {
       return (
         <div className="grid grid-cols-2 gap-6">
@@ -280,7 +302,7 @@ const SelectedTopicPage: React.FC = () => {
         </div>
       );
     }
-
+  
     return null;
   };
 

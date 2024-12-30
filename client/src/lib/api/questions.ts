@@ -1,4 +1,4 @@
-import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
+import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quiz';
 
 const BASE_URL = 'https://lean-learn-backend-ai.onrender.com';
 
@@ -95,6 +95,20 @@ export const mcqQuestionApi = {
       throw error;
     }
   },
+  delete: async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/mcqquestion/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete MCQ question');
+    } catch (error) {
+      console.error('Error deleting MCQ question:', error);
+      throw error;
+    }
+  }
 };
 
 export const fillQuestionApi = {
@@ -136,6 +150,20 @@ export const fillQuestionApi = {
       throw error;
     }
   },
+  delete: async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/fillquestion/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete fill-in question');
+    } catch (error) {
+      console.error('Error deleting fill-in question:', error);
+      throw error;
+    }
+  }
 };
 
 export const tfQuestionApi = {
@@ -177,4 +205,83 @@ export const tfQuestionApi = {
       throw error;
     }
   },
+  delete: async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/tfquestion/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete True/False question');
+    } catch (error) {
+      console.error('Error deleting True/False question:', error);
+      throw error;
+    }
+  }
+};
+export const formulaQuestionApi = {
+  getAll: async (): Promise<FormulaQuestion[]> => {
+    try {
+      const response = await fetch(`${BASE_URL}/formula/`);
+      if (!response.ok) throw new Error('Failed to fetch formula questions');
+      return response.json();
+    } catch (error) {
+      console.error('Error fetching formula questions:', error);
+      throw error;
+    }
+  },
+
+  create: async (question: {
+    id: string;
+    class_: string;
+    subject: string;
+    topic: string;
+    question: string;
+    quantities: Array<{
+      name: string;
+      symbol: string;
+      isUnknown?: boolean;
+    }>;
+    formula: string;
+    options: string[];
+    answers: string[];
+    resource: string[];
+    used: boolean;
+  }) => {
+    try {
+      const response = await fetch(`${BASE_URL}/formula/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(question)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to create formula question: ${errorText}`);
+      }
+      
+      return response.json();
+    } catch (error) {
+      console.error('Error details:', error);
+      throw error;
+    }
+  },
+  delete: async (id: string): Promise<void> => {
+    try {
+      const response = await fetch(`${BASE_URL}/formula/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) throw new Error('Failed to delete formula question');
+    } catch (error) {
+      console.error('Error deleting formula question:', error);
+      throw error;
+    }
+  }
 };
