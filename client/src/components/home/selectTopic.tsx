@@ -6,8 +6,8 @@ import einstein from "../../assets/Einstein.gif";
 import newton from "../../assets/Newton.gif";
 import galileo from "../../assets/Galileo.gif";
 import raman from "../../assets/CV Raman.gif";
-import { MCQQuestion, FillQuestion, TFQuestion } from "../../types/quiz";
-import { mcqQuestionApi, fillQuestionApi, tfQuestionApi, aiApi } from "../../lib/api/questions";
+import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from "../../types/quiz";
+import { mcqQuestionApi, fillQuestionApi, tfQuestionApi, formulaQuestionApi, aiApi } from "../../lib/api/questions";
 
 const companionImages = {
   1: einstein,
@@ -16,13 +16,13 @@ const companionImages = {
   4: raman,
 };
 
-type QuestionType = MCQQuestion | FillQuestion | TFQuestion;
+type QuestionType = MCQQuestion | FillQuestion | TFQuestion | FormulaQuestion;
 
 const SelectedTopicPage: React.FC = () => {
   const { topicId } = useParams<{ topicId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedCompanion, questionType = "mcq" } = location.state || {};
+  const { selectedCompanion, selectedClass } = location.state || {};
 
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
@@ -39,6 +39,23 @@ const SelectedTopicPage: React.FC = () => {
 
   const borderColor = isCorrect ? 'border-green-500' : 'border-red-500';
 
+  const isValidOption = (option: string): boolean => {
+    return option !== 'd' && option.trim().length > 0;
+  };
+
+  const validateQuestion = (question: QuestionType): boolean => {
+    if (isMCQQuestion(question)) {
+      return question.options.some(isValidOption) && question.answers.every(isValidOption);
+    }
+    if (isFillQuestion(question)) {
+      return question.choices.some(isValidOption) && question.answers.every(isValidOption);
+    }
+    if (isTFQuestion(question)) {
+      return question.answer === 'True' || question.answer === 'False';
+    }
+    return false;
+  };
+
   const isMCQQuestion = (question: QuestionType): question is MCQQuestion => {
     return 'options' in question;
   };
@@ -52,27 +69,59 @@ const SelectedTopicPage: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!selectedClass) {
+      navigate('/');
+      return;
+    }
+
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        const [mcqData, fillData, tfData] = await Promise.all([
+        console.log('Fetching questions for:', {
+          class: selectedClass,
+          topic: topicId
+        });
+    
+        const [mcqData, fillData, tfData, formulaData] = await Promise.all([
           mcqQuestionApi.getAll(),
           fillQuestionApi.getAll(),
-          tfQuestionApi.getAll()
+          tfQuestionApi.getAll(),
+          formulaQuestionApi.getAll()
         ]);
-
-        const combinedQuestions: QuestionType[] = [...mcqData, ...fillData, ...tfData];
-        
-        const filteredQuestions = topicId 
-          ? combinedQuestions.filter(q => q.topic?.toLowerCase() === topicId?.toLowerCase())
-          : combinedQuestions;
-
-        if (filteredQuestions.length > 0) {
-          const shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
+    
+        console.log('Raw data from APIs:', {
+          mcq: mcqData?.length,
+          fill: fillData?.length,
+          tf: tfData?.length,
+          formula: formulaData?.length
+        });
+    
+        const combinedQuestions = [...mcqData, ...fillData, ...tfData, ...formulaData]
+          .filter(q => {
+            if (!q || !q.class_ || !q.topic) return false;
+    
+            const classMatch = String(q.class_).trim() === String(selectedClass).trim();
+            const topicMatch = String(q.topic).toLowerCase().trim() === 'gravitation';
+            
+            console.log('Question filtering:', {
+              id: q.id,
+              qClass: q.class_,
+              selectedClass,
+              classMatch,
+              qTopic: q.topic,
+              topicMatch,
+            });
+    
+            return classMatch && topicMatch;
+          });
+    
+        console.log('Filtered questions:', combinedQuestions);
+            
+        if (combinedQuestions.length > 0) {
+          const shuffledQuestions = combinedQuestions.sort(() => Math.random() - 0.5);
           setQuestions(shuffledQuestions);
         } else {
-          const shuffledAll = combinedQuestions.sort(() => Math.random() - 0.5);
-          setQuestions(shuffledAll);
+          setError(`No questions available for Class ${selectedClass} topic ${topicId}`);
         }
       } catch (err) {
         console.error('Error in fetchQuestions:', err);
@@ -83,7 +132,7 @@ const SelectedTopicPage: React.FC = () => {
     };
 
     fetchQuestions();
-  }, [topicId]);
+  }, [topicId, selectedClass, navigate]);
 
   useEffect(() => {
     localStorage.setItem("currentQuestionIndex", currentQuestionIndex.toString());
@@ -220,7 +269,6 @@ const SelectedTopicPage: React.FC = () => {
         state: {
           topicId,
           selectedCompanion,
-          questionType,
         },
       });
     }
@@ -229,7 +277,7 @@ const SelectedTopicPage: React.FC = () => {
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return null;
-
+  
     const renderButton = (choice: string, isCorrect: boolean) => (
       <button
         key={choice}
@@ -250,27 +298,29 @@ const SelectedTopicPage: React.FC = () => {
         <span className="text-white text-sm lg:text-lg">{choice}</span>
       </button>
     );
-
+  
     if (isMCQQuestion(currentQuestion)) {
+      const validOptions = currentQuestion.options.filter(isValidOption);
       return (
         <div className="grid grid-cols-2 gap-6">
-          {currentQuestion.options.map((option) => 
+          {validOptions.map((option) => 
             renderButton(option, currentQuestion.answers.includes(option))
           )}
         </div>
       );
     }
-
+  
     if (isFillQuestion(currentQuestion)) {
+      const validChoices = currentQuestion.choices.filter(isValidOption);
       return (
         <div className="grid grid-cols-2 gap-6">
-          {currentQuestion.choices.map((choice) =>
+          {validChoices.map((choice) =>
             renderButton(choice, currentQuestion.answers.includes(choice))
           )}
         </div>
       );
     }
-
+  
     if (isTFQuestion(currentQuestion)) {
       return (
         <div className="grid grid-cols-2 gap-6">
@@ -280,7 +330,7 @@ const SelectedTopicPage: React.FC = () => {
         </div>
       );
     }
-
+  
     return null;
   };
 
@@ -301,8 +351,16 @@ const SelectedTopicPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        {error}
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+        <div className="text-white text-center">
+          <p className="mb-4">{error}</p>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-6 py-2 bg-[#21B6F8] rounded-lg hover:bg-opacity-90 transition-colors"
+          >
+            Back to Topics
+          </button>
+        </div>
       </div>
     );
   }
@@ -311,8 +369,16 @@ const SelectedTopicPage: React.FC = () => {
 
   if (!currentQuestion) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        No questions available
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center">
+        <div className="text-white text-center">
+          <p className="mb-4">No questions available for this topic</p>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-6 py-2 bg-[#21B6F8] rounded-lg hover:bg-opacity-90 transition-colors"
+          >
+            Back to Topics
+          </button>
+        </div>
       </div>
     );
   }
@@ -335,7 +401,8 @@ const SelectedTopicPage: React.FC = () => {
         <div className={`flex ${companionMessage && "flex-row-reverse"} lg:flex-col min-h-0 md:flex-grow overflow-hidden md:justify-between`}>
           {companionMessage ? (
             <>
-              <div className={`bg-[#141414] border-2 ${borderColor} rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
+              <div 
+                className={`bg-[#141414] border-2 ${borderColor} rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
                 style={{
                   "--scrollbar-width": "1px",
                   "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",

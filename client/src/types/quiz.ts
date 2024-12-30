@@ -23,3 +23,16 @@ export interface TFQuestion extends BaseQuestion {
   answer: string;
   resource: string;
 }
+
+export interface FormulaQuestion extends BaseQuestion {
+  quantities: Array<{
+    name: string;
+    symbol: string;
+    value?: number;
+    isUnknown?: boolean;
+  }>;
+  formula: string;
+  options: string[];
+  answers: string[];
+  resource: string[];
+}
