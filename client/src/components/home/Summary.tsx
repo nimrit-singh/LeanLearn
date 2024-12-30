@@ -16,7 +16,7 @@ const companionImages = {
 const Summary: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedCompanion, topicId, totalQuestions, correctAnswersCount, incorrectAnswersCount } = location.state || {};
+  const { selectedCompanion, topicId, totalQuestions, correctAnswersCount, incorrectAnswersCount,attemptedQuestionsCount } = location.state || {};
 
   const handleRetryQuiz = () => {
     localStorage.removeItem("currentQuestionIndex");
@@ -25,6 +25,8 @@ const Summary: React.FC = () => {
     });
 
   };
+  const percentage = totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
+
 
   const handleTakeAnotherQuiz = () => {
     localStorage.removeItem("currentQuestionIndex");
@@ -55,7 +57,7 @@ const Summary: React.FC = () => {
           <img src={logo} alt="LeanLearn Logo" className="w-[120px]" />
         </button>
 
-        <div className="bg-[#1A1A1A] rounded-lg p-4">
+        {/* <div className="bg-[#1A1A1A] rounded-lg p-4">
           <h3 className="text-white text-sm mb-3">Topics you have to improve on</h3>
           <ul className="text-gray-300 space-y-2 text-sm">
             {[
@@ -70,7 +72,7 @@ const Summary: React.FC = () => {
               <li key={index}>• {topic}</li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         {selectedCompanion && (
           <div className="mt-auto hidden md:flex justify-center">
@@ -104,13 +106,17 @@ const Summary: React.FC = () => {
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-[#00A3FF] mb-2">Quiz Complete!</h1>
-          <p className="text-[#00A3FF] text-sm mb-8">You're 70% closer to mastering this topic!</p>
+          <h1 className="text-2xl font-bold text-green-500 mb-2">Quiz Complete!</h1>
+          <p className="text-[#00A3FF] text-sm mb-8">  You're {percentage.toFixed(0)}% closer to mastering this topic!</p>
 
           <div className="w-full space-y-2 mb-8 text-white text-sm">
             <div className="flex justify-between">
               <span>Total Quiz Questions:</span>
               <span>{totalQuestions}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Attemped:</span>
+              <span>{attemptedQuestionsCount}</span>
             </div>
             <div className="flex justify-between">
               <span>Correctly Answered:</span>
@@ -120,9 +126,10 @@ const Summary: React.FC = () => {
               <span>Incorrectly Answered:</span>
               <span>{incorrectAnswersCount}</span>
             </div>
+           
             <div className="flex justify-between border-t border-gray-700 pt-2 mt-2">
               <span>Total Score:</span>
-              <span>{correctAnswersCount} /10</span>
+              <span>{correctAnswersCount} / {totalQuestions}</span>
             </div>
           </div>
 

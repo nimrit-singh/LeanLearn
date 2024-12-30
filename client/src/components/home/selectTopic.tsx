@@ -46,7 +46,9 @@ const SelectedTopicPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false);
   const [companionMessage, setCompanionMessage] = useState<string>("");
-
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0); // Initialize correct answers count
+  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0); // Initialize incorrect answers count
+  const [attemptedQuestionsCount, setAttemptedQuestionsCount] = useState(0); // Initialize attempted questions count
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
@@ -244,13 +246,17 @@ const SelectedTopicPage: React.FC = () => {
 
     if (correct) {
       correctAudio.play();
+      setCorrectAnswersCount((prevCount) => prevCount + 1);
     } else {
       incorrectAudio.play();
+      setIncorrectAnswersCount((prevCount) => prevCount + 1);
     }
 
     setIsCorrect(correct);
     setShowFeedback(true);
     setLoadingCompanionMessage(true);
+    setAttemptedQuestionsCount((prevCount) => prevCount + 1);
+
 
     try {
       const requestData = {
@@ -327,32 +333,14 @@ const SelectedTopicPage: React.FC = () => {
     } else {
       summaryAudio.play();
       const totalQuestions = questions.length;
-      const correctAnswersCount = questions.reduce(
-        (count, currentQuestion, index) => {
-          const selectedAnswer = selectedAnswers[index];
-          if (
-            isMCQQuestion(currentQuestion) ||
-            isFillQuestion(currentQuestion)
-          ) {
-            return (
-              count + (currentQuestion.answers.includes(selectedAnswer) ? 1 : 0)
-            );
-          } else if (isTFQuestion(currentQuestion)) {
-            return count + (selectedAnswer === currentQuestion.answer ? 1 : 0);
-          }
-          return count;
-        },
-        0
-      );
-
-      const incorrectAnswersCount = totalQuestions - correctAnswersCount;
-
+      
       navigate("/summary", {
         state: {
           topicId,
           selectedCompanion,
           totalQuestions,
           correctAnswersCount,
+          attemptedQuestionsCount,
           incorrectAnswersCount,
         },
       });
