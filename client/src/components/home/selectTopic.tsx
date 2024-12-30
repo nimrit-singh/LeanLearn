@@ -6,8 +6,22 @@ import einstein from "../../assets/Einstein.gif";
 import newton from "../../assets/Newton.gif";
 import galileo from "../../assets/Galileo.gif";
 import raman from "../../assets/CV Raman.gif";
-import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from "../../types/quiz";
-import { mcqQuestionApi, fillQuestionApi, tfQuestionApi, formulaQuestionApi, aiApi } from "../../lib/api/questions";
+import correctSound from "../../assets/sound/ans_sound.aac";
+import incorrectSound from "../../assets/sound/WhatsApp Audio 2024-12-30 at 6.54.33 PM.aac";
+import summarySound from "../../assets/sound/quiz-done.aac";
+import {
+  MCQQuestion,
+  FillQuestion,
+  TFQuestion,
+  FormulaQuestion,
+} from "../../types/quiz";
+import {
+  mcqQuestionApi,
+  fillQuestionApi,
+  tfQuestionApi,
+  formulaQuestionApi,
+  aiApi,
+} from "../../lib/api/questions";
 
 const companionImages = {
   1: einstein,
@@ -32,99 +46,123 @@ const SelectedTopicPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false);
   const [companionMessage, setCompanionMessage] = useState<string>("");
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
   });
 
-  const borderColor = isCorrect ? 'border-green-500' : 'border-red-500';
+  const correctAudio = new Audio(correctSound);
+  const incorrectAudio = new Audio(incorrectSound);
+  const summaryAudio = new Audio(summarySound);
+  const borderColor = isCorrect ? "border-green-500" : "border-red-500";
 
   const isValidOption = (option: string): boolean => {
-    return option !== 'd' && option.trim().length > 0;
+    return option !== "d" && option.trim().length > 0;
   };
 
   const validateQuestion = (question: QuestionType): boolean => {
     if (isMCQQuestion(question)) {
-      return question.options.some(isValidOption) && question.answers.every(isValidOption);
+      return (
+        question.options.some(isValidOption) &&
+        question.answers.every(isValidOption)
+      );
     }
     if (isFillQuestion(question)) {
-      return question.choices.some(isValidOption) && question.answers.every(isValidOption);
+      return (
+        question.choices.some(isValidOption) &&
+        question.answers.every(isValidOption)
+      );
     }
     if (isTFQuestion(question)) {
-      return question.answer === 'True' || question.answer === 'False';
+      return question.answer === "True" || question.answer === "False";
     }
     return false;
   };
 
   const isMCQQuestion = (question: QuestionType): question is MCQQuestion => {
-    return 'options' in question;
+    return "options" in question;
   };
 
   const isFillQuestion = (question: QuestionType): question is FillQuestion => {
-    return 'choices' in question;
+    return "choices" in question;
   };
 
   const isTFQuestion = (question: QuestionType): question is TFQuestion => {
-    return !('options' in question) && !('choices' in question) && 'answer' in question;
+    return (
+      !("options" in question) &&
+      !("choices" in question) &&
+      "answer" in question
+    );
   };
 
   useEffect(() => {
     if (!selectedClass) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        console.log('Fetching questions for:', {
+        console.log("Fetching questions for:", {
           class: selectedClass,
-          topic: topicId
+          topic: topicId,
         });
-    
+
         const [mcqData, fillData, tfData, formulaData] = await Promise.all([
           mcqQuestionApi.getAll(),
           fillQuestionApi.getAll(),
           tfQuestionApi.getAll(),
-          formulaQuestionApi.getAll()
+          formulaQuestionApi.getAll(),
         ]);
-    
-        console.log('Raw data from APIs:', {
+
+        console.log("Raw data from APIs:", {
           mcq: mcqData?.length,
           fill: fillData?.length,
           tf: tfData?.length,
-          formula: formulaData?.length
+          formula: formulaData?.length,
         });
-    
-        const combinedQuestions = [...mcqData, ...fillData, ...tfData, ...formulaData]
-          .filter(q => {
-            if (!q || !q.class_ || !q.topic) return false;
-    
-            const classMatch = String(q.class_).trim() === String(selectedClass).trim();
-            const topicMatch = String(q.topic).toLowerCase().trim() === 'gravitation';
-            
-            console.log('Question filtering:', {
-              id: q.id,
-              qClass: q.class_,
-              selectedClass,
-              classMatch,
-              qTopic: q.topic,
-              topicMatch,
-            });
-    
-            return classMatch && topicMatch;
+
+        const combinedQuestions = [
+          ...mcqData,
+          ...fillData,
+          ...tfData,
+          ...formulaData,
+        ].filter((q) => {
+          if (!q || !q.class_ || !q.topic) return false;
+
+          const classMatch =
+            String(q.class_).trim() === String(selectedClass).trim();
+          const topicMatch =
+            String(q.topic).toLowerCase().trim() === "gravitation";
+
+          console.log("Question filtering:", {
+            id: q.id,
+            qClass: q.class_,
+            selectedClass,
+            classMatch,
+            qTopic: q.topic,
+            topicMatch,
           });
-    
-        console.log('Filtered questions:', combinedQuestions);
-            
+
+          return classMatch && topicMatch;
+        });
+
+        console.log("Filtered questions:", combinedQuestions);
+
         if (combinedQuestions.length > 0) {
-          const shuffledQuestions = combinedQuestions.sort(() => Math.random() - 0.5);
+          const shuffledQuestions = combinedQuestions.sort(
+            () => Math.random() - 0.5
+          );
           setQuestions(shuffledQuestions);
         } else {
-          setError(`No questions available for Class ${selectedClass} topic ${topicId}`);
+          setError(
+            `No questions available for Class ${selectedClass} topic ${topicId}`
+          );
         }
       } catch (err) {
-        console.error('Error in fetchQuestions:', err);
+        console.error("Error in fetchQuestions:", err);
         setError("Failed to load questions");
       } finally {
         setLoading(false);
@@ -135,7 +173,10 @@ const SelectedTopicPage: React.FC = () => {
   }, [topicId, selectedClass, navigate]);
 
   useEffect(() => {
-    localStorage.setItem("currentQuestionIndex", currentQuestionIndex.toString());
+    localStorage.setItem(
+      "currentQuestionIndex",
+      currentQuestionIndex.toString()
+    );
   }, [currentQuestionIndex]);
 
   useEffect(() => {
@@ -157,7 +198,11 @@ const SelectedTopicPage: React.FC = () => {
     });
   };
 
-  const formatExplanation = (explanation: string, isCorrect: boolean, correctAnswer: string): string => {
+  const formatExplanation = (
+    explanation: string,
+    isCorrect: boolean,
+    correctAnswer: string
+  ): string => {
     let cleanText = explanation.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
     cleanText = cleanText.replace(/\d+\.\s*/g, "");
     cleanText = cleanText
@@ -175,7 +220,9 @@ const SelectedTopicPage: React.FC = () => {
     if (isCorrect) {
       return `✓ ${points.join(".\n\n")}`;
     } else {
-      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(".\n\n")}`;
+      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(
+        ".\n\n"
+      )}`;
     }
   };
 
@@ -187,11 +234,18 @@ const SelectedTopicPage: React.FC = () => {
 
     if (isMCQQuestion(currentQuestion) || isFillQuestion(currentQuestion)) {
       const correctAnswers = currentQuestion.answers;
-      correct = selectedAnswers.length === correctAnswers.length &&
-        selectedAnswers.every(answer => correctAnswers.includes(answer)) &&
-        correctAnswers.every(answer => selectedAnswers.includes(answer));
+      correct =
+        selectedAnswers.length === correctAnswers.length &&
+        selectedAnswers.every((answer) => correctAnswers.includes(answer)) &&
+        correctAnswers.every((answer) => selectedAnswers.includes(answer));
     } else if (isTFQuestion(currentQuestion)) {
       correct = selectedAnswers[0] === currentQuestion.answer;
+    }
+
+    if (correct) {
+      correctAudio.play();
+    } else {
+      incorrectAudio.play();
     }
 
     setIsCorrect(correct);
@@ -203,16 +257,22 @@ const SelectedTopicPage: React.FC = () => {
         question: currentQuestion.question,
         topic: currentQuestion.topic,
         subject: currentQuestion.subject,
-        answer: isTFQuestion(currentQuestion) 
-          ? currentQuestion.answer 
+        answer: isTFQuestion(currentQuestion)
+          ? currentQuestion.answer
           : currentQuestion.answers.join(", "),
         chosen_answer: selectedAnswers.join(", "),
       };
 
       const explanation = await aiApi.explainAnswer(requestData);
-      setCompanionMessage(formatExplanation(explanation, correct, 
-        isTFQuestion(currentQuestion) ? currentQuestion.answer : currentQuestion.answers.join(", ")
-      ));
+      setCompanionMessage(
+        formatExplanation(
+          explanation,
+          correct,
+          isTFQuestion(currentQuestion)
+            ? currentQuestion.answer
+            : currentQuestion.answers.join(", ")
+        )
+      );
     } catch (error) {
       console.error("Failed to get AI explanation:", error);
       setCompanionMessage(
@@ -265,10 +325,35 @@ const SelectedTopicPage: React.FC = () => {
       setSelectedAnswers([]);
       setShowFeedback(false);
     } else {
+      summaryAudio.play();
+      const totalQuestions = questions.length;
+      const correctAnswersCount = questions.reduce(
+        (count, currentQuestion, index) => {
+          const selectedAnswer = selectedAnswers[index];
+          if (
+            isMCQQuestion(currentQuestion) ||
+            isFillQuestion(currentQuestion)
+          ) {
+            return (
+              count + (currentQuestion.answers.includes(selectedAnswer) ? 1 : 0)
+            );
+          } else if (isTFQuestion(currentQuestion)) {
+            return count + (selectedAnswer === currentQuestion.answer ? 1 : 0);
+          }
+          return count;
+        },
+        0
+      );
+
+      const incorrectAnswersCount = totalQuestions - correctAnswersCount;
+
       navigate("/summary", {
         state: {
           topicId,
           selectedCompanion,
+          totalQuestions,
+          correctAnswersCount,
+          incorrectAnswersCount,
         },
       });
     }
@@ -277,7 +362,7 @@ const SelectedTopicPage: React.FC = () => {
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return null;
-  
+
     const renderButton = (choice: string, isCorrect: boolean) => (
       <button
         key={choice}
@@ -298,18 +383,18 @@ const SelectedTopicPage: React.FC = () => {
         <span className="text-white text-sm lg:text-lg">{choice}</span>
       </button>
     );
-  
+
     if (isMCQQuestion(currentQuestion)) {
       const validOptions = currentQuestion.options.filter(isValidOption);
       return (
         <div className="grid grid-cols-2 gap-6">
-          {validOptions.map((option) => 
+          {validOptions.map((option) =>
             renderButton(option, currentQuestion.answers.includes(option))
           )}
         </div>
       );
     }
-  
+
     if (isFillQuestion(currentQuestion)) {
       const validChoices = currentQuestion.choices.filter(isValidOption);
       return (
@@ -320,7 +405,7 @@ const SelectedTopicPage: React.FC = () => {
         </div>
       );
     }
-  
+
     if (isTFQuestion(currentQuestion)) {
       return (
         <div className="grid grid-cols-2 gap-6">
@@ -330,7 +415,7 @@ const SelectedTopicPage: React.FC = () => {
         </div>
       );
     }
-  
+
     return null;
   };
 
@@ -339,9 +424,18 @@ const SelectedTopicPage: React.FC = () => {
       <div className="min-h-screen bg-black flex flex-col items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-2">
-            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" style={{ animationDelay: "0s" }} />
-            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
-            <div className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce" style={{ animationDelay: "0.4s" }} />
+            <div
+              className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce"
+              style={{ animationDelay: "0s" }}
+            />
+            <div
+              className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce"
+              style={{ animationDelay: "0.2s" }}
+            />
+            <div
+              className="w-4 h-4 bg-[#00A3FF] rounded-full animate-bounce"
+              style={{ animationDelay: "0.4s" }}
+            />
           </div>
           <span className="text-[#00A3FF] text-xl font-medium">Loading...</span>
         </div>
@@ -354,8 +448,8 @@ const SelectedTopicPage: React.FC = () => {
       <div className="min-h-screen bg-black flex flex-col items-center justify-center">
         <div className="text-white text-center">
           <p className="mb-4">{error}</p>
-          <button 
-            onClick={() => navigate('/')}
+          <button
+            onClick={() => navigate("/")}
             className="px-6 py-2 bg-[#21B6F8] rounded-lg hover:bg-opacity-90 transition-colors"
           >
             Back to Topics
@@ -372,8 +466,8 @@ const SelectedTopicPage: React.FC = () => {
       <div className="min-h-screen bg-black flex flex-col items-center justify-center">
         <div className="text-white text-center">
           <p className="mb-4">No questions available for this topic</p>
-          <button 
-            onClick={() => navigate('/')}
+          <button
+            onClick={() => navigate("/")}
             className="px-6 py-2 bg-[#21B6F8] rounded-lg hover:bg-opacity-90 transition-colors"
           >
             Back to Topics
@@ -398,23 +492,32 @@ const SelectedTopicPage: React.FC = () => {
           </p>
         )}
 
-        <div className={`flex ${companionMessage && "flex-row-reverse"} lg:flex-col min-h-0 md:flex-grow overflow-hidden md:justify-between`}>
+        <div
+          className={`flex ${
+            companionMessage && "flex-row-reverse"
+          } lg:flex-col min-h-0 md:flex-grow overflow-hidden md:justify-between`}
+        >
           {companionMessage ? (
             <>
-              <div 
+              <div
                 className={`bg-[#141414] border-2 ${borderColor} rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
-                style={{
-                  "--scrollbar-width": "1px",
-                  "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
-                  "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
-                } as React.CSSProperties}
+                style={
+                  {
+                    "--scrollbar-width": "1px",
+                    "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
+                    "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
+                  } as React.CSSProperties
+                }
               >
                 <div className="space-y-4">
                   {companionMessage.split(".").map((sentence, index) => {
                     const trimmedSentence = sentence.trim();
                     if (trimmedSentence) {
                       return (
-                        <p key={index} className="text-gray-300 leading-relaxed text-sm tracking-wide">
+                        <p
+                          key={index}
+                          className="text-gray-300 leading-relaxed text-sm tracking-wide"
+                        >
                           {trimmedSentence}.
                         </p>
                       );
@@ -427,7 +530,11 @@ const SelectedTopicPage: React.FC = () => {
               {selectedCompanion && (
                 <div className="mt-4 md:mt-0 flex-shrink-0 flex items-end lg:justify-center">
                   <img
-                    src={companionImages[selectedCompanion as keyof typeof companionImages]}
+                    src={
+                      companionImages[
+                        selectedCompanion as keyof typeof companionImages
+                      ]
+                    }
                     alt="Selected Companion"
                     className="md:w-full h-[180px] lg:h-auto object-contain md:max-h-[300px]"
                   />
@@ -438,7 +545,11 @@ const SelectedTopicPage: React.FC = () => {
             selectedCompanion && (
               <div className="flex-shrink-0 flex lg:justify-center md:mt-auto">
                 <img
-                  src={companionImages[selectedCompanion as keyof typeof companionImages]}
+                  src={
+                    companionImages[
+                      selectedCompanion as keyof typeof companionImages
+                    ]
+                  }
                   alt="Selected Companion"
                   className="md:w-full h-[180px] object-contain lg:h-auto md:max-h-[300px]"
                 />
@@ -457,27 +568,31 @@ const SelectedTopicPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="mb-8">
-              {renderQuestionOptions()}
-            </div>
+            <div className="mb-8">{renderQuestionOptions()}</div>
 
             <div className="flex justify-between items-center">
               <div>
                 {showFeedback && (
                   <div className="flex items-center gap-2">
-                    <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-                      {isCorrect ? <FaCheckCircle size={36} /> : <FaTimesCircle size={36} />}
-                    </span>
-                    <span className={isCorrect ? "text-green-500" : "text-red-500"}>
+                    <span
+                      className={isCorrect ? "text-green-500" : "text-red-500"}
+                    >
                       {isCorrect ? (
-                        "Correct!"
+                        <FaCheckCircle size={36} />
                       ) : (
-                        `Incorrect. The correct answer was: ${
-                          isTFQuestion(currentQuestion)
-                            ? currentQuestion.answer
-                            : currentQuestion.answers.join(", ")
-                        }`
+                        <FaTimesCircle size={36} />
                       )}
+                    </span>
+                    <span
+                      className={isCorrect ? "text-green-500" : "text-red-500"}
+                    >
+                      {isCorrect
+                        ? "Correct!"
+                        : `Incorrect. The correct answer was: ${
+                            isTFQuestion(currentQuestion)
+                              ? currentQuestion.answer
+                              : currentQuestion.answers.join(", ")
+                          }`}
                     </span>
                   </div>
                 )}

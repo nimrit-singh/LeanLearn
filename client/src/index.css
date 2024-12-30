@@ -138,9 +138,37 @@ input:-webkit-autofill:active {
   opacity: 0 ;
 }
 
+
+
 @media (max-width: 576px) {
   .main-icon{
     opacity: 1;
+    }
+    .sidebar-main{
+    
+        position: absolute;
+        z-index: 10;
+       
+        height: 100%; /* Full height */
+    
+    }
+    .page-content{
+      padding-top: 20px !important;
+    }
+    .page-content-quiz
+    {
+      padding-top: 50px;
+    }
+    .main-content-wrap{
+      flex-wrap: wrap;
+      flex-direction: column-reverse;
+    }
+    .mobile-view-header{
+      justify-content: center;
+      gap: 0;
+    }
+    .side-bar-header{
+      justify-content: space-between;
     }
 }
 

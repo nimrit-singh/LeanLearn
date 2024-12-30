@@ -604,18 +604,39 @@ const AddQuestion: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-black">
-      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#111111] transition-all duration-300 ease-in-out`}>
-        <div className={`p-4 flex ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
+    <>
+    <div className="md:hidden flex items-center absolute p-4 pl-8 z-20">
+        {!isSidebarOpen && ( // Only show the icon when the sidebar is closed
           <button 
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            onClick={() => setIsSidebarOpen(true)} // Open sidebar on click
             className="text-white hover:text-gray-300 focus:outline-none"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
+        )}
+      </div>
+    <div className="flex min-h-screen bg-black">
+      <div className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-[#111111] transition-all duration-300 sidebar-main ease-in-out ${isSidebarOpen ? 'block' : 'hidden md:block'} `}>
+        <div className={`p-4 flex side-bar-header ${isSidebarOpen ? 'gap-2' : 'justify-center'} items-center`}>
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="text-white hover:text-gray-300 focus:outline-none hidden md:block"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
           {isSidebarOpen && <img src={leanLearnLogo} alt="LeanLearn" className="h-8 pl-4 md:pl-12" onClick={() => navigate('/')} />}
+          <button 
+    onClick={() => setIsSidebarOpen(false)}
+    className="text-white hover:text-gray-300 focus:outline-none block md:hidden"
+>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+</button>
         </div>
 
         <nav className="mt-8 flex flex-col gap-2 px-3">
@@ -638,8 +659,8 @@ const AddQuestion: React.FC = () => {
         </nav>
       </div>
 
-      <div className="flex-1 flex">
-        <div className="flex-1 p-6">
+      <div className="flex-1 flex  main-content-wrap page-content-quiz">
+        <div className="flex-1 p-2 md:p-6 pb-4">
           <div className="bg-[#111111] rounded-lg p-6">
             <div className="mb-4">
               <div className="flex items-start gap-2">
@@ -668,7 +689,7 @@ const AddQuestion: React.FC = () => {
               <div className="mt-4 flex flex-wrap gap-4">
                 {imageUrls.map((url, index) => (
                   <div key={index} className="relative">
-                    <img src={url} alt={`Uploaded ${index + 1}`} className="max-w-full h-32 w-32 p-3 object-cover" />
+                    <img src={url} alt={`Uploaded ${index + 1}`} className="max-w-full h-20 w-20 md:h-32 md:w-32 p-3 object-cover" />
                     <button
                       onClick={() => removeImage(index)}
                       className="absolute -top-3 right-0 text-red-500 rounded-full p-1"
@@ -684,7 +705,7 @@ const AddQuestion: React.FC = () => {
             {renderQuestionContent()}
           </div>
 
-          <div className="flex justify-end mt-6">
+          <div className="flex justify-end mt-6 sm:mb-10">
             <button
               onClick={handleSubmit}
               className="bg-[#21B6F8] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
@@ -694,7 +715,7 @@ const AddQuestion: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-80 bg-black border-l border-gray-800 p-6 space-y-4">
+        <div className="w-full md:w-80 bg-black border-l border-gray-800 p-6 space-y-4">
           <div className="space-y-2">
             <label className="text-white text-sm">Select Class</label>
             <select
@@ -759,6 +780,7 @@ const AddQuestion: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

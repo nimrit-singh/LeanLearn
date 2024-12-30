@@ -16,7 +16,7 @@ const companionImages = {
 const Summary: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedCompanion, topicId } = location.state || {};
+  const { selectedCompanion, topicId, totalQuestions, correctAnswersCount, incorrectAnswersCount } = location.state || {};
 
   const handleRetryQuiz = () => {
     localStorage.removeItem("currentQuestionIndex");
@@ -34,8 +34,8 @@ const Summary: React.FC = () => {
    
   };
 
-  const handleChallengeClick = () => {
-  };
+  // const handleChallengeClick = () => {
+  // };
 
   const handleGoBack = () => {
     navigate('/');
@@ -110,19 +110,19 @@ const Summary: React.FC = () => {
           <div className="w-full space-y-2 mb-8 text-white text-sm">
             <div className="flex justify-between">
               <span>Total Quiz Questions:</span>
-              <span>10</span>
+              <span>{totalQuestions}</span>
             </div>
             <div className="flex justify-between">
               <span>Correctly Answered:</span>
-              <span>7</span>
+              <span>{correctAnswersCount}</span>
             </div>
             <div className="flex justify-between">
               <span>Incorrectly Answered:</span>
-              <span>3</span>
+              <span>{incorrectAnswersCount}</span>
             </div>
             <div className="flex justify-between border-t border-gray-700 pt-2 mt-2">
               <span>Total Score:</span>
-              <span>7/10</span>
+              <span>{correctAnswersCount} /10</span>
             </div>
           </div>
 
@@ -133,12 +133,12 @@ const Summary: React.FC = () => {
             >
               Retry Quiz
             </button>
-            <button
+            {/* <button
               onClick={handleChallengeClick}
               className="w-full py-3 px-4 bg-[#101113] text-white rounded-lg hover:bg-[#1A1A1A] transition-colors"
             >
               Challenge Friends
-            </button>
+            </button> */}
             <button
               onClick={handleTakeAnotherQuiz}
               className="w-full py-3 px-4 bg-[#00A3FF] text-white rounded-lg hover:bg-[#0086CC] transition-colors"
