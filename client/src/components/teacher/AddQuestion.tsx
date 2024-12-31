@@ -76,7 +76,7 @@ const AddQuestion: React.FC = () => {
     topic: 'gravitation',
     class_: '8',
     subject: 'Physics',
-    options: ['', ''],
+    options: [''],
     answers: [''],
     resource: [''],
     used: true
@@ -88,22 +88,7 @@ const AddQuestion: React.FC = () => {
   ]);
 
   const [isRandomized, setIsRandomized] = useState(false);
-  const [selectedSequence, setSelectedSequence] = useState<Array<{
-    type: 'quantity' | 'operator';
-    value: string;
-    symbol?: string;
-  }>>([]);
 
-  const [formulaOptions, setFormulaOptions] = useState<Array<{
-    id: number;
-    sequence: Array<{
-      type: 'quantity' | 'operator';
-      value: string;
-      symbol?: string;
-    }>;
-  }>>([{ id: 1, sequence: [] }]);
-  
-  const [correctFormulaIndex, setCorrectFormulaIndex] = useState<number | null>(null);
 
   const classes = [
     { value: '8', label: 'Class 8' },
@@ -163,7 +148,7 @@ const AddQuestion: React.FC = () => {
       setChoices(newChoices);
       setQuestionData(prev => ({
         ...prev,
-        options: newChoices.map(c => c.text)
+        options: newChoices.map(c => c.text) as string[]
       }));
     }
   };
@@ -206,93 +191,102 @@ const AddQuestion: React.FC = () => {
     localStorage.setItem('imageUrls', JSON.stringify(updatedImageUrls));
   };
 
-  const [customQuantity, setCustomQuantity] = useState({ name: '', symbol: '' });
+  const [newOption, setNewOption] = useState('');
+  const [formulaSequence, setFormulaSequence] = useState<Array<{
+    type: 'word' | 'operator';
+    value: string;
+  }>>([]);
   const renderFormulaContent = () => {
     const operators = ['+', '-', '*', '/', '=', '^'];
   
-    const handleSelect = (type: 'quantity' | 'operator', value: string, symbol?: string) => {
-      setSelectedSequence([...selectedSequence, { type, value, symbol }]);
+    const handleSelect = (type: 'word' | 'operator', value: string) => {
+      setFormulaSequence([...formulaSequence, { type, value }]);
     };
   
-    const addCustomQuantity = () => {
-      if (!customQuantity.name || !customQuantity.symbol) {
-        alert('Please enter both name and symbol for the quantity');
+    const addOption = () => {
+      if (!newOption.trim()) {
+        alert('Please enter a word');
         return;
       }
-      handleSelect('quantity', customQuantity.name, customQuantity.symbol);
-      setCustomQuantity({ name: '', symbol: '' });
+  
+      setQuestionData(prev => ({
+        ...prev,
+        options: [...prev.options, newOption.trim()]
+      }));
+      setNewOption('');
     };
   
     const removeLastItem = () => {
-      setSelectedSequence(selectedSequence.slice(0, -1));
+      setFormulaSequence(formulaSequence.slice(0, -1));
     };
   
     const clearSequence = () => {
-      setSelectedSequence([]);
+      setFormulaSequence([]);
     };
   
-    const addFormulaOption = () => {
-      if (selectedSequence.length === 0) {
+    const saveFinalFormula = () => {
+      if (formulaSequence.length === 0) {
         alert('Please build a formula first');
         return;
       }
-      
-      if (formulaOptions.length >= 4) {
-        alert('Maximum 4 options allowed');
-        return;
-      }
   
-      const newId = formulaOptions.length > 0 ? 
-        Math.max(...formulaOptions.map(opt => opt.id)) + 1 : 1;
-      setFormulaOptions([...formulaOptions, {
-        id: newId,
-        sequence: [...selectedSequence]
-      }]);
-      clearSequence();
+      const formulaString = formulaSequence.map(item => item.value).join(' ');
+      setQuestionData(prev => ({
+        ...prev,
+        answers: [formulaString]
+      }));
     };
   
-
     return (
       <div className="space-y-6 ml-6">
         <div className="bg-[#1A1A1A] p-6 rounded-lg border border-gray-700">
           {/* Current Formula Display */}
           <div className="mb-6 p-4 bg-[#111111] rounded-lg min-h-[60px] flex items-center">
             <div className="flex flex-wrap gap-2">
-              {selectedSequence.map((item, index) => (
+              {formulaSequence.map((item, index) => (
                 <span
                   key={index}
                   className="px-3 py-1 rounded bg-[#21B6F8] text-white"
                 >
-                  {item.type === 'quantity' ? item.symbol : item.value}
+                  {item.value}
                 </span>
               ))}
             </div>
           </div>
   
-          {/* Add Custom Quantity */}
+          {/* Add Word Option */}
           <div className="mb-6">
-            <h3 className="text-white text-sm mb-3">Add Quantity</h3>
+            <h3 className="text-white text-sm mb-3">Add Option Word</h3>
             <div className="flex gap-3">
               <input
                 type="text"
-                value={customQuantity.name}
-                onChange={(e) => setCustomQuantity({ ...customQuantity, name: e.target.value })}
-                placeholder="Quantity Name (e.g., Force)"
+                value={newOption}
+                onChange={(e) => setNewOption(e.target.value)}
+                placeholder="Enter a word (e.g., Force)"
                 className="flex-1 bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
               />
-              <input
-                type="text"
-                value={customQuantity.symbol}
-                onChange={(e) => setCustomQuantity({ ...customQuantity, symbol: e.target.value })}
-                placeholder="Symbol (e.g., F)"
-                className="w-24 bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
-              />
               <button
-                onClick={addCustomQuantity}
+                onClick={addOption}
                 className="px-4 py-2 bg-[#21B6F8] text-white rounded hover:bg-opacity-90"
               >
-                Add
+                Add Option
               </button>
+            </div>
+          </div>
+  
+          {/* Options Display */}
+          <div className="mb-6">
+            <h3 className="text-white text-sm mb-3">Available Words</h3>
+            <div className="flex flex-wrap gap-2">
+              {questionData.options.map((word, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSelect('word', word)}
+                  className="px-4 py-2 rounded bg-[#111111] text-white hover:bg-[#21B6F8] transition-colors"
+                >
+                  {word}
+                </button>
+              ))}
             </div>
           </div>
   
@@ -316,48 +310,33 @@ const AddQuestion: React.FC = () => {
           <div className="flex gap-3">
             <button
               onClick={removeLastItem}
-              disabled={selectedSequence.length === 0}
+              disabled={formulaSequence.length === 0}
               className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Undo Last
             </button>
             <button
               onClick={clearSequence}
-              disabled={selectedSequence.length === 0}
+              disabled={formulaSequence.length === 0}
               className="px-4 py-2 rounded bg-gray-500 text-white hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Clear All
             </button>
             <button
-              onClick={addFormulaOption}
+              onClick={saveFinalFormula}
               className="px-4 py-2 rounded bg-[#21B6F8] text-white hover:bg-opacity-90"
             >
-              Add as Option
+              Save Formula
             </button>
           </div>
         </div>
   
-        {/* Formula Options */}
-        <div className="space-y-4 bg-[#1A1A1A] p-4 rounded-lg border border-gray-700">
-          <h4 className="text-white text-md">Formula Options</h4>
-          {formulaOptions.length > 0 && formulaOptions.map((option) => (
-            <div key={option.id} className="flex items-center gap-3">
-              <input
-                type="radio"
-                name="correctFormula"
-                checked={correctFormulaIndex === option.id}
-                onChange={() => setCorrectFormulaIndex(option.id)}
-                className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
-              />
-              <div className="flex-1 bg-[#111111] text-white px-4 py-2 rounded-lg">
-                {option.sequence.map((item, index) => (
-                  <span key={index} className="mx-1">
-                    {item.type === 'quantity' ? item.symbol : item.value}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
+        {/* Formula Preview */}
+        <div className="bg-[#1A1A1A] p-4 rounded-lg border border-gray-700">
+          <h4 className="text-white text-md mb-2">Correct Formula</h4>
+          <div className="bg-[#111111] text-white px-4 py-2 rounded-lg">
+            {questionData.answers[0] || "No formula saved yet"}
+          </div>
         </div>
       </div>
     );
@@ -601,62 +580,57 @@ const AddQuestion: React.FC = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
       } else if (questionType === 'Create Formula') {
-        if (formulaOptions.length < 2) {
-          alert('Please add at least two formula options');
+        if (!questionData.question.trim()) {
+          alert('Please enter a question');
           return;
         }
       
-        if (correctFormulaIndex === null) {
-          alert('Please select the correct formula');
+        if (questionData.options.length < 2) {
+          alert('Please add at least two options');
           return;
         }
-        
+      
+        if (!questionData.answers[0]) {
+          alert('Please create and save a formula');
+          return;
+        }
+      
+        const formulaData: FormulaQuestionData = {
+          id: String(Date.now()),
+          class_: questionData.class_,
+          subject: 'Physics',
+          topic: questionData.topic,
+          question: questionData.question,
+          options: questionData.options,
+          answers: [questionData.answers[0]],
+          resource: [""],
+          used: true,
+          quantities: [
+            {
+              name: "placeholder",
+              symbol: "placeholder",
+              isUnknown: false
+            }
+          ],
+          formula: questionData.answers[0] 
+        };
+      
         try {
-          const correctOption = formulaOptions.find(opt => opt.id === correctFormulaIndex);
-          const formulaData: FormulaQuestionData = {
-            id: String(Date.now()),
-            class_: questionData.class_,
-            subject: 'Physics',
-            topic: questionData.topic,
-            question: questionData.question,
-            quantities: selectedSequence
-              .filter(item => item.type === 'quantity')
-              .map(item => ({
-                name: item.value,
-                symbol: item.symbol || '',
-                isUnknown: false
-              })),
-            formula: correctOption ? correctOption.sequence.map(item => 
-              item.type === 'quantity' ? item.symbol || item.value : item.value
-            ).join(' ') : "",
-            options: formulaOptions.map(opt => 
-              opt.sequence.map(item => 
-                item.type === 'quantity' ? item.symbol || item.value : item.value
-              ).join(' ')
-            ),
-            answers: [correctOption ? correctOption.sequence.map(item => 
-              item.type === 'quantity' ? item.symbol || item.value : item.value
-            ).join(' ') : ""],
-            resource: [""],
-            used: true
-          };
-      
           const result = await formulaQuestionApi.create(formulaData);
           console.log('Creation successful:', result);
-
+      
           setQuestionData({
             question: '',
             topic: 'gravitation',
             class_: '8',
             subject: 'Physics',
-            options: ['', ''],
+            options: [],
             answers: [''],
             resource: [''],
             used: true
           });
-          setSelectedSequence([]);
-          setFormulaOptions([{ id: 1, sequence: [] }]);
-          setCorrectFormulaIndex(null);
+          setFormulaSequence([]);
+          setNewOption('');
           navigate('/teacher/question-bank');
 
         } catch (error) {
