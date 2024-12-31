@@ -46,9 +46,9 @@ const SelectedTopicPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false);
   const [companionMessage, setCompanionMessage] = useState<string>("");
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0); // Initialize correct answers count
-  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0); // Initialize incorrect answers count
-  const [attemptedQuestionsCount, setAttemptedQuestionsCount] = useState(0); // Initialize attempted questions count
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);  
+  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);  
+  const [attemptedQuestionsCount, setAttemptedQuestionsCount] = useState(0);  
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
