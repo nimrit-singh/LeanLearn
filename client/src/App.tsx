@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Navbar from './components/layout/Navbar';
@@ -24,6 +24,9 @@ import SelectedTopicPage from './components/home/selectTopic';
 import Summary from './components/home/Summary';
 import Feedback from './components/home/Feedback';
 import NotFound from './components/layout/PageNotFound';
+import Profile from './components/auth/userProfile';
+import { analytics } from './components/auth/firebase';
+import { logEvent } from 'firebase/analytics';
 
 const HomePage = () => (
   <>
@@ -34,6 +37,8 @@ const HomePage = () => (
     <Footer />
   </>
 );
+
+
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => (
   <>
@@ -48,6 +53,14 @@ const QuizLayout = ({ children }: { children: React.ReactNode }) => (
 );
 
 function App() {
+  useEffect(() => {
+    // Log screen view event when the component mounts
+    logEvent(analytics, 'screen_view', {
+      screen_name: 'Home',
+      screen_class: 'HomeScreen',
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <div className="min-h-screen">
@@ -57,6 +70,7 @@ function App() {
 
             <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
             <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/verify-otp" element={<AuthLayout><VerifyOTP /></AuthLayout>} />
 
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />

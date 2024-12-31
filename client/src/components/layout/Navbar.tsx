@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
   };
 
   const handleStudentSignup = () => {
-    navigate('/signup?role=student');
+    navigate('/login');
   };
 
   const handleLogoClick = () => {
