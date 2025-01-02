@@ -269,6 +269,21 @@ export const formulaQuestionApi = {
       console.error('Error details:', error);
       throw error;
     }
+  },update: async (id: string, question: FormulaQuestion): Promise<FormulaQuestion> => {
+    try {
+      const response = await fetch(`${BASE_URL}/formula/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(question),
+      });
+      if (!response.ok) throw new Error('Failed to update Formula question');
+      return response.json();
+    } catch (error) {
+      console.error('Error updating Formula question:', error);
+      throw error;
+    }
   },
   delete: async (id: string): Promise<void> => {
     try {

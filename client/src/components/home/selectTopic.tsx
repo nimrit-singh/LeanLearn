@@ -23,16 +23,17 @@ import {
   aiApi,
 } from "../../lib/api/questions";
 
-const companionImages = {
-  1: einstein,
-  2: newton,
-  3: galileo,
-  4: raman,
-};
+const companionImages = { 1: einstein, 2: newton, 3: galileo, 4: raman };
+const operators = ['+', '-', '*', '/', '=', '^'];
 
 type QuestionType = MCQQuestion | FillQuestion | TFQuestion | FormulaQuestion;
 
 const SelectedTopicPage: React.FC = () => {
+  const [formulaSequence, setFormulaSequence] = useState<Array<{
+    type: 'word' | 'operator';
+    value: string;
+  }>>([]);
+  
   const { topicId } = useParams<{ topicId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -46,9 +47,9 @@ const SelectedTopicPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingCompanionMessage, setLoadingCompanionMessage] = useState(false);
   const [companionMessage, setCompanionMessage] = useState<string>("");
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);  
-  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);  
-  const [attemptedQuestionsCount, setAttemptedQuestionsCount] = useState(0);  
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);
+  const [attemptedQuestionsCount, setAttemptedQuestionsCount] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(() => {
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
@@ -63,27 +64,12 @@ const SelectedTopicPage: React.FC = () => {
     return option !== "d" && option.trim().length > 0;
   };
 
-  const validateQuestion = (question: QuestionType): boolean => {
-    if (isMCQQuestion(question)) {
-      return (
-        question.options.some(isValidOption) &&
-        question.answers.every(isValidOption)
-      );
-    }
-    if (isFillQuestion(question)) {
-      return (
-        question.choices.some(isValidOption) &&
-        question.answers.every(isValidOption)
-      );
-    }
-    if (isTFQuestion(question)) {
-      return question.answer === "True" || question.answer === "False";
-    }
-    return false;
+  const isFormulaQuestion = (question: QuestionType): question is FormulaQuestion => {
+    return "formula" in question;
   };
 
   const isMCQQuestion = (question: QuestionType): question is MCQQuestion => {
-    return "options" in question;
+    return "options" in question && !("formula" in question);
   };
 
   const isFillQuestion = (question: QuestionType): question is FillQuestion => {
@@ -91,11 +77,7 @@ const SelectedTopicPage: React.FC = () => {
   };
 
   const isTFQuestion = (question: QuestionType): question is TFQuestion => {
-    return (
-      !("options" in question) &&
-      !("choices" in question) &&
-      "answer" in question
-    );
+    return !("options" in question) && !("choices" in question) && "answer" in question;
   };
 
   useEffect(() => {
@@ -107,24 +89,12 @@ const SelectedTopicPage: React.FC = () => {
     const fetchQuestions = async () => {
       try {
         setLoading(true);
-        console.log("Fetching questions for:", {
-          class: selectedClass,
-          topic: topicId,
-        });
-
         const [mcqData, fillData, tfData, formulaData] = await Promise.all([
           mcqQuestionApi.getAll(),
           fillQuestionApi.getAll(),
           tfQuestionApi.getAll(),
           formulaQuestionApi.getAll(),
         ]);
-
-        console.log("Raw data from APIs:", {
-          mcq: mcqData?.length,
-          fill: fillData?.length,
-          tf: tfData?.length,
-          formula: formulaData?.length,
-        });
 
         const combinedQuestions = [
           ...mcqData,
@@ -133,35 +103,16 @@ const SelectedTopicPage: React.FC = () => {
           ...formulaData,
         ].filter((q) => {
           if (!q || !q.class_ || !q.topic) return false;
-
-          const classMatch =
-            String(q.class_).trim() === String(selectedClass).trim();
-          const topicMatch =
-            String(q.topic).toLowerCase().trim() === "gravitation";
-
-          console.log("Question filtering:", {
-            id: q.id,
-            qClass: q.class_,
-            selectedClass,
-            classMatch,
-            qTopic: q.topic,
-            topicMatch,
-          });
-
+          const classMatch = String(q.class_).trim() === String(selectedClass).trim();
+          const topicMatch = String(q.topic).toLowerCase().trim() === "gravitation";
           return classMatch && topicMatch;
         });
 
-        console.log("Filtered questions:", combinedQuestions);
-
         if (combinedQuestions.length > 0) {
-          const shuffledQuestions = combinedQuestions.sort(
-            () => Math.random() - 0.5
-          );
+          const shuffledQuestions = combinedQuestions.sort(() => Math.random() - 0.5);
           setQuestions(shuffledQuestions);
         } else {
-          setError(
-            `No questions available for Class ${selectedClass} topic ${topicId}`
-          );
+          setError(`No questions available for Class ${selectedClass} topic ${topicId}`);
         }
       } catch (err) {
         console.error("Error in fetchQuestions:", err);
@@ -175,15 +126,24 @@ const SelectedTopicPage: React.FC = () => {
   }, [topicId, selectedClass, navigate]);
 
   useEffect(() => {
-    localStorage.setItem(
-      "currentQuestionIndex",
-      currentQuestionIndex.toString()
-    );
+    localStorage.setItem("currentQuestionIndex", currentQuestionIndex.toString());
   }, [currentQuestionIndex]);
 
   useEffect(() => {
     setCompanionMessage("");
   }, [currentQuestionIndex]);
+
+  const handleFormulaSelect = (type: 'word' | 'operator', value: string) => {
+    setFormulaSequence(prev => [...prev, { type, value }]);
+  };
+
+  const handleFormulaUndo = () => {
+    setFormulaSequence(prev => prev.slice(0, -1));
+  };
+
+  const handleFormulaClear = () => {
+    setFormulaSequence([]);
+  };
 
   const handleOptionSelect = (answer: string) => {
     setSelectedAnswers((prev) => {
@@ -200,11 +160,7 @@ const SelectedTopicPage: React.FC = () => {
     });
   };
 
-  const formatExplanation = (
-    explanation: string,
-    isCorrect: boolean,
-    correctAnswer: string
-  ): string => {
+  const formatExplanation = (explanation: string, isCorrect: boolean, correctAnswer: string): string => {
     let cleanText = explanation.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
     cleanText = cleanText.replace(/\d+\.\s*/g, "");
     cleanText = cleanText
@@ -222,26 +178,29 @@ const SelectedTopicPage: React.FC = () => {
     if (isCorrect) {
       return `✓ ${points.join(".\n\n")}`;
     } else {
-      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(
-        ".\n\n"
-      )}`;
+      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(".\n\n")}`;
     }
   };
 
   const handleAnswerSubmit = async () => {
-    if (selectedAnswers.length === 0) return;
-
     const currentQuestion = questions[currentQuestionIndex];
     let correct = false;
+    let submittedAnswer = "";
 
-    if (isMCQQuestion(currentQuestion) || isFillQuestion(currentQuestion)) {
+    if (isFormulaQuestion(currentQuestion)) {
+      submittedAnswer = formulaSequence.map(item => item.value).join(' ');
+      correct = submittedAnswer === currentQuestion.formula;
+    } else if (isMCQQuestion(currentQuestion) || isFillQuestion(currentQuestion)) {
+      if (selectedAnswers.length === 0) return;
       const correctAnswers = currentQuestion.answers;
-      correct =
-        selectedAnswers.length === correctAnswers.length &&
+      correct = selectedAnswers.length === correctAnswers.length &&
         selectedAnswers.every((answer) => correctAnswers.includes(answer)) &&
         correctAnswers.every((answer) => selectedAnswers.includes(answer));
+      submittedAnswer = selectedAnswers.join(", ");
     } else if (isTFQuestion(currentQuestion)) {
+      if (selectedAnswers.length === 0) return;
       correct = selectedAnswers[0] === currentQuestion.answer;
+      submittedAnswer = selectedAnswers[0];
     }
 
     if (correct) {
@@ -257,16 +216,17 @@ const SelectedTopicPage: React.FC = () => {
     setLoadingCompanionMessage(true);
     setAttemptedQuestionsCount((prevCount) => prevCount + 1);
 
-
     try {
       const requestData = {
         question: currentQuestion.question,
         topic: currentQuestion.topic,
         subject: currentQuestion.subject,
-        answer: isTFQuestion(currentQuestion)
+        answer: isFormulaQuestion(currentQuestion)
+          ? currentQuestion.formula
+          : isTFQuestion(currentQuestion)
           ? currentQuestion.answer
           : currentQuestion.answers.join(", "),
-        chosen_answer: selectedAnswers.join(", "),
+        chosen_answer: submittedAnswer,
       };
 
       const explanation = await aiApi.explainAnswer(requestData);
@@ -274,7 +234,9 @@ const SelectedTopicPage: React.FC = () => {
         formatExplanation(
           explanation,
           correct,
-          isTFQuestion(currentQuestion)
+          isFormulaQuestion(currentQuestion)
+            ? currentQuestion.formula
+            : isTFQuestion(currentQuestion)
             ? currentQuestion.answer
             : currentQuestion.answers.join(", ")
         )
@@ -285,7 +247,9 @@ const SelectedTopicPage: React.FC = () => {
         correct
           ? "Well done! You got it right."
           : `Not quite right. The correct answer was: ${
-              isTFQuestion(currentQuestion)
+              isFormulaQuestion(currentQuestion)
+                ? currentQuestion.formula
+                : isTFQuestion(currentQuestion)
                 ? currentQuestion.answer
                 : currentQuestion.answers.join(", ")
             }`
@@ -295,7 +259,12 @@ const SelectedTopicPage: React.FC = () => {
     }
 
     try {
-      if (isMCQQuestion(currentQuestion)) {
+      if (isFormulaQuestion(currentQuestion)) {
+        await formulaQuestionApi.update(currentQuestion.id, {
+          ...currentQuestion,
+          used: true,
+        });
+      } else if (isMCQQuestion(currentQuestion)) {
         await mcqQuestionApi.update(currentQuestion.id, {
           ...currentQuestion,
           used: true,
@@ -322,6 +291,7 @@ const SelectedTopicPage: React.FC = () => {
       setSelectedAnswers([]);
       setShowFeedback(false);
       setCompanionMessage("");
+      setFormulaSequence([]);
     }
   };
 
@@ -330,10 +300,10 @@ const SelectedTopicPage: React.FC = () => {
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedAnswers([]);
       setShowFeedback(false);
+      setFormulaSequence([]);
     } else {
       summaryAudio.play();
       const totalQuestions = questions.length;
-      
       navigate("/summary", {
         state: {
           topicId,
@@ -347,9 +317,81 @@ const SelectedTopicPage: React.FC = () => {
     }
   };
 
+  const renderFormulaInterface = (question: FormulaQuestion) => {
+    return (
+      <div className="space-y-6">
+        <div className="bg-[#111111] p-6 rounded-lg">
+          <div className="mb-6 p-4 bg-[#1A1A1A] rounded-lg min-h-[60px] flex items-center">
+            <div className="flex flex-wrap gap-2">
+              {formulaSequence.map((item, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 rounded bg-[#00A3FF] text-white"
+                >
+                  {item.value}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-white text-sm mb-3">Available Terms</h3>
+            <div className="flex flex-wrap gap-2">
+              {question.options.map((word, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleFormulaSelect('word', word)}
+                  className="px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-[#00A3FF] transition-colors"
+                >
+                  {word}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <h3 className="text-white text-sm mb-3">Operators</h3>
+            <div className="flex flex-wrap gap-2">
+              {operators.map((op) => (
+                <button
+                  key={op}
+                  onClick={() => handleFormulaSelect('operator', op)}
+                  className="px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-[#00A3FF] transition-colors"
+                >
+                  {op}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleFormulaUndo}
+              disabled={formulaSequence.length === 0}
+              className="px-4 py-2 rounded bg-[#101113] text-white hover:bg-[#1A1A1A] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Undo Last
+            </button>
+            <button
+              onClick={handleFormulaClear}
+              disabled={formulaSequence.length === 0}
+              className="px-4 py-2 rounded bg-[#101113] text-white hover:bg-[#1A1A1A] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Clear All
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return null;
+
+    if (isFormulaQuestion(currentQuestion)) {
+      return renderFormulaInterface(currentQuestion);
+    }
 
     const renderButton = (choice: string, isCorrect: boolean) => (
       <button
@@ -577,7 +619,9 @@ const SelectedTopicPage: React.FC = () => {
                       {isCorrect
                         ? "Correct!"
                         : `Incorrect. The correct answer was: ${
-                            isTFQuestion(currentQuestion)
+                            isFormulaQuestion(currentQuestion)
+                              ? currentQuestion.formula
+                              : isTFQuestion(currentQuestion)
                               ? currentQuestion.answer
                               : currentQuestion.answers.join(", ")
                           }`}
@@ -598,7 +642,11 @@ const SelectedTopicPage: React.FC = () => {
                 {!showFeedback ? (
                   <button
                     onClick={handleAnswerSubmit}
-                    disabled={selectedAnswers.length === 0}
+                    disabled={
+                      isFormulaQuestion(currentQuestion)
+                        ? formulaSequence.length === 0
+                        : selectedAnswers.length === 0
+                    }
                     className="px-6 py-2 rounded-lg bg-[#00A3FF] text-white hover:bg-[#0086CC] transition-colors disabled:opacity-50"
                   >
                     Submit
