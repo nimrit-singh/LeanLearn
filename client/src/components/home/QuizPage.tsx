@@ -8,6 +8,7 @@ import logo from "../../assets/images/Logo.png";
 import choiceCloud from "../../assets/images/choose.png";
 import choiceCloud1 from "../../assets/Frame 193.svg";
 import selectsound from '../../assets/sound/sound1.aac'
+import ProfileIcon from "../auth/ProfilePage";
 
 const classes = [
   { value: "8", label: "Class 8" },
@@ -43,6 +44,9 @@ const QuizPage: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("");
 
+ 
+
+  
   useEffect(() => {
     const companion = localStorage.getItem("selectedCompanion");
     if (companion) {
@@ -82,6 +86,11 @@ const QuizPage: React.FC = () => {
           </div>
         </button>
       </div>
+      
+        <div className="absolute top-8 right-8">
+          <ProfileIcon/>
+        </div>
+      
 
       {showMobileMenu && (
         <div className="lg:hidden fixed top-16 right-0 bg-[#181818] p-4 z-50 rounded-bl-lg">

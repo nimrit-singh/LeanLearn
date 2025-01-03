@@ -12,6 +12,7 @@ import {
 import leanLearnLogo from "../../assets/images/Logo.png";
 import { auth } from "./firebase";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { useUser } from "@/UserContext";
 
 declare global {
   interface Window {
@@ -26,6 +27,7 @@ const Login: React.FC = () => {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { setUser } = useUser();
 
   const setUpRecaptcha = () => {
     const recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
@@ -97,6 +99,7 @@ const Login: React.FC = () => {
           autoClose: 1000, // Toast will auto-close after 3 seconds
           onClose: () => {
             // Navigate after the toast is closed
+            setUser(userData);
             navigate("/select-mentor", { state: { user: userData } });
           },
         });
@@ -160,7 +163,7 @@ const Login: React.FC = () => {
 
           <button
             onClick={handleGoogleSignIn}
-            className="w-full bg-[#FF3E3E] text-white py-3 mt-4 rounded-md hover:bg-[#CC3232] transition-colors"
+            className="w-full signin-button text-white py-3 mt-4 rounded-md  transition-colors"
           >
             Sign in with Google
           </button>

@@ -5,6 +5,7 @@ import einstein from "../../assets/Einstein.gif";
 import newton from "../../assets/Newton.gif";
 import galileo from "../../assets/Galileo.gif";
 import raman from "../../assets/CV Raman.gif";
+import ProfileIcon from '../auth/ProfilePage';
 
 const companionImages = {
   1: einstein,
@@ -84,6 +85,9 @@ const Summary: React.FC = () => {
           </div>
         )}
       </div>
+      <div className="absolute top-8 right-8">
+          <ProfileIcon/>
+        </div>
 
       <div className="flex-1 flex flex-col p-4 order-1 md:order-2 bg-black">
         <div className="md:absolute md:top-6 md:right-6 mb-6 md:mb-0">

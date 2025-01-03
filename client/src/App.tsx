@@ -24,7 +24,7 @@ import SelectedTopicPage from './components/home/selectTopic';
 import Summary from './components/home/Summary';
 import Feedback from './components/home/Feedback';
 import NotFound from './components/layout/PageNotFound';
-import Profile from './components/auth/userProfile';
+
 import { analytics } from './components/auth/firebase';
 import { logEvent } from 'firebase/analytics';
 
@@ -70,7 +70,6 @@ function App() {
 
             <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
             <Route path="/signup" element={<AuthLayout><SignUp /></AuthLayout>} />
-            <Route path="/profile" element={<Profile />} />
             <Route path="/verify-otp" element={<AuthLayout><VerifyOTP /></AuthLayout>} />
 
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
