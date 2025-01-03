@@ -1,14 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../assets/images/Logo.png';
 import einstein from '../../assets/Einstein.gif';
 import newton from '../../assets/Newton.gif';
 import galileo from '../../assets/Galileo.gif';
 import raman from '../../assets/CV Raman.gif';
 import selectSound from '../../assets/sound/sound1.aac'; 
+import ProfileIcon from '../auth/ProfilePage';
 
 const SelectingMentors: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const user = location?.state?.user || null; 
+
 
   const companions = [
     { id: 1, name: 'Prof Einstein', gif: einstein },
@@ -23,6 +27,7 @@ const SelectingMentors: React.FC = () => {
     localStorage.setItem('selectedCompanion', companionId.toString());
     navigate('/quiz-page');
   };
+  
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
@@ -35,6 +40,11 @@ const SelectingMentors: React.FC = () => {
         />
       </div>
 
+      {user && ( 
+        <div className="absolute top-8 right-8">
+          <ProfileIcon />
+        </div>
+      )}
       <div className="flex-1 bg-black p-4 lg:p-8">
         <div className="pt-8 lg:pt-24 pb-8 lg:pb-16 px-4 lg:pl-12">
           <h1 className="text-white font-nunito text-[28px] lg:text-[32px] font-bold leading-[36px] lg:leading-[40px] mb-1">

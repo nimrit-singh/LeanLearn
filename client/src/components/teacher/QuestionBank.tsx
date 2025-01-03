@@ -139,8 +139,9 @@ const QuestionBank: React.FC = () => {
     fetchQuestionCounts();
   }, []);
 
+
   const handleClassSelect = (classId: number) => {
-    localStorage.removeItem("imageUrls");
+    localStorage.removeItem('imageUrls');
     navigate(`/teacher/question-bank/class/${classId}`);
   };
 

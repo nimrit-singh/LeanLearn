@@ -138,8 +138,18 @@ input:-webkit-autofill:active {
   opacity: 0 ;
 }
 
+.signin-button{
+  background: rgb(33, 182, 248);
+  font-weight: 600;
+}
+.dropdown-menu {
+  transform: translateY(-10px);
+  transition: transform 0.3s;
+}
 
-
+.dropdown-menu.opacity-100 {
+  transform: translateY(0);
+}
 @media (max-width: 576px) {
   .main-icon{
     opacity: 1;

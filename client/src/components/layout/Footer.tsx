@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
                 href="tel:7889352121"
                 className="text-white hover:text-gray-300 transition-colors"
               >
-               Contact Us
+               Contact Us - 7889352121
               </a>
               <a
                 href="https://www.instagram.com/lean_learn01/profilecard/?igsh=a25wNGVra28wZ2pi"
