@@ -95,6 +95,18 @@ const QuestionBank: React.FC = () => {
   ];
 
   const classes = [
+    { id: 1, name: "Class 1", questionCount: 0 },
+
+    { id: 2, name: "Class 2", questionCount: 0 },
+    { id: 3, name: "Class 3", questionCount: 0 },
+
+    { id: 4, name: "Class 4", questionCount: 0 },
+
+    { id: 5, name: "Class 5", questionCount: 0 },
+
+    { id: 6, name: "Class 6", questionCount: 0 },
+    { id: 7, name: "Class 7", questionCount: 0 },
+
     { id: 8, name: "Class 8", questionCount: 0 },
     { id: 9, name: "Class 9", questionCount: 0 },
     { id: 10, name: "Class 10", questionCount: 0 },
@@ -139,9 +151,8 @@ const QuestionBank: React.FC = () => {
     fetchQuestionCounts();
   }, []);
 
-
   const handleClassSelect = (classId: number) => {
-    localStorage.removeItem('imageUrls');
+    localStorage.removeItem("imageUrls");
     navigate(`/teacher/question-bank/class/${classId}`);
   };
 
@@ -187,9 +198,20 @@ const QuestionBank: React.FC = () => {
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               className="text-white hover:text-gray-300 focus:outline-none hidden md:block"
             >
-                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
             </button>
             {isSidebarOpen && (
               <img

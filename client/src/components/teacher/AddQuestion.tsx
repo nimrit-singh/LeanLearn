@@ -53,6 +53,7 @@ const AddQuestion: React.FC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [choiceType, setChoiceType] = useState("text");
   const [questionData, setQuestionData] = useState({
     question: "",
     topic: "gravitation",
@@ -112,10 +113,10 @@ const AddQuestion: React.FC = () => {
 
   const topics = [
     { value: "gravitation", label: "Gravitation" },
-    { value: "topic2", label: "Topic 2" },
-    { value: "topic3", label: "Topic 3" },
-    { value: "topic4", label: "Topic 4" },
-    { value: "topic5", label: "Topic 5" },
+    { value: "motion", label: "Motion" },
+    { value: "forceandnewton'slawsofmotion", label: "Force and Newton's laws of motion" },
+    { value: "Workenergyandpower", label: "Work, Energy and Power" },
+    // { value: "topic5", label: "Topic 5" },
   ];
 
   const navigationItems = [
@@ -224,7 +225,6 @@ const AddQuestion: React.FC = () => {
     };
     setQuantities(newQuantities);
   };
-
   const handleChoiceImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     choiceId: number
@@ -235,28 +235,33 @@ const AddQuestion: React.FC = () => {
       reader.onloadend = () => {
         const updatedChoices = choices.map((choice) =>
           choice.id === choiceId
-            ? { ...choice, imageUrl: reader.result as string }
+            ? { ...choice, imageUrl: reader.result as string, text: "" }
             : choice
         );
         setChoices(updatedChoices);
-
+  
         // Update the imageUrls state
-        const updatedImageUrls = imageUrls.concat(reader.result as string);
+        const updatedImageUrls = updatedChoices.map((c) => c.imageUrl || "");
         setImageUrls(updatedImageUrls);
-
-        // Update the choice's image URL in the question data
-        const updatedQuestionData = { ...questionData };
-        updatedQuestionData.options = choices.map((c) => c.text);
-        updatedQuestionData.resource = choices.map((c) => c.imageUrl || "");
-        setQuestionData(updatedQuestionData);
+  
+        // Update the question data with the new image URLs
+        setQuestionData({
+          ...questionData,
+          resource: updatedImageUrls,
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const handleImageAnswerSelect = (choiceId: number) => {
+    setSelectedAnswer(choiceId);
+  };
   const handleChoiceChange = (id: number, text: string) => {
     setChoices(
-      choices.map((choice) => (choice.id === id ? { ...choice, text } : choice))
+      choices.map((choice) =>
+        choice.id === id ? { ...choice, text, imageUrl: "" } : choice
+      )
     );
     setQuestionData({
       ...questionData,
@@ -386,35 +391,55 @@ const AddQuestion: React.FC = () => {
     if (questionType === "MCQs") {
       return (
         <div className="space-y-4 ml-6">
+          <span className="text-white mr-1">
+            Which Type Of Ans You Want to Upload ?
+          </span>
+          <select
+            value={choiceType}
+            onChange={(e) => setChoiceType(e.target.value)}
+            className="bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+          >
+            <option value="text">Text Based</option>
+            <option value="image">Image Based</option>
+          </select>
           {choices.map((choice) => (
-            <div key={choice.id} className="flex items-center gap-3">
-              <input
-                type="radio"
-                name="answer"
-                checked={selectedAnswer === choice.id}
-                onChange={() => setSelectedAnswer(choice.id)}
-                className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
-              />
-              <input
-                type="text"
-                value={choice.text}
-                onChange={(e) => handleChoiceChange(choice.id, e.target.value)}
-                placeholder="Your Choice here"
-                className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleChoiceImageUpload(e, choice.id)}
-                style={{ display: "none" }}
-                id={`image-upload-${choice.id}`}
-              />
-              <label
-                htmlFor={`image-upload-${choice.id}`}
-                className="text-[#21B6F8] text-sm hover:underline cursor-pointer"
-              >
-                Add Image
-              </label>
+            <div key={choice.id} className="flex  gap-3">
+              <div className="flex items-center gap-3">
+                <input
+                  type="radio"
+                  name="answer"
+                  checked={selectedAnswer === choice.id}
+                  onChange={() => handleImageAnswerSelect(choice.id)}
+                  className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
+                />
+              </div>
+              {choiceType === "text" ? (
+                <input
+                  type="text"
+                  value={choice.text}
+                  onChange={(e) =>
+                    handleChoiceChange(choice.id, e.target.value)
+                  }
+                  placeholder="Your Choice here"
+                  className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+                />
+              ) : (
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleChoiceImageUpload(e, choice.id)}
+                  style={{ display: "none" }}
+                  id={`image-upload-${choice.id}`}
+                />
+              )}
+              {choiceType === "image" && (
+                <label
+                  htmlFor={`image-upload-${choice.id}`}
+                  className="text-[#21B6F8] text-sm hover:underline cursor-pointer"
+                >
+                  Add Image
+                </label>
+              )}
               {choice.imageUrl && (
                 <div className="relative">
                   <img
@@ -428,11 +453,12 @@ const AddQuestion: React.FC = () => {
                         c.id === choice.id ? { ...c, imageUrl: "" } : c
                       );
                       setChoices(updatedChoices);
-                      const updatedQuestionData = { ...questionData };
-                      updatedQuestionData.resource = choices.map(
-                        (c) => c.imageUrl || ""
-                      );
-                      setQuestionData(updatedQuestionData);
+                      const updatedImageUrls = updatedChoices.map((c) => c.imageUrl || "");
+                      setImageUrls(updatedImageUrls);
+                      setQuestionData({
+                        ...questionData,
+                        resource: updatedImageUrls,
+                      });
                     }}
                     className="absolute -top-3 right-0 text-red-500 rounded-full p-1"
                     title="Remove Image"
@@ -538,9 +564,16 @@ const AddQuestion: React.FC = () => {
       }
 
       if (questionType === "MCQs") {
-        if (choices.some((c) => !c.text.trim())) {
-          alert("Please fill in all choices");
-          return;
+        if (choiceType === "text") {
+          if (choices.some((c) => !c.text.trim())) {
+            alert("Please fill in all options");
+            return;
+          }
+        } else if (choiceType === "image") {
+          if (choices.some((c) => !c.imageUrl)) {
+            alert("Please upload all images");
+            return;
+          }
         }
 
         if (selectedAnswer === null) {
@@ -554,12 +587,14 @@ const AddQuestion: React.FC = () => {
           subject: "Physics",
           topic: questionData.topic,
           question: questionData.question,
-          options: choices.map((c) => c.text),
-          answers: [choices.find((c) => c.id === selectedAnswer)?.text || ""],
+          options: choiceType === "text" 
+          ? choices.map((c) => c.text || "") // Ensure no undefined values
+          : choices.map((c) => c.imageUrl || ""), 
+          answers: [choiceType === "text" ? choices.find((c) => c.id === selectedAnswer)?.text || "" : choices.find((c) => c.id === selectedAnswer)?.imageUrl || ""],          
           resource: choices.map((c) => c.imageUrl || ""),
           used: true,
         };
-       
+
         const response = await fetch(
           "https://lean-learn-backend-ai.onrender.com/mcqquestion",
           {
@@ -853,40 +888,40 @@ const AddQuestion: React.FC = () => {
             </div>
 
             <div className="flex justify-end mt-6 sm:mb-10">
-        <button
-          onClick={handleSubmit}
-          className="bg-[#21B6F8] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-          disabled={isLoading} // Disable the submit button while the question is being saved
-        >
-          {isLoading ? (
-            <div className="flex items-center gap-2 justify-center">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+              <button
+                onClick={handleSubmit}
+                className="bg-[#21B6F8] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+                disabled={isLoading} // Disable the submit button while the question is being saved
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Saving...
+                {isLoading ? (
+                  <div className="flex items-center gap-2 justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Saving...
+                  </div>
+                ) : (
+                  "Save Question"
+                )}
+              </button>
             </div>
-          ) : (
-            "Save Question"
-          )}
-        </button>
-      </div>
           </div>
 
           <div className="w-full md:w-80 bg-black border-l border-gray-800 p-6 space-y-4">

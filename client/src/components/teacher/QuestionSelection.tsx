@@ -133,9 +133,17 @@ const PreviewModal: React.FC<{
             {'options' in question ? (
               <div className="space-y-2">
                 {question.options.map((option, index) => (
-                  <div key={index} className="p-3 bg-[#1A1A1A] rounded text-white">
-                    {option}
-                  </div>
+                   <div key={index} className="p-3 bg-[#1A1A1A] rounded text-white">
+                   {typeof option === "string" && option.startsWith("data:") ? (
+                     <img
+                       src={option}
+                       alt={`Option ${index + 1}`}
+                       className="w-[50px] h-[50px] rounded-lg"
+                     />
+                   ) : (
+                     <div>{option}</div>
+                   )}
+                 </div>
                 ))}
               </div>
             ) : 'choices' in question ? (

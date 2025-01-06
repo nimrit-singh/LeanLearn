@@ -482,14 +482,22 @@ const ClassQuestions: React.FC = () => {
 
               <div className="flex items-center gap-4">
                 <button
-                 onClick={() => {
-                  // Remove the item from localStorage
-                  console.log('brforr removal:', localStorage.getItem('imageUrl'));
-                  localStorage.removeItem('imageUrl');
-                  console.log('After removal:', localStorage.getItem('imageUrl')); // Debugging
-                  // Navigate to the specified route
-                  navigate(`/teacher/question-bank/class/${classId}/add-question`);
-                }}
+                  onClick={() => {
+                    // Remove the item from localStorage
+                    console.log(
+                      "brforr removal:",
+                      localStorage.getItem("imageUrl")
+                    );
+                    localStorage.removeItem("imageUrl");
+                    console.log(
+                      "After removal:",
+                      localStorage.getItem("imageUrl")
+                    ); // Debugging
+                    // Navigate to the specified route
+                    navigate(
+                      `/teacher/question-bank/class/${classId}/add-question`
+                    );
+                  }}
                   className=" px-4 py-2 "
                 >
                   <svg
@@ -625,17 +633,23 @@ const ClassQuestions: React.FC = () => {
                               : "bg-[#111111] text-white"
                           }`}
                         >
-                          {option}
+                          {!previewQuestion.resource && <div>{option}</div>}
                           {previewQuestion.resource &&
-                            previewQuestion.resource[idx] && (
-                              <img
-                                src={
-                                  previewQuestion.resource[idx] ||
-                                  "https://via.placeholder.com/150"
-                                }
-                                alt={`Option ${idx + 1}`}
-                                className="mt-2 w-[50px] h-[50px] rounded-lg"
-                              />
+                            previewQuestion.options[idx] && (
+                              <div>
+                                {previewQuestion.resource[idx] ? (
+                                  <img
+                                    src={
+                                      previewQuestion.resource[idx] ||
+                                      "https://via.placeholder.com/150"
+                                    }
+                                    alt={`Option ${idx + 1}`}
+                                    className="mt-2 w-[50px] h-[50px] rounded-lg"
+                                  />
+                                ) : (
+                                  <div>{option}</div>
+                                )}
+                              </div>
                             )}
                         </div>
                       ))}
@@ -653,17 +667,6 @@ const ClassQuestions: React.FC = () => {
                           }`}
                         >
                           {choice}
-                          {previewQuestion.resource &&
-                            previewQuestion.resource[idx] && (
-                              <img
-                                src={
-                                  previewQuestion.resource[idx] ||
-                                  "https://via.placeholder.com/150"
-                                }
-                                alt={`Option ${idx + 1}`}
-                                className="mt-2  w-[50px] h-[50px] rounded-lg"
-                              />
-                            )}
                         </div>
                       ))}
                     </div>
