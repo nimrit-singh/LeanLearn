@@ -51,6 +51,7 @@ const AddQuestion: React.FC = () => {
     "MCQs" | "Fill in the blank" | "True/False" | "Create Formula"
   >("MCQs");
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [choiceType, setChoiceType] = useState("text");
@@ -74,6 +75,10 @@ const AddQuestion: React.FC = () => {
         ];
   });
 
+  const handleSelectionChange = (e) => {
+    setChoiceType(e.target.value);
+    localStorage.removeItem("choices");
+  };
   useEffect(() => {
     localStorage.setItem("choices", JSON.stringify(choices));
   }, [choices]);
@@ -204,6 +209,7 @@ const AddQuestion: React.FC = () => {
       setChoices([...choices, { id: newId, text: "" }]);
     }
   };
+  console.log(imageUrls)
 
   const addQuantity = () => {
     setQuantities([...quantities, { name: "", symbol: "", isUnknown: false }]);
@@ -253,9 +259,18 @@ const AddQuestion: React.FC = () => {
       reader.readAsDataURL(file);
     }
   };
-
   const handleImageAnswerSelect = (choiceId: number) => {
-    setSelectedAnswer(choiceId);
+    if (questionType === "MCQs") {
+      // Toggle selection for MCQs
+      setSelectedAnswers(prev => 
+        prev.includes(choiceId) 
+          ? prev.filter(id => id !== choiceId)
+          : [...prev, choiceId]
+      );
+    } else {
+      // Single selection for other question types
+      setSelectedAnswer(choiceId);
+    }
   };
   const handleChoiceChange = (id: number, text: string) => {
     setChoices(
@@ -396,7 +411,8 @@ const AddQuestion: React.FC = () => {
           </span>
           <select
             value={choiceType}
-            onChange={(e) => setChoiceType(e.target.value)}
+            onChange={handleSelectionChange}
+
             className="bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
           >
             <option value="text">Text Based</option>
@@ -406,10 +422,10 @@ const AddQuestion: React.FC = () => {
             <div key={choice.id} className="flex  gap-3">
               <div className="flex items-center gap-3">
                 <input
-                  type="radio"
-                  name="answer"
-                  checked={selectedAnswer === choice.id}
-                  onChange={() => handleImageAnswerSelect(choice.id)}
+                 type="checkbox" // Changed from radio to checkbox
+                 name="answer"
+                 checked={selectedAnswers.includes(choice.id)}
+                 onChange={() => handleImageAnswerSelect(choice.id)}
                   className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
                 />
               </div>
@@ -567,19 +583,23 @@ const AddQuestion: React.FC = () => {
         if (choiceType === "text") {
           if (choices.some((c) => !c.text.trim())) {
             alert("Please fill in all options");
+            setIsLoading(false);
             return;
           }
         } else if (choiceType === "image") {
           if (choices.some((c) => !c.imageUrl)) {
             alert("Please upload all images");
+            setIsLoading(false);
             return;
           }
         }
-
-        if (selectedAnswer === null) {
-          alert("Please select an answer");
+        if (selectedAnswers.length === 0) {
+          alert("Please select at least one correct answer");
+          setIsLoading(false);
           return;
         }
+
+       
 
         const mcqData: MCQQuestionData = {
           id: String(Date.now()),
@@ -590,13 +610,16 @@ const AddQuestion: React.FC = () => {
           options: choiceType === "text" 
           ? choices.map((c) => c.text || "") // Ensure no undefined values
           : choices.map((c) => c.imageUrl || ""), 
-          answers: [choiceType === "text" ? choices.find((c) => c.id === selectedAnswer)?.text || "" : choices.find((c) => c.id === selectedAnswer)?.imageUrl || ""],          
+          answers: selectedAnswers.map(answerId => {
+            const choice = choices.find(c => c.id === answerId);
+            return choiceType === "text" ? choice?.text || "" : choice?.imageUrl || "";
+          }),
           resource: choices.map((c) => c.imageUrl || ""),
           used: true,
         };
 
         const response = await fetch(
-          "https://lean-learn-backend-ai.onrender.com/mcqquestion",
+          "https://lean-learn-backend.onrender.com/mcqquestion",
           {
             method: "POST",
             headers: {
@@ -633,12 +656,12 @@ const AddQuestion: React.FC = () => {
           question: questionData.question,
           choices: choices.map((c) => c.text),
           answers: [choices.find((c) => c.id === selectedAnswer)?.text || ""],
-          resource: choices.map((c) => c.imageUrl || ""),
+          resource:  [""],
           used: true,
         };
 
         const response = await fetch(
-          "https://lean-learn-backend-ai.onrender.com/fillquestion",
+          "https://lean-learn-backend.onrender.com/fillquestion",
           {
             method: "POST",
             headers: {
@@ -659,12 +682,12 @@ const AddQuestion: React.FC = () => {
           topic: questionData.topic,
           question: questionData.question,
           answer: selectedAnswer === 1 ? "True" : "False",
-          resource: imageUrls.length > 0 ? imageUrls[0] : "",
+          resource: "",
           used: true,
         };
 
         const response = await fetch(
-          "https://lean-learn-backend-ai.onrender.com/tfquestion",
+          "https://lean-learn-backend.onrender.com/tfquestion",
           {
             method: "POST",
             headers: {

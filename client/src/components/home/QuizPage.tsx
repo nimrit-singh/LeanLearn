@@ -20,12 +20,10 @@ const classes = [
 
 const topics = [
   { id: 1, name: "Gravitation", enabled: true },
-  { id: 2, name: "Topic 2", enabled: true },
-  { id: 3, name: "Topic 3", enabled: true },
-  { id: 4, name: "Topic 4", enabled: true },
-  { id: 5, name: "Topic 5", enabled: true },
+  { id: 2, name: "Motion", enabled: true },
+  { id: 3, name: "Force and Newton's laws of motion", enabled: true },
+  { id: 4, name: "Work, Energy and Power", enabled: true },
 ];
-
 const companionImages = {
   1: einstein,
   2: newton,
@@ -60,12 +58,15 @@ const QuizPage: React.FC = () => {
 
   const handleContinue = () => {
     if (selectedClass && selectedTopic) {
+      const selectedTopicName = topics.find((topic) => topic.id === Number(selectedTopic))?.name;
+      console.log(selectedTopicName);
       localStorage.removeItem("currentQuestionIndex");
       playCommonSound();
       navigate(`/topic/${selectedTopic}`, {
         state: {
           selectedCompanion,
           selectedClass,
+          selectedTopic: selectedTopicName, 
         },
       });
     }
