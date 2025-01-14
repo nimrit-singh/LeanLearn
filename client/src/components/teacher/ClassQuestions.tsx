@@ -114,6 +114,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             >
               Preview
             </button>
+
             <button
               onClick={handleDelete}
               disabled={isDeleting}
@@ -483,17 +484,8 @@ const ClassQuestions: React.FC = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => {
-                    // Remove the item from localStorage
-                    console.log(
-                      "brforr removal:",
-                      localStorage.getItem("imageUrl")
-                    );
                     localStorage.removeItem("imageUrl");
-                    console.log(
-                      "After removal:",
-                      localStorage.getItem("imageUrl")
-                    ); // Debugging
-                    // Navigate to the specified route
+
                     navigate(
                       `/teacher/question-bank/class/${classId}/add-question`
                     );
@@ -748,7 +740,6 @@ const ClassQuestions: React.FC = () => {
                     </button>
                     <span className="text-[#8C8C8C]">Provide Feedback</span>
                   </div>
-
                   <button
                     onClick={() => toggleQuestion(previewQuestion.id)}
                     className={`px-4 py-2 rounded ${
