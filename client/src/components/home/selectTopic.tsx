@@ -86,6 +86,7 @@ const SelectedTopicPage: React.FC = () => {
       return;
     }
 
+
     const fetchQuestions = async () => {
       try {
         setLoading(true);
@@ -95,6 +96,7 @@ const SelectedTopicPage: React.FC = () => {
           tfQuestionApi.getAll(),
           formulaQuestionApi.getAll(),
         ]);
+ const transformedSelectedTopic = selectedTopic.replace(/\s+/g, '').toLowerCase();
 
         const combinedQuestions = [
           ...mcqData,
@@ -104,7 +106,7 @@ const SelectedTopicPage: React.FC = () => {
         ].filter((q) => {
           if (!q || !q.class_ || !q.topic) return false;
           const classMatch = String(q.class_).trim() === String(selectedClass).trim();
-          const topicMatch = String(q.topic).toLowerCase().trim() === selectedTopic.toLowerCase().trim();
+          const topicMatch = String(q.topic).toLowerCase().trim() === transformedSelectedTopic;
           return classMatch && topicMatch;
         });
 
