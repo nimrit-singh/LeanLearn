@@ -11,17 +11,19 @@ import selectsound from '../../assets/sound/sound1.aac'
 import ProfileIcon from "../auth/ProfilePage";
 
 const classes = [
-  { value: "8", label: "Class 8" },
+  // { value: "8", label: "Class 8" },
   { value: "9", label: "Class 9" },
-  { value: "10", label: "Class 10" },
-  { value: "11", label: "Class 11" },
-  { value: "12", label: "Class 12" },
+  // { value: "10", label: "Class 10" },
+  // { value: "11", label: "Class 11" },
+  // { value: "12", label: "Class 12" },
 ];
 
 const topics = [
-  { id: 1, name: "Gravitation", enabled: true },
-  { id: 2, name: "Motion", enabled: true },
-  { id: 3, name: "Force and Newton's laws of motion", enabled: true },
+  { id: 1, name: "Motion", enabled: true },
+  { id: 2, name: "Force and Newton's laws of motion", enabled: true },  
+  { id: 3, name: "Gravitation", enabled: true },
+
+  
   { id: 4, name: "Work, Energy and Power", enabled: true },
 ];
 const companionImages = {

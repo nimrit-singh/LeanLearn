@@ -119,7 +119,10 @@ const AddQuestion: React.FC = () => {
   const topics = [
     { value: "gravitation", label: "Gravitation" },
     { value: "motion", label: "Motion" },
-    { value: "forceandnewton'slawsofmotion", label: "Force and Newton's laws of motion" },
+    {
+      value: "forceandnewton'slawsofmotion",
+      label: "Force and Newton's laws of motion",
+    },
     { value: "Workenergyandpower", label: "Work, Energy and Power" },
     // { value: "topic5", label: "Topic 5" },
   ];
@@ -209,7 +212,7 @@ const AddQuestion: React.FC = () => {
       setChoices([...choices, { id: newId, text: "" }]);
     }
   };
-  console.log(imageUrls)
+  console.log(imageUrls);
 
   const addQuantity = () => {
     setQuantities([...quantities, { name: "", symbol: "", isUnknown: false }]);
@@ -245,11 +248,11 @@ const AddQuestion: React.FC = () => {
             : choice
         );
         setChoices(updatedChoices);
-  
+
         // Update the imageUrls state
         const updatedImageUrls = updatedChoices.map((c) => c.imageUrl || "");
         setImageUrls(updatedImageUrls);
-  
+
         // Update the question data with the new image URLs
         setQuestionData({
           ...questionData,
@@ -262,9 +265,9 @@ const AddQuestion: React.FC = () => {
   const handleImageAnswerSelect = (choiceId: number) => {
     if (questionType === "MCQs") {
       // Toggle selection for MCQs
-      setSelectedAnswers(prev => 
-        prev.includes(choiceId) 
-          ? prev.filter(id => id !== choiceId)
+      setSelectedAnswers((prev) =>
+        prev.includes(choiceId)
+          ? prev.filter((id) => id !== choiceId)
           : [...prev, choiceId]
       );
     } else {
@@ -412,7 +415,6 @@ const AddQuestion: React.FC = () => {
           <select
             value={choiceType}
             onChange={handleSelectionChange}
-
             className="bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
           >
             <option value="text">Text Based</option>
@@ -422,10 +424,10 @@ const AddQuestion: React.FC = () => {
             <div key={choice.id} className="flex  gap-3">
               <div className="flex items-center gap-3">
                 <input
-                 type="checkbox" // Changed from radio to checkbox
-                 name="answer"
-                 checked={selectedAnswers.includes(choice.id)}
-                 onChange={() => handleImageAnswerSelect(choice.id)}
+                  type="checkbox" // Changed from radio to checkbox
+                  name="answer"
+                  checked={selectedAnswers.includes(choice.id)}
+                  onChange={() => handleImageAnswerSelect(choice.id)}
                   className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
                 />
               </div>
@@ -469,7 +471,9 @@ const AddQuestion: React.FC = () => {
                         c.id === choice.id ? { ...c, imageUrl: "" } : c
                       );
                       setChoices(updatedChoices);
-                      const updatedImageUrls = updatedChoices.map((c) => c.imageUrl || "");
+                      const updatedImageUrls = updatedChoices.map(
+                        (c) => c.imageUrl || ""
+                      );
                       setImageUrls(updatedImageUrls);
                       setQuestionData({
                         ...questionData,
@@ -599,27 +603,28 @@ const AddQuestion: React.FC = () => {
           return;
         }
 
-       
-
         const mcqData: MCQQuestionData = {
           id: String(Date.now()),
           class_: questionData.class_,
           subject: "Physics",
           topic: questionData.topic,
           question: questionData.question,
-          options: choiceType === "text" 
-          ? choices.map((c) => c.text || "") // Ensure no undefined values
-          : choices.map((c) => c.imageUrl || ""), 
-          answers: selectedAnswers.map(answerId => {
-            const choice = choices.find(c => c.id === answerId);
-            return choiceType === "text" ? choice?.text || "" : choice?.imageUrl || "";
+          options:
+            choiceType === "text"
+              ? choices.map((c) => c.text || "") // Ensure no undefined values
+              : choices.map((c) => c.imageUrl || ""),
+          answers: selectedAnswers.map((answerId) => {
+            const choice = choices.find((c) => c.id === answerId);
+            return choiceType === "text"
+              ? choice?.text || ""
+              : choice?.imageUrl || "";
           }),
           resource: choices.map((c) => c.imageUrl || ""),
           used: true,
         };
 
         const response = await fetch(
-          "https://lean-learn-backend.onrender.com/mcqquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/mcqquestion",
           {
             method: "POST",
             headers: {
@@ -635,16 +640,19 @@ const AddQuestion: React.FC = () => {
       } else if (questionType === "Fill in the blank") {
         if (!questionData.question.includes("_")) {
           alert("Please add at least one blank in your question");
+          setIsLoading(false);
           return;
         }
 
         if (choices.some((c) => !c.text.trim())) {
           alert("Please fill in all options");
+          setIsLoading(false);
           return;
         }
 
         if (selectedAnswer === null) {
           alert("Please select the correct answer");
+          setIsLoading(false);
           return;
         }
 
@@ -656,12 +664,11 @@ const AddQuestion: React.FC = () => {
           question: questionData.question,
           choices: choices.map((c) => c.text),
           answers: [choices.find((c) => c.id === selectedAnswer)?.text || ""],
-          resource:  [""],
+          resource: [""],
           used: true,
         };
-
         const response = await fetch(
-          "https://lean-learn-backend.onrender.com/fillquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/fillquestion",
           {
             method: "POST",
             headers: {
@@ -687,7 +694,7 @@ const AddQuestion: React.FC = () => {
         };
 
         const response = await fetch(
-          "https://lean-learn-backend.onrender.com/tfquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/tfquestion",
           {
             method: "POST",
             headers: {

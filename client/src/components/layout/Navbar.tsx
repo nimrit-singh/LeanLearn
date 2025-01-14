@@ -124,6 +124,12 @@ const Navbar: React.FC = () => {
         )}
 
         <div className="hidden sm:flex items-center gap-4">
+        <button
+            onClick={handleStudentSignup}
+            className="transform hover:scale-95 transition-transform duration-200"
+          >
+            <StudentIcon />
+          </button>
           <button
             onClick={handleTeacherSignup}
             className="transform hover:scale-95 transition-transform duration-200"
@@ -131,12 +137,7 @@ const Navbar: React.FC = () => {
             <TeacherIcon />
           </button>
 
-          <button
-            onClick={handleStudentSignup}
-            className="transform hover:scale-95 transition-transform duration-200"
-          >
-            <StudentIcon />
-          </button>
+      
         </div>
       </nav>
     </header>
