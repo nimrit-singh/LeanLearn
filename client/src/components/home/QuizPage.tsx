@@ -61,7 +61,7 @@ const QuizPage: React.FC = () => {
   const handleContinue = () => {
     if (selectedClass && selectedTopic) {
       const selectedTopicName = topics.find((topic) => topic.id === Number(selectedTopic))?.name;
-      console.log(selectedTopicName);
+     
       localStorage.removeItem("currentQuestionIndex");
       playCommonSound();
       navigate(`/topic/${selectedTopic}`, {
