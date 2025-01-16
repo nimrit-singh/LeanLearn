@@ -127,6 +127,10 @@ const AddQuestion: React.FC = () => {
     // { value: "topic5", label: "Topic 5" },
   ];
 
+  useEffect(() => {
+    localStorage.removeItem("choices");
+  }, [questionType]);
+  
   const navigationItems = [
     {
       id: "home",
@@ -504,71 +508,77 @@ const AddQuestion: React.FC = () => {
     if (questionType === "Fill in the blank") {
       return (
         <div className="space-y-4">
-          <div className="flex items-start gap-2">
-            <span className="text-white">1.</span>
-            <div className="flex-1 space-y-4">
-              <div className="relative">
-                <textarea
-                  placeholder="Start your question here"
-                  value={questionData.question}
-                  onChange={(e) =>
-                    setQuestionData({
-                      ...questionData,
-                      question: e.target.value,
-                    })
-                  }
-                  className="w-full bg-transparent text-white border border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:border-[#21B6F8] min-h-[100px] resize-none"
-                />
-                <button
-                  onClick={() => {
-                    const textarea = document.querySelector("textarea");
-                    const cursorPosition = textarea?.selectionStart || 0;
-                    const currentText = questionData.question;
-                    const newText = `${currentText.slice(
-                      0,
-                      cursorPosition
-                    )} _____ ${currentText.slice(cursorPosition)}`;
-                    setQuestionData({ ...questionData, question: newText });
+      <div className="flex items-start gap-2">
+        <span className="text-white">1.</span>
+        <div className="flex-1 space-y-4">
+          <div className="relative">
+            <textarea
+              placeholder="Start your question here"
+              value={questionData.question}
+              onChange={(e) =>
+                setQuestionData({
+                  ...questionData,
+                  question: e.target.value,
+                })
+              }
+              className="w-full bg-transparent text-white border border-gray-700 rounded-md px-4 py-2 focus:outline-none focus:border-[#21B6F8] min-h-[100px] resize-none"
+            />
+            <button
+              onClick={() => {
+                const textarea = document.querySelector("textarea");
+                const cursorPosition = textarea?.selectionStart || 0;
+                const currentText = questionData.question;
+                const newText = `${currentText.slice(
+                  0,
+                  cursorPosition
+                )} _____ ${currentText.slice(cursorPosition)}`;
+                setQuestionData({ ...questionData, question: newText });
+              }}
+              className="absolute bottom-2 right-2 text-[#21B6F8] text-sm hover:underline"
+              type="button"
+            >
+              Add Blank
+            </button>
+          </div>
+          <div className="space-y-3">
+            {choices.map((choice) => (
+              <div key={choice.id} className="flex items-center gap-3">
+                <input
+                  type="checkbox" // Changed from radio to checkbox
+                  name="answer"
+                  checked={selectedAnswers.includes(choice.id)}
+                  onChange={() => {
+                    setSelectedAnswers((prev) =>
+                      prev.includes(choice.id)
+                        ? prev.filter((id) => id !== choice.id)
+                        : [...prev, choice.id]
+                    );
                   }}
-                  className="absolute bottom-2 right-2 text-[#21B6F8] text-sm hover:underline"
-                  type="button"
-                >
-                  Add Blank
-                </button>
+                  className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
+                />
+                <input
+                  type="text"
+                  value={choice.text}
+                  onChange={(e) =>
+                    handleChoiceChange(choice.id, e.target.value)
+                  }
+                  placeholder="Your Option here"
+                  className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+                />
               </div>
-              <div className="space-y-3">
-                {choices.map((choice) => (
-                  <div key={choice.id} className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="answer"
-                      checked={selectedAnswer === choice.id}
-                      onChange={() => setSelectedAnswer(choice.id)}
-                      className="w-4 h-4 text-[#21B6F8] bg-transparent border-gray-600 focus:ring-[#21B6F8]"
-                    />
-                    <input
-                      type="text"
-                      value={choice.text}
-                      onChange={(e) =>
-                        handleChoiceChange(choice.id, e.target.value)
-                      }
-                      placeholder="Your Option here"
-                      className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
-                    />
-                  </div>
-                ))}
-                {choices.length < 4 && (
-                  <button
-                    onClick={addChoice}
-                    className="text-[#21B6F8] text-sm hover:underline"
-                  >
-                    Add Option
-                  </button>
-                )}
-              </div>
-            </div>
+            ))}
+            {choices.length < 4 && (
+              <button
+                onClick={addChoice}
+                className="text-[#21B6F8] text-sm hover:underline"
+              >
+                Add Option
+              </button>
+            )}
           </div>
         </div>
+      </div>
+    </div>
       );
     }
 
@@ -650,11 +660,12 @@ const AddQuestion: React.FC = () => {
           return;
         }
 
-        if (selectedAnswer === null) {
-          alert("Please select the correct answer");
+        if (selectedAnswers.length === 0) {
+          alert("Please select at least one correct answer");
           setIsLoading(false);
           return;
         }
+      
 
         const fillBlankData: FillBlankQuestionData = {
           id: String(Date.now()),
@@ -663,7 +674,10 @@ const AddQuestion: React.FC = () => {
           topic: questionData.topic,
           question: questionData.question,
           choices: choices.map((c) => c.text),
-          answers: [choices.find((c) => c.id === selectedAnswer)?.text || ""],
+          answers: selectedAnswers.map((answerId) => {
+            const choice = choices.find((c) => c.id === answerId);
+            return choice?.text || "";
+          }),
           resource: [""],
           used: true,
         };

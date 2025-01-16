@@ -484,7 +484,8 @@ const ClassQuestions: React.FC = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => {
-                    localStorage.removeItem("imageUrl");
+                    localStorage.removeItem("choices");
+
 
                     navigate(
                       `/teacher/question-bank/class/${classId}/add-question`

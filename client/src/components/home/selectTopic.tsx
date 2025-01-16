@@ -24,20 +24,23 @@ import {
 } from "../../lib/api/questions";
 
 const companionImages = { 1: einstein, 2: newton, 3: galileo, 4: raman };
-const operators = ['+', '-', '*', '/', '=', '^'];
+const operators = ["+", "-", "*", "/", "=", "^"];
 
 type QuestionType = MCQQuestion | FillQuestion | TFQuestion | FormulaQuestion;
 
 const SelectedTopicPage: React.FC = () => {
-  const [formulaSequence, setFormulaSequence] = useState<Array<{
-    type: 'word' | 'operator';
-    value: string;
-  }>>([]);
-  
+  const [formulaSequence, setFormulaSequence] = useState<
+    Array<{
+      type: "word" | "operator";
+      value: string;
+    }>
+  >([]);
+
   const { topicId } = useParams<{ topicId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { selectedCompanion, selectedClass, selectedTopic } = location.state || {};
+  const { selectedCompanion, selectedClass, selectedTopic } =
+    location.state || {};
 
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
@@ -64,7 +67,9 @@ const SelectedTopicPage: React.FC = () => {
     return option !== "d" && option.trim().length > 0;
   };
 
-  const isFormulaQuestion = (question: QuestionType): question is FormulaQuestion => {
+  const isFormulaQuestion = (
+    question: QuestionType
+  ): question is FormulaQuestion => {
     return "formula" in question;
   };
 
@@ -77,7 +82,11 @@ const SelectedTopicPage: React.FC = () => {
   };
 
   const isTFQuestion = (question: QuestionType): question is TFQuestion => {
-    return !("options" in question) && !("choices" in question) && "answer" in question;
+    return (
+      !("options" in question) &&
+      !("choices" in question) &&
+      "answer" in question
+    );
   };
 
   useEffect(() => {
@@ -85,7 +94,6 @@ const SelectedTopicPage: React.FC = () => {
       navigate("/");
       return;
     }
-
 
     const fetchQuestions = async () => {
       try {
@@ -96,7 +104,11 @@ const SelectedTopicPage: React.FC = () => {
           tfQuestionApi.getAll(),
           formulaQuestionApi.getAll(),
         ]);
- const transformedSelectedTopic = selectedTopic.replace(/\s+/g, '').toLowerCase();
+        const transformedSelectedTopic = selectedTopic
+        .replace(/\s+/g, "")
+        .replace(/,/g, "") 
+        .toLowerCase();    
+          console.log(transformedSelectedTopic)
 
         const combinedQuestions = [
           ...mcqData,
@@ -105,16 +117,22 @@ const SelectedTopicPage: React.FC = () => {
           ...formulaData,
         ].filter((q) => {
           if (!q || !q.class_ || !q.topic) return false;
-          const classMatch = String(q.class_).trim() === String(selectedClass).trim();
-          const topicMatch = String(q.topic).toLowerCase().trim() === transformedSelectedTopic;
+          const classMatch =
+            String(q.class_).trim() === String(selectedClass).trim();
+          const topicMatch =
+            String(q.topic).toLowerCase().trim() === transformedSelectedTopic;
           return classMatch && topicMatch;
         });
 
         if (combinedQuestions.length > 0) {
-          const shuffledQuestions = combinedQuestions.sort(() => Math.random() - 0.5);
+          const shuffledQuestions = combinedQuestions.sort(
+            () => Math.random() - 0.5
+          );
           setQuestions(shuffledQuestions);
         } else {
-          setError(`No questions available for Class ${selectedClass} topic ${topicId}`);
+          setError(
+            `No questions available for Class ${selectedClass} topic ${topicId}`
+          );
         }
       } catch (err) {
         console.error("Error in fetchQuestions:", err);
@@ -128,19 +146,22 @@ const SelectedTopicPage: React.FC = () => {
   }, [topicId, selectedClass, navigate]);
 
   useEffect(() => {
-    localStorage.setItem("currentQuestionIndex", currentQuestionIndex.toString());
+    localStorage.setItem(
+      "currentQuestionIndex",
+      currentQuestionIndex.toString()
+    );
   }, [currentQuestionIndex]);
 
   useEffect(() => {
     setCompanionMessage("");
   }, [currentQuestionIndex]);
 
-  const handleFormulaSelect = (type: 'word' | 'operator', value: string) => {
-    setFormulaSequence(prev => [...prev, { type, value }]);
+  const handleFormulaSelect = (type: "word" | "operator", value: string) => {
+    setFormulaSequence((prev) => [...prev, { type, value }]);
   };
 
   const handleFormulaUndo = () => {
-    setFormulaSequence(prev => prev.slice(0, -1));
+    setFormulaSequence((prev) => prev.slice(0, -1));
   };
 
   const handleFormulaClear = () => {
@@ -155,14 +176,18 @@ const SelectedTopicPage: React.FC = () => {
       }
       if (prev.includes(answer)) {
         return prev.filter((a) => a !== answer);
-      } else if (prev.length < 2) {
+      } else if (prev.length < 3) {
         return [...prev, answer];
       }
       return prev;
     });
   };
 
-  const formatExplanation = (explanation: string, isCorrect: boolean, correctAnswer: string): string => {
+  const formatExplanation = (
+    explanation: string,
+    isCorrect: boolean,
+    correctAnswer: string
+  ): string => {
     let cleanText = explanation.replace(/\n/g, " ").replace(/\s+/g, " ").trim();
     cleanText = cleanText.replace(/\d+\.\s*/g, "");
     cleanText = cleanText
@@ -180,7 +205,9 @@ const SelectedTopicPage: React.FC = () => {
     if (isCorrect) {
       return `✓ ${points.join(".\n\n")}`;
     } else {
-      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(".\n\n")}`;
+      return `✗ The correct answer is ${correctAnswer}.\n\n${points.join(
+        ".\n\n"
+      )}`;
     }
   };
 
@@ -190,12 +217,16 @@ const SelectedTopicPage: React.FC = () => {
     let submittedAnswer = "";
 
     if (isFormulaQuestion(currentQuestion)) {
-      submittedAnswer = formulaSequence.map(item => item.value).join(' ');
+      submittedAnswer = formulaSequence.map((item) => item.value).join(" ");
       correct = submittedAnswer === currentQuestion.formula;
-    } else if (isMCQQuestion(currentQuestion) || isFillQuestion(currentQuestion)) {
+    } else if (
+      isMCQQuestion(currentQuestion) ||
+      isFillQuestion(currentQuestion)
+    ) {
       if (selectedAnswers.length === 0) return;
       const correctAnswers = currentQuestion.answers;
-      correct = selectedAnswers.length === correctAnswers.length &&
+      correct =
+        selectedAnswers.length === correctAnswers.length &&
         selectedAnswers.every((answer) => correctAnswers.includes(answer)) &&
         correctAnswers.every((answer) => selectedAnswers.includes(answer));
       submittedAnswer = selectedAnswers.join(", ");
@@ -218,7 +249,10 @@ const SelectedTopicPage: React.FC = () => {
     setLoadingCompanionMessage(true);
     setAttemptedQuestionsCount((prevCount) => prevCount + 1);
     const isBase64Image = (answer: string): boolean => {
-      return answer.startsWith('data:image/png;base64') || answer.startsWith('data:image/jpeg;base64');
+      return (
+        answer.startsWith("data:image/png;base64") ||
+        answer.startsWith("data:image/jpeg;base64")
+      );
     };
     try {
       const requestData = {
@@ -255,14 +289,14 @@ const SelectedTopicPage: React.FC = () => {
                 ? currentQuestion.formula
                 : isTFQuestion(currentQuestion)
                 ? currentQuestion.answer
-                : isMCQQuestion(currentQuestion) || isFillQuestion(currentQuestion)
-                ? isBase64Image(currentQuestion.answers.join(", ")) 
-                  ? "[Image]" 
+                : isMCQQuestion(currentQuestion) ||
+                  isFillQuestion(currentQuestion)
+                ? isBase64Image(currentQuestion.answers.join(", "))
+                  ? "[Image]"
                   : currentQuestion.answers.join(", ")
                 : currentQuestion.answers.join(", ")
             }`
       );
-      
     } finally {
       setLoadingCompanionMessage(false);
     }
@@ -353,7 +387,7 @@ const SelectedTopicPage: React.FC = () => {
               {question.options.map((word, index) => (
                 <button
                   key={index}
-                  onClick={() => handleFormulaSelect('word', word)}
+                  onClick={() => handleFormulaSelect("word", word)}
                   className="px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-[#00A3FF] transition-colors"
                 >
                   {word}
@@ -368,7 +402,7 @@ const SelectedTopicPage: React.FC = () => {
               {operators.map((op) => (
                 <button
                   key={op}
-                  onClick={() => handleFormulaSelect('operator', op)}
+                  onClick={() => handleFormulaSelect("operator", op)}
                   className="px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-[#00A3FF] transition-colors"
                 >
                   {op}
@@ -624,45 +658,67 @@ const SelectedTopicPage: React.FC = () => {
             <div className="flex justify-between items-center">
               <div>
                 {showFeedback && (
-            <div className="flex items-center gap-2">
-            <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-              {isCorrect ? <FaCheckCircle size={36} /> : <FaTimesCircle size={36} />}
-            </span>
-            <span className={isCorrect ? "text-green-500" : "text-red-500"}>
-              {isCorrect
-                ? "Correct!"
-                : 
-                <>
-                    Incorrect. The correct answer was:{" "}
-                    {isFormulaQuestion(currentQuestion)
-  ? currentQuestion.formula
-  : isTFQuestion(currentQuestion)
-  ? isImageUrl(currentQuestion.answer)
-    ? <div className="flex gap-2"> {/* Flex container for images */}
-        <img
-          src={currentQuestion.answer}
-          alt="Correct Answer"
-          className="w-20 h-20 rounded-lg"
-        />
-      </div>
-    : currentQuestion.answer
-  : <div className="flex gap-2"> {/* Flex container for multiple answers */}
-      {currentQuestion.answers.map((answer, index) => (
-        <span key={index}>
-          {isImageUrl(answer)
-            ? <img
-                src={answer}
-                alt="Correct Answer"
-                className="w-12 h-12 md:h-20 md:w-20 rounded-lg"
-              />
-            : answer}
-          {index < currentQuestion.answers.length - 1 && !isImageUrl(answer) ? ", " : ""}
-        </span>
-      ))}
-    </div>}
-                  </>}
-            </span>
-          </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={isCorrect ? "text-green-500" : "text-red-500"}
+                    >
+                      {isCorrect ? (
+                        <FaCheckCircle size={36} />
+                      ) : (
+                        <FaTimesCircle size={36} />
+                      )}
+                    </span>
+                    <span
+                      className={isCorrect ? "text-green-500" : "text-red-500"}
+                    >
+                      {isCorrect ? (
+                        "Correct!"
+                      ) : (
+                        <>
+                          Incorrect. The correct answer was:{" "}
+                          {isFormulaQuestion(currentQuestion) ? (
+                            currentQuestion.formula
+                          ) : isTFQuestion(currentQuestion) ? (
+                            isImageUrl(currentQuestion.answer) ? (
+                              <div className="flex gap-2">
+                                {" "}
+                                {/* Flex container for images */}
+                                <img
+                                  src={currentQuestion.answer}
+                                  alt="Correct Answer"
+                                  className="w-20 h-20 rounded-lg"
+                                />
+                              </div>
+                            ) : (
+                              currentQuestion.answer
+                            )
+                          ) : (
+                            <div className="flex gap-2">
+                              {" "}
+                              {/* Flex container for multiple answers */}
+                              {currentQuestion.answers.map((answer, index) => (
+                                <span key={index}>
+                                  {isImageUrl(answer) ? (
+                                    <img
+                                      src={answer}
+                                      alt="Correct Answer"
+                                      className="w-12 h-12 md:h-20 md:w-20 rounded-lg"
+                                    />
+                                  ) : (
+                                    answer
+                                  )}
+                                  {index < currentQuestion.answers.length - 1 &&
+                                  !isImageUrl(answer)
+                                    ? ", "
+                                    : ""}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </span>
+                  </div>
                 )}
               </div>
 
