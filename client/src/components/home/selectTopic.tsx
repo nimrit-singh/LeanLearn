@@ -580,21 +580,23 @@ const SelectedTopicPage: React.FC = () => {
         <div
           className={`flex ${
             companionMessage && "flex-row-reverse"
-          } lg:flex-col min-h-0 md:flex-grow overflow-hidden md:justify-between`}
+          } lg:flex-col min-h-0 md:flex-grow overflow-hidden  md:justify-between`}
         >
           {companionMessage ? (
             <>
-              <div
-                className={`bg-[#141414] border-2 ${borderColor} rounded-lg p-2 lg:p-6 mb-4 overflow-y-auto max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
+              <div 
+                className={`border-2 ${borderColor} relative rounded-lg p-2 lg:p-6 mb-4 max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
                 style={
                   {
                     "--scrollbar-width": "1px",
                     "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
                     "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
+                    overflow: 'visible'
                   } as React.CSSProperties
                 }
               >
-                <div className="space-y-4">
+               <div className={`absolute block md:hidden bottom-0 -left-[12px] top-[117px] w-6 h-6   ${borderColor}  bg-[#101113] border-l-2 border-b-2  rotate-45 transform translate-y-3`}></div>
+                <div className="space-y-4 re">
                   {companionMessage.split(".").map((sentence, index) => {
                     const trimmedSentence = sentence.trim();
                     if (trimmedSentence) {
@@ -610,6 +612,7 @@ const SelectedTopicPage: React.FC = () => {
                     return null;
                   })}
                 </div>
+             
               </div>
 
               {selectedCompanion && (

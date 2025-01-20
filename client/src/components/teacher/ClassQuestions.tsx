@@ -486,7 +486,6 @@ const ClassQuestions: React.FC = () => {
                   onClick={() => {
                     localStorage.removeItem("choices");
 
-
                     navigate(
                       `/teacher/question-bank/class/${classId}/add-question`
                     );
