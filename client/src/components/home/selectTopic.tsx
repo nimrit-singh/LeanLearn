@@ -573,7 +573,7 @@ const SelectedTopicPage: React.FC = () => {
 
         {loadingCompanionMessage && (
           <p className="text-gray-300 leading-relaxed text-sm tracking-wide loading text-center mt-11">
-            Loading Explaination...
+            Loading Explanation...
           </p>
         )}
 
