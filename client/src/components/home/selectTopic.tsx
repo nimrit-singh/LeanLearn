@@ -591,11 +591,10 @@ const SelectedTopicPage: React.FC = () => {
                     "--scrollbar-width": "1px",
                     "--scrollbar-thumb-color": "rgba(255, 255, 255, 0.2)",
                     "--scrollbar-track-color": "rgba(0, 0, 0, 0.2)",
-                    overflow: 'visible'
                   } as React.CSSProperties
                 }
               >
-               <div className={`absolute block md:hidden bottom-0 -left-[12px] top-[117px] w-6 h-6   ${borderColor}  bg-[#101113] border-l-2 border-b-2  rotate-45 transform translate-y-3`}></div>
+               {/* <div className={`absolute block md:hidden bottom-0 -left-[12px] top-[117px] w-6 h-6   ${borderColor}  bg-[#101113] border-l-2 border-b-2  rotate-45 transform translate-y-3`}></div> */}
                 <div className="space-y-4 re">
                   {companionMessage.split(".").map((sentence, index) => {
                     const trimmedSentence = sentence.trim();
