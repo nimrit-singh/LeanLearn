@@ -573,7 +573,7 @@ const SelectedTopicPage: React.FC = () => {
 
         {loadingCompanionMessage && (
           <p className="text-gray-300 leading-relaxed text-sm tracking-wide loading text-center mt-11">
-            Loading Solution...
+            Loading Explaination...
           </p>
         )}
 
@@ -585,7 +585,7 @@ const SelectedTopicPage: React.FC = () => {
           {companionMessage ? (
             <>
               <div 
-                className={`border-2 ${borderColor} relative rounded-lg p-2 lg:p-6 mb-4 max-h-[20vh] lg:max-h-[50vh] custom-scrollbar`}
+                className={`border-2 ${borderColor} relative rounded-lg p-2 lg:p-6 mb-4 max-h-[20vh] lg:max-h-[50vh] custom-scrollbar overflow-y-auto`}
                 style={
                   {
                     "--scrollbar-width": "1px",
