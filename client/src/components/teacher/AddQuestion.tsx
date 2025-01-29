@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import leanLearnLogo from "../../assets/images/Logo.png";
 import { formulaQuestionApi } from "../../lib/api/questions";
+import SideBar from "../ui/SideBar";
+import { BlockMath, InlineMath } from "react-katex";
+import "katex/dist/katex.min.css";
+import { convertToLatex } from "./LatexConverter";
 
 interface Choice {
   id: number;
@@ -46,7 +49,6 @@ interface TrueFalseQuestionData {
 
 const AddQuestion: React.FC = () => {
   const navigate = useNavigate();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [questionType, setQuestionType] = useState<
     "MCQs" | "Fill in the blank" | "True/False" | "Create Formula"
   >("MCQs");
@@ -67,6 +69,7 @@ const AddQuestion: React.FC = () => {
   });
   const [choices, setChoices] = useState<Choice[]>(() => {
     const savedChoices = localStorage.getItem("choices");
+    console.log(savedChoices)
     return savedChoices
       ? JSON.parse(savedChoices)
       : [
@@ -423,6 +426,7 @@ const AddQuestion: React.FC = () => {
           >
             <option value="text">Text Based</option>
             <option value="image">Image Based</option>
+            <option value="formulae">Formulae Based</option>
           </select>
           {choices.map((choice) => (
             <div key={choice.id} className="flex  gap-3">
@@ -445,7 +449,7 @@ const AddQuestion: React.FC = () => {
                   placeholder="Your Choice here"
                   className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
                 />
-              ) : (
+              ) :choiceType === "image"? (
                 <input
                   type="file"
                   accept="image/*"
@@ -453,6 +457,15 @@ const AddQuestion: React.FC = () => {
                   style={{ display: "none" }}
                   id={`image-upload-${choice.id}`}
                 />
+              ): (
+                <textarea
+                className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+
+                rows={2}
+                placeholder="Enter an equation, e.g., lim x->0 x^2, |v|, det(A), a x b, [1,2;3,4]"
+                value={choice.text}
+                onChange={(e) => handleChoiceChange(choice.id,e.target.value)}
+              />
               )}
               {choiceType === "image" && (
                 <label
@@ -490,9 +503,15 @@ const AddQuestion: React.FC = () => {
                     &times;
                   </button>
                 </div>
-              )}
+              )}{choiceType==="formulae" && (
+                <div className="mt-4 p-4 border rounded-md bg-gray-100">
+                   <InlineMath>{convertToLatex(choice.text)}</InlineMath>
+                </div>)
+
+              }
             </div>
           ))}
+          {/* {choiceType} */}
           {choices.length < 4 && (
             <button
               onClick={addChoice}
@@ -620,19 +639,19 @@ const AddQuestion: React.FC = () => {
           topic: questionData.topic,
           question: questionData.question,
           options:
-            choiceType === "text"
+            choiceType === "text" || choiceType === "formulae"
               ? choices.map((c) => c.text || "") // Ensure no undefined values
               : choices.map((c) => c.imageUrl || ""),
           answers: selectedAnswers.map((answerId) => {
             const choice = choices.find((c) => c.id === answerId);
-            return choiceType === "text"
+            return choiceType === "text" || choiceType === "formulae"
               ? choice?.text || ""
               : choice?.imageUrl || "";
           }),
           resource: choices.map((c) => c.imageUrl || ""),
           used: true,
         };
-
+        console.log(mcqData);
         const response = await fetch(
           "https://lean-learn-backend-ai-do7a.onrender.com/mcqquestion",
           {
@@ -643,7 +662,7 @@ const AddQuestion: React.FC = () => {
             body: JSON.stringify(mcqData),
           }
         );
-
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -803,110 +822,8 @@ const AddQuestion: React.FC = () => {
 
   return (
     <>
-      <div className="md:hidden flex items-center absolute p-4 pl-8 z-20">
-        {!isSidebarOpen && ( // Only show the icon when the sidebar is closed
-          <button
-            onClick={() => setIsSidebarOpen(true)} // Open sidebar on click
-            className="text-white hover:text-gray-300 focus:outline-none"
-          >
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        )}
-      </div>
       <div className="flex min-h-screen bg-black">
-        <div
-          className={`${
-            isSidebarOpen ? "w-64" : "w-20"
-          } bg-[#111111] transition-all duration-300 sidebar-main ease-in-out ${
-            isSidebarOpen ? "block" : "hidden md:block"
-          } `}
-        >
-          <div
-            className={`p-4 flex side-bar-header ${
-              isSidebarOpen ? "gap-2" : "justify-center"
-            } items-center`}
-          >
-            <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-white hover:text-gray-300 focus:outline-none hidden md:block"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
-            {isSidebarOpen && (
-              <img
-                src={leanLearnLogo}
-                alt="LeanLearn"
-                className="h-8 pl-4 md:pl-12"
-                onClick={() => navigate("/")}
-              />
-            )}
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="text-white hover:text-gray-300 focus:outline-none block md:hidden"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <nav className="mt-8 flex flex-col gap-2 px-3">
-            {navigationItems.map((item) => (
-              <a
-                key={item.id}
-                href={item.path}
-                className={`flex items-center ${
-                  isSidebarOpen ? "gap-3 px-4" : "justify-center"
-                } py-2 rounded-md ${
-                  item.id === "question-bank"
-                    ? "bg-[#21B6F8] text-black"
-                    : "text-gray-400 hover:text-white hover:bg-[#1A1A1A]"
-                }`}
-              >
-                {item.icon}
-                {isSidebarOpen && <span>{item.label}</span>}
-              </a>
-            ))}
-          </nav>
-        </div>
-
+<SideBar navigationItems={navigationItems}/>
         <div className="flex-1 flex  main-content-wrap page-content-quiz">
           <div className="flex-1 p-2 md:p-6 pb-4">
             <div className="bg-[#111111] rounded-lg p-6">
