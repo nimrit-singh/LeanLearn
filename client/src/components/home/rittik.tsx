@@ -92,7 +92,6 @@ const QuizPagee: React.FC = () => {
         ...tfQuestions,
         ...formulaQuestions,
       ];
-
       // Extract and deduplicate classes and topics
       const uniqueClasses = [...new Set(allQuestions.map((q) => q.class_))];
       const uniqueTopics = [...new Set(allQuestions.map((q) => q.topic))];
@@ -100,6 +99,19 @@ const QuizPagee: React.FC = () => {
       // Update state
       setClasses(uniqueClasses);
       setTopics(uniqueTopics);
+      
+      console.log(allQuestions);
+      
+      console.log(mcqQuestions);
+      
+      console.log(fillQuestions);
+      
+      console.log(tfQuestions);
+      
+      console.log(formulaQuestions);
+
+
+
     } catch (err) {
       console.error('Error fetching classes and topics:', err);
       // setError('Failed to fetch classes and topics. Please try again.');
@@ -111,6 +123,7 @@ const QuizPagee: React.FC = () => {
   // Fetch data on component mount
   useEffect(() => {
     fetchClassesAndTopics();
+    
   }, []);
 
 

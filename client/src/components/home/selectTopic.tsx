@@ -41,6 +41,7 @@ const SelectedTopicPage: React.FC = () => {
   const navigate = useNavigate();
   const { selectedCompanion, selectedClass, selectedTopic } =
     location.state || {};
+    console.log(selectedCompanion,selectedTopic,selectedClass)
 
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
@@ -110,7 +111,7 @@ const SelectedTopicPage: React.FC = () => {
         .toLowerCase();    
           console.log(transformedSelectedTopic)
 
-        const combinedQuestions = [
+        const combinedQuestions:(MCQQuestion|FillQuestion|TFQuestion|FormulaQuestion)[] = [
           ...mcqData,
           ...fillData,
           ...tfData,
@@ -365,7 +366,7 @@ const SelectedTopicPage: React.FC = () => {
   };
 
   const renderFormulaInterface = (question: FormulaQuestion) => {
-    return (
+    return(
       <div className="space-y-6">
         <div className="bg-[#111111] p-6 rounded-lg">
           <div className="mb-6 p-4 bg-[#1A1A1A] rounded-lg min-h-[60px] flex items-center">
@@ -384,13 +385,13 @@ const SelectedTopicPage: React.FC = () => {
           <div className="mb-6">
             <h3 className="text-white text-sm mb-3">Available Terms</h3>
             <div className="flex flex-wrap gap-2">
-              {question.options.map((word, index) => (
+              {question.quantities.map((word, index) => (
                 <button
                   key={index}
-                  onClick={() => handleFormulaSelect("word", word)}
+                  onClick={() => handleFormulaSelect("word", word.name)}
                   className="px-4 py-2 rounded bg-[#1A1A1A] text-white hover:bg-[#00A3FF] transition-colors"
                 >
-                  {word}
+                  {word.name}
                 </button>
               ))}
             </div>
@@ -434,6 +435,8 @@ const SelectedTopicPage: React.FC = () => {
 
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
+    console.log("question: ",currentQuestion);
+    console.log("formula: ",isFormulaQuestion(currentQuestion),"mcq: ",isMCQQuestion(currentQuestion),"tf question: ",isTFQuestion(currentQuestion),"fill blank: ",isFillQuestion(currentQuestion));
     if (!currentQuestion) return null;
 
     if (isFormulaQuestion(currentQuestion)) {
@@ -498,8 +501,15 @@ const SelectedTopicPage: React.FC = () => {
             renderButton(choice, currentQuestion.answer === choice)
           )}
         </div>
-      );
-    }
+      );}
+      if (isFormulaQuestion(currentQuestion)){
+        return(
+          <div className="flex flex-1 gap-2">{["p", "m","v"].map((choice) =>
+            renderButton(choice, true)
+          )}</div>
+        )
+      }
+    
 
     return null;
   };

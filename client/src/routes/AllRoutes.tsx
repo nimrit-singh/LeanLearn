@@ -23,6 +23,7 @@ import SelectedTopicPage from '../components/home/selectTopic';
 import Summary from '../components/home/Summary';
 import Feedback from '../components/home/Feedback';
 import NotFound from '../components/layout/PageNotFound';
+import DragnDrop from '@/components/ui/DragnDrop';
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => (
     <>
@@ -75,6 +76,9 @@ const AllRoutes = () => {
                     <Route
                         path="/topic/:topicId"
                         element={<QuizLayout><SelectedTopicPage /></QuizLayout>}
+                    />
+                    <Route path="/dragndrop"
+                    element={<QuizLayout><DragnDrop/></QuizLayout>}
                     />
                     <Route
                         path="/summary"

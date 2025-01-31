@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formulaQuestionApi } from "../../lib/api/questions";
 import SideBar from "../ui/SideBar";
-import { BlockMath, InlineMath } from "react-katex";
+import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import { convertToLatex } from "./LatexConverter";
 
@@ -78,7 +78,7 @@ const AddQuestion: React.FC = () => {
         ];
   });
 
-  const handleSelectionChange = (e) => {
+  const handleSelectionChange = (e:any) => {
     setChoiceType(e.target.value);
     localStorage.removeItem("choices");
   };
@@ -94,6 +94,16 @@ const AddQuestion: React.FC = () => {
       isUnknown?: boolean;
     }[]
   >([]);
+  const [operators,setOperators] = useState<
+  {
+    name: string;
+    symbol: string;
+  }[]
+>([])
+const [formula, setFormula]=useState<{
+  name: string;
+  symbol: string;
+}[]>([])
   const [selectedOperator, setSelectedOperator] = useState("+");
 
   const commonQuantities = {
@@ -109,7 +119,8 @@ const AddQuestion: React.FC = () => {
     Gravity: "g",
   };
 
-  const operators = ["+", "-", "*", "/", "=", "(", ")"];
+  const commonOperators = {Addition:"+",Subtraction: "-",Multiplication: "X",Division: "/",Equals: "=",
+    "Left Paranthesis":"(","Right Paranthesis": ")"};
 
   const classes = [
     { value: "8", label: "Class 8" },
@@ -224,23 +235,65 @@ const AddQuestion: React.FC = () => {
   const addQuantity = () => {
     setQuantities([...quantities, { name: "", symbol: "", isUnknown: false }]);
   };
-
   const removeQuantity = (index: number) => {
     const newQuantities = quantities.filter((_, i) => i !== index);
     setQuantities(newQuantities);
   };
-
+  const addOperator = () => {
+    setOperators([...operators, { name: "", symbol: "" }]);
+  };
+  const removeOperator = (index: number) => {
+    const newOperators = operators.filter((_, i) => i !== index);
+    setOperators(newOperators);
+  };
   const handleQuantitySelect = (index: number, quantityName: string) => {
-    const symbol =
-      commonQuantities[quantityName as keyof typeof commonQuantities];
+    const symbol = commonQuantities[quantityName as keyof typeof commonQuantities];
+  
+    // Update quantities
     const newQuantities = [...quantities];
     newQuantities[index] = {
       ...newQuantities[index],
       name: quantityName,
       symbol: symbol,
     };
+  
+    // Update formula at the correct position (even index)
+    const newFormula = [...formula];
+    const formulaIndex = index * 2; // Ensuring quantities go to even indices
+    newFormula[formulaIndex] = {
+      name: quantityName,
+      symbol: symbol,
+    };
+  
     setQuantities(newQuantities);
+    setFormula(newFormula);
   };
+  
+  const handleOperatorSelect = (index: number, operatorName: string) => {
+    const symbol = commonOperators[operatorName as keyof typeof commonOperators];
+  
+    // Update operators
+    const newOperators = [...operators];
+    newOperators[index] = {
+      ...newOperators[index],
+      name: operatorName,
+      symbol: symbol,
+    };
+  
+    // Update formula at the correct position (odd index)
+    const newFormula = [...formula];
+    const formulaIndex = index * 2 + 1; // Ensuring operators go to odd indices
+    newFormula[formulaIndex] = {
+      name: operatorName,
+      symbol: symbol,
+    };
+  
+    setOperators(newOperators);
+    setFormula(newFormula);
+  };
+  
+  
+  console.log(formula)
   const handleChoiceImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     choiceId: number
@@ -376,18 +429,37 @@ const AddQuestion: React.FC = () => {
                 </button>
               </div>
             ))}
+            {operators.map((op, index) => (
+              <div key={index} className="flex items-center gap-4">
+                <select
+                  value={op.name}
+                  onChange={(e) => handleOperatorSelect(index, e.target.value)}
+                  className="bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+                >
+                  <option value="">Select Operator</option>
+                  {Object.keys(commonOperators).map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
 
-            <button
-              onClick={addQuantity}
-              className="px-4 py-2 bg-[#21B6F8] text-white rounded hover:bg-opacity-90"
-            >
-              Add Quantity
-            </button>
-
-            <div className="flex gap-2 mt-4">
-              {operators.map((op) => (
+                <div className="flex items-center gap-2 text-white">
+                  <span>Symbol: {op.symbol}</span>
+                </div>
                 <button
-                  key={op}
+                  onClick={() => removeOperator(index)}
+                  className="text-red-500 hover:text-red-400"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            
+  <div className="flex gap-2 mt-4">
+  {/* {Object.keys(commonOperators).map((name) => (
+                <button
+                  key={name}
                   onClick={() => setSelectedOperator(op)}
                   className={`px-3 py-1 rounded ${
                     selectedOperator === op
@@ -397,15 +469,28 @@ const AddQuestion: React.FC = () => {
                 >
                   {op}
                 </button>
-              ))}
+              ))} */}
             </div>
+            <button
+              onClick={addQuantity}
+              className="px-4 py-2 mr-2 bg-[#21B6F8] text-white rounded hover:bg-opacity-90"
+            >
+              Add Quantity
+            </button>
+            <button
+              onClick={()=>{addOperator()}}
+              className="px-4 py-2 bg-[#21B6F8] text-white rounded hover:bg-opacity-90"
+            >
+              Add operator
+            </button>
+          
 
             <div className="mt-4 p-3 bg-[#111111] rounded">
               <p className="text-gray-300">Formula Preview:</p>
               <div className="mt-2 font-mono text-white">
-                {quantities
-                  .map((q) => q.symbol)
-                  .join(" " + selectedOperator + " ")}
+                {formula.map((q)=>{
+                  return(" "+q.symbol+" ")
+                })}
               </div>
             </div>
           </div>
@@ -768,9 +853,7 @@ const AddQuestion: React.FC = () => {
               symbol: q.symbol,
               isUnknown: Boolean(q.isUnknown),
             })),
-            formula: quantities
-              .map((q) => q.symbol)
-              .join(" " + selectedOperator + " "),
+            formula: formula,
             // Add the required fields that were missing
             options: [""], // Empty array as it's not used for formula questions
             answers: [""], // Empty array as it's not used for formula questions
@@ -795,7 +878,6 @@ const AddQuestion: React.FC = () => {
             used: true,
           });
           setQuantities([]);
-          setSelectedOperator("+");
           navigate("/teacher/question-bank");
         } catch (error) {
           console.error("Error saving formula question:", error);

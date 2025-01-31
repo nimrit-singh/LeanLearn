@@ -1,12 +1,13 @@
 import React from 'react';
-import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
+import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quiz';
 import MCQQuestionComponent from './MCQQuestion';
 import FillQuestionComponent from './FillBlankQuestion';
 import TFQuestionComponent from './TrueFalseQuestion';
+import CFQuestionComponent from './CFQuestionComponent';
 
 interface QuestionCardProps {
-  question: MCQQuestion | FillQuestion | TFQuestion;
-  type: 'mcq' | 'fill' | 'tf';
+  question: MCQQuestion | FillQuestion | TFQuestion| FormulaQuestion;
+  type: 'mcq' | 'fill' | 'tf' | 'cf';
   onAnswer: (answer: string) => void;
   showFeedback: boolean;
   selectedAnswer: string | null;
@@ -53,6 +54,14 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             isCorrect={isCorrect}
           />
         );
+        case 'cf':
+          return(<CFQuestionComponent
+            question={question as FormulaQuestion}
+            onAnswer={onAnswer}
+            showFeedback={showFeedback}
+            selectedAnswer={selectedAnswer}
+            isCorrect={isCorrect}
+            />)
       default:
         return null;
     }
