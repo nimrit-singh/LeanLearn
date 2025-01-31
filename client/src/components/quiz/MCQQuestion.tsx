@@ -1,5 +1,5 @@
 import React from 'react';
-import { MCQQuestion } from '../../types/quiz';
+import { MCQQuestion } from '../../types/quizInterface';
 
 interface MCQQuestionProps {
   question: MCQQuestion;

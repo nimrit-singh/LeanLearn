@@ -20,6 +20,7 @@ interface MCQQuestionData {
   question: string;
   options: string[];
   answers: string[];
+  captions:string[];
   resource: string[];
   used: boolean;
 }
@@ -345,6 +346,7 @@ const [formula, setFormula]=useState<{
       ...questionData,
       options: choices.map((c) => c.text),
     });
+    console.log(choices,questionData)
   };
 
   const renderQuestionContent = () => {
@@ -511,7 +513,6 @@ const [formula, setFormula]=useState<{
           >
             <option value="text">Text Based</option>
             <option value="image">Image Based</option>
-            <option value="formulae">Formulae Based</option>
           </select>
           {choices.map((choice) => (
             <div key={choice.id} className="flex  gap-3">
@@ -534,7 +535,7 @@ const [formula, setFormula]=useState<{
                   placeholder="Your Choice here"
                   className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
                 />
-              ) :choiceType === "image"? (
+              ) :(
                 <input
                   type="file"
                   accept="image/*"
@@ -542,15 +543,6 @@ const [formula, setFormula]=useState<{
                   style={{ display: "none" }}
                   id={`image-upload-${choice.id}`}
                 />
-              ): (
-                <textarea
-                className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
-
-                rows={2}
-                placeholder="Enter an equation, e.g., lim x->0 x^2, |v|, det(A), a x b, [1,2;3,4]"
-                value={choice.text}
-                onChange={(e) => handleChoiceChange(choice.id,e.target.value)}
-              />
               )}
               {choiceType === "image" && (
                 <label
@@ -588,12 +580,7 @@ const [formula, setFormula]=useState<{
                     &times;
                   </button>
                 </div>
-              )}{choiceType==="formulae" && (
-                <div className="mt-4 p-4 border rounded-md bg-gray-100">
-                   <InlineMath>{convertToLatex(choice.text)}</InlineMath>
-                </div>)
-
-              }
+              )}
             </div>
           ))}
           {/* {choiceType} */}
@@ -698,7 +685,7 @@ const [formula, setFormula]=useState<{
       }
 
       if (questionType === "MCQs") {
-        if (choiceType === "text") {
+        if (choiceType === "text" ) {
           if (choices.some((c) => !c.text.trim())) {
             alert("Please fill in all options");
             setIsLoading(false);
@@ -724,21 +711,22 @@ const [formula, setFormula]=useState<{
           topic: questionData.topic,
           question: questionData.question,
           options:
-            choiceType === "text" || choiceType === "formulae"
+            choiceType === "text"
               ? choices.map((c) => c.text || "") // Ensure no undefined values
               : choices.map((c) => c.imageUrl || ""),
           answers: selectedAnswers.map((answerId) => {
             const choice = choices.find((c) => c.id === answerId);
-            return choiceType === "text" || choiceType === "formulae"
+            return choiceType === "text"
               ? choice?.text || ""
               : choice?.imageUrl || "";
           }),
+          captions:[""],
           resource: choices.map((c) => c.imageUrl || ""),
           used: true,
         };
-        console.log(mcqData);
+        console.log("mcqData:",mcqData);
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/mcqquestion",
+          "http://127.0.0.1:8000/mcqquestion",
           {
             method: "POST",
             headers: {
@@ -786,7 +774,7 @@ const [formula, setFormula]=useState<{
           used: true,
         };
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/fillquestion",
+          "http://127.0.0.1:8000/fillquestion",
           {
             method: "POST",
             headers: {
@@ -812,7 +800,7 @@ const [formula, setFormula]=useState<{
         };
 
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/tfquestion",
+          "http://127.0.0.1:8000/tfquestion",
           {
             method: "POST",
             headers: {
@@ -891,7 +879,8 @@ const [formula, setFormula]=useState<{
       setIsLoading(false);
       localStorage.removeItem("choices");
       navigate("/teacher/question-bank");
-    } catch (error) {
+    } 
+    catch (error) {
       setIsLoading(false);
       console.error("Error saving question:", error);
       if (error instanceof Error) {

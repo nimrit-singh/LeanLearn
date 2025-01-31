@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Formula = () => {
+const Formula = (initialItems:string[]) => {
   const initialSlots = {
     1: null,
     2: null,
@@ -11,7 +11,6 @@ const Formula = () => {
   };
 
   const [slots, setSlots] = useState(initialSlots);
-  const initialItems = ["Force", "Mass", "Acceleration", "=", "x"];
   const [items, setItems] = useState(initialItems);
   const [draggedItem, setDraggedItem] = useState(null);
   const [activeSlot, setActiveSlot] = useState(null);

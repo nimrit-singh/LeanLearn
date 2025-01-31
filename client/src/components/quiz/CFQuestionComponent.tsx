@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormulaQuestion } from '../../types/quiz';
+import { FormulaQuestion } from '../../types/quizInterface';
 
 interface CFQuestionProps {
   question: FormulaQuestion;

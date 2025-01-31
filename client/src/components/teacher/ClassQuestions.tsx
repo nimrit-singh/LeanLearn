@@ -11,7 +11,7 @@ import {
   FillQuestion,
   TFQuestion,
   FormulaQuestion,
-} from "../../types/quiz";
+} from "../../types/quizInterface";
 import leanLearnLogo from "../../assets/images/Logo.png";
 import SideBar from "../ui/SideBar";
 

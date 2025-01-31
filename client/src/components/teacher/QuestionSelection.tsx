@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mcqQuestionApi, fillQuestionApi, tfQuestionApi } from '../../lib/api/questions';
-import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quiz';
+import { MCQQuestion, FillQuestion, TFQuestion } from '../../types/quizInterface';
 import SideBar from '../ui/SideBar';
 
 interface ModalProps {

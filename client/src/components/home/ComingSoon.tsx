@@ -18,7 +18,7 @@ const ComingSoon: React.FC = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <g clip-path="url(#clip0_66_4573)">
+              <g clipPath="url(#clip0_66_4573)">
                 <rect width="1080" height="24" rx="12" fill="#252627" />
                 <rect width="695" height="24" rx="12" fill="#21B6F8" />
                 <path

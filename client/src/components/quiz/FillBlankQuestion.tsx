@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FillQuestion } from '../../types/quiz';
+import { FillQuestion } from '../../types/quizInterface';
 
 interface FillQuestionProps {
   question: FillQuestion;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TFQuestion } from '../../types/quiz';
+import { TFQuestion } from '../../types/quizInterface';
 
 interface TFQuestionProps {
   question: TFQuestion;

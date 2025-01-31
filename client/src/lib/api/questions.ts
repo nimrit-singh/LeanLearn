@@ -1,12 +1,15 @@
-import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quiz';
+import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quizInterface';
 
-const BASE_URL = 'https://lean-learn-backend-ai-do7a.onrender.com';
+const BASE_URL = 'http://127.0.0.1:8000';
 
 export const aiApi = {
   explainAnswer: async (data: {
     question: string;
     topic: string;
-    answer: string;
+    answer: string |{
+      name: string;
+      symbol: string;
+  }[];
     chosen_answer: string;
   }): Promise<string> => {
     try {
@@ -243,7 +246,10 @@ export const formulaQuestionApi = {
       symbol: string;
       isUnknown?: boolean;
     }>;
-    formula: string;
+    formula: Array<{
+      name: string;
+      symbol: string;
+    }>;
     options: string[];
     answers: string[];
     resource: string[];
