@@ -103,7 +103,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           </div>
           {isFormula && (
             <div className="mt-2 text-xs text-[#21B6F8]">
-              Formula: {question.formula}
+              Formula: {question.formula.map((f)=>f.symbol)}
             </div>
           )}
         </div>
@@ -495,7 +495,7 @@ const ClassQuestions: React.FC = () => {
                       <div className="p-4 bg-[#1A1A1A] rounded-lg">
                         <p className="text-[#8C8C8C] mb-3">Formula:</p>
                         <p className="text-[#21B6F8] font-mono text-lg">
-                          {previewQuestion.formula}
+                          {previewQuestion.formula.map((f)=>f.symbol).join(" ")}
                         </p>
                       </div>
                       <div className="space-y-3">

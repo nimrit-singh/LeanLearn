@@ -236,7 +236,7 @@ const [disable,setDisable]=useState(false);
     let filteredform="";
     if (isFormulaQuestion(currentQuestion)) {
       submittedAnswer = formulaSequence.map((item) => item.value).join(" ");
-      filteredform=currentQuestion.formula.map((f)=>f.symbol).join(" ");
+      filteredform=currentQuestion.formula.map((f)=>(currentQuestion.formula.indexOf(f)%2==0)?f.name:f.symbol).join(" ");
       correct = submittedAnswer === filteredform;
     } else if (
       isMCQQuestion(currentQuestion) ||
@@ -326,6 +326,7 @@ const [disable,setDisable]=useState(false);
           ...currentQuestion,
           used: true,
         });
+        setFormulaSequence([]);
       } else if (isMCQQuestion(currentQuestion)) {
         await mcqQuestionApi.update(currentQuestion.id, {
           ...currentQuestion,
@@ -353,7 +354,8 @@ const [disable,setDisable]=useState(false);
       setSelectedAnswers([]);
       setShowFeedback(false);
       setCompanionMessage("");
-      setFormulaSequence([]);
+    setDisabledSymbols(new Set());
+    setFormulaSequence([]);
     }
   };
 
@@ -367,6 +369,8 @@ const [disable,setDisable]=useState(false);
       setSelectedAnswers([]);
       setShowFeedback(false);
       setFormulaSequence([]);
+    setDisabledSymbols(new Set());
+
     } else {
       summaryAudio.play();
       const totalQuestions = questions.length;
@@ -406,17 +410,17 @@ const [disable,setDisable]=useState(false);
               {question.quantities.map((word, index) => (
                <button
                key={index}
-               disabled={disabledSymbols.has(word.symbol)}
+               disabled={disabledSymbols.has(word.name)}
                onClick={() => {
-                 handleFormulaSelect("word", word.symbol);
+                 handleFormulaSelect("word", word.name);
                }}
                className={`px-4 py-2 rounded ${
-                 disabledSymbols.has(word.symbol) 
-                   ? 'bg-gray-500' 
+                 disabledSymbols.has(word.name) 
+                   ? 'hidden' 
                    : 'bg-[#1A1A1A] hover:bg-[#00A3FF]'
                } text-white transition-colors`}
              >
-               {word.symbol}
+               {word.name}
              </button>
               ))}
             </div>
@@ -712,7 +716,7 @@ const [disable,setDisable]=useState(false);
                         <>
                           Incorrect. The correct answer was:{" "}
                           {isFormulaQuestion(currentQuestion) ? (
-                            currentQuestion.formula.map((f)=>f.symbol).join(" ")
+                            currentQuestion.formula.map((f)=>(currentQuestion.formula.indexOf(f)%2==0)?f.name:f.symbol).join(" ")
                           ) : isTFQuestion(currentQuestion) ? (
                             isImageUrl(currentQuestion.answer) ? (
                               <div className="flex gap-2">

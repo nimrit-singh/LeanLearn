@@ -1,5 +1,5 @@
 import React from 'react';
-import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quiz';
+import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quizInterface';
 import MCQQuestionComponent from './MCQQuestion';
 import FillQuestionComponent from './FillBlankQuestion';
 import TFQuestionComponent from './TrueFalseQuestion';
