@@ -1,6 +1,6 @@
 import { MCQQuestion, FillQuestion, TFQuestion, FormulaQuestion } from '../../types/quizInterface';
 
-const BASE_URL = 'http://127.0.0.1:8000';
+const BASE_URL = 'https://lean-learn-backend-ai-do7a.onrender.com';
 
 export const aiApi = {
   explainAnswer: async (data: {

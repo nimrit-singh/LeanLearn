@@ -157,7 +157,7 @@ const [disable,setDisable]=useState(false);
     setCompanionMessage("");
   }, [currentQuestionIndex]);
 
-  const handleFormulaSelect = (type, value) => {
+  const handleFormulaSelect = (type: "word" | "operator", value: string) => {
     setFormulaSequence(prev => [...prev, { type, value }]);
     setDisabledSymbols(prev => new Set([...prev, value]));
   };
@@ -464,6 +464,7 @@ const [disable,setDisable]=useState(false);
 
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
+    console.log("questions",questions,"index",currentQuestionIndex);
     if (!currentQuestion) return null;
 
     if (isFormulaQuestion(currentQuestion)) {

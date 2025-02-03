@@ -11,6 +11,9 @@ interface Choice {
   text: string;
   imageUrl?: string;
 }
+type commonQuantities= {
+  [key:string]:string
+}
 
 interface MCQQuestionData {
   id: string;
@@ -105,9 +108,10 @@ const [formula, setFormula]=useState<{
   name: string;
   symbol: string;
 }[]>([])
-  const [selectedOperator, setSelectedOperator] = useState("+");
-
-  const commonQuantities = {
+  const [addnew, setAddNew] = useState(true);
+  const [qname,setQname]=useState("");
+  const [qsymbol,setQsymbol]=useState("");
+  const [commonQuantities,setCommonq] = useState({
     Force: "F",
     Mass: "m",
     Acceleration: "a",
@@ -118,7 +122,7 @@ const [formula, setFormula]=useState<{
     Power: "P",
     Momentum: "p",
     Gravity: "g",
-  };
+  });
 
   const commonOperators = {Addition:"+",Subtraction: "-",Multiplication: "X",Division: "/",Equals: "=",
     "Left Paranthesis":"(","Right Paranthesis": ")"};
@@ -247,9 +251,15 @@ const [formula, setFormula]=useState<{
     const newOperators = operators.filter((_, i) => i !== index);
     setOperators(newOperators);
   };
+ 
+
   const handleQuantitySelect = (index: number, quantityName: string) => {
-    const symbol = commonQuantities[quantityName as keyof typeof commonQuantities];
-  
+    
+    if (quantityName=="add new"){
+      setAddNew(true);
+      
+    }else{const symbol = commonQuantities[quantityName as keyof typeof commonQuantities];
+    // console.log(symbol)
     // Update quantities
     const newQuantities = [...quantities];
     newQuantities[index] = {
@@ -290,7 +300,7 @@ const [formula, setFormula]=useState<{
     };
   
     setOperators(newOperators);
-    setFormula(newFormula);
+    setFormula(newFormula);}
   };
   
   
@@ -400,8 +410,8 @@ const [formula, setFormula]=useState<{
                       {name}
                     </option>
                   ))}
+                  <option value="add new">Add New</option>
                 </select>
-
                 <div className="flex items-center gap-2 text-white">
                   <span>Symbol: {quantity.symbol}</span>
                 </div>
@@ -677,6 +687,24 @@ const [formula, setFormula]=useState<{
   };
 
   const handleSubmit = async () => {
+    if (addnew){
+      setIsLoading(true);
+      if(!qname||!qsymbol){
+        setIsLoading(false);
+        alert("Please fill all fields")
+        return;
+      }
+      if(commonQuantities.hasOwnProperty(qname)&&commonQuantities[qname]===qsymbol){
+        alert("Quantity already exists");
+        setIsLoading(false);
+        setAddNew(false)
+        return;
+      }
+      setCommonq(prev=>({...prev,  [qname]: qsymbol }));
+      console.log(commonQuantities)
+      setIsLoading(false);
+      setAddNew(false)
+    }else{
     try {
       setIsLoading(true);
       if (!questionData.question.trim()) {
@@ -726,7 +754,7 @@ const [formula, setFormula]=useState<{
         };
         console.log("mcqData:",mcqData);
         const response = await fetch(
-          "http://127.0.0.1:8000/mcqquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/mcqquestion",
           {
             method: "POST",
             headers: {
@@ -774,7 +802,7 @@ const [formula, setFormula]=useState<{
           used: true,
         };
         const response = await fetch(
-          "http://127.0.0.1:8000/fillquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/fillquestion",
           {
             method: "POST",
             headers: {
@@ -800,7 +828,7 @@ const [formula, setFormula]=useState<{
         };
 
         const response = await fetch(
-          "http://127.0.0.1:8000/tfquestion",
+          "https://lean-learn-backend-ai-do7a.onrender.com/tfquestion",
           {
             method: "POST",
             headers: {
@@ -888,11 +916,77 @@ const [formula, setFormula]=useState<{
       } else {
         alert("Failed to save question");
       }
-    }
+    }}
   };
 
   return (
     <>
+    
+    <div className={`${addnew?"z-10 absolute w-full h-full flex justify-center fade-in-5 items-center bg-black/50 text-white":"hidden"}`}>
+    <div className="bg-[#111111] rounded-lg p-6 w-1/2 h-1/2 flex flex-col justify-evenly">
+    <div className="flex justify-between items-center"><div><h3 className="text-xl ">Add a new quantity</h3></div><button onClick={()=>{setAddNew(false)}} className="bg-white text-black rounded-full  p-2 w-10 h-10">X</button></div>
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
+      <label className="text-white text-md ">Name of the Quantity
+   <div><input
+                  type="text"
+                  // value={choice.text}
+                  onChange={(e) =>{setQname(e.target.value)}
+                    // handleChoiceChange(choice.id, e.target.value)
+                  }
+                  placeholder="Your Choice here"
+                  className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+                /></div> </label></div>
+               
+      <div className="flex flex-col gap-4">
+      <label className="text-white text-md ">Name of the Quantity
+   <div><input
+                  type="text"
+                  // value={choice.text}
+                  onChange={(e) =>{setQsymbol(e.target.value)}
+                    // handleChoiceChange(choice.id, e.target.value)
+                  }
+                  placeholder="Your Choice here"
+                  className="flex-1 bg-[#1A1A1A] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
+                /></div> </label></div>
+                </div>
+                <div className="flex justify-end mt-6 sm:mb-10">
+              <button
+                onClick={handleSubmit}
+                className="bg-[#21B6F8] text-white px-6 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+                disabled={isLoading} // Disable the submit button while the question is being saved
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2 justify-center">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Saving...
+                  </div>
+                ) : (
+                  "Save Question"
+                )}
+              </button>
+            </div>
+    </div>
+    </div>
       <div className="flex min-h-screen bg-black">
 <SideBar navigationItems={navigationItems}/>
         <div className="flex-1 flex  main-content-wrap page-content-quiz">

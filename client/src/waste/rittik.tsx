@@ -8,7 +8,7 @@ import logo from "../../assets/images/Logo.png";
 import choiceCloud from "../../assets/images/choose.png";
 import choiceCloud1 from "../../assets/Frame 193.svg";
 import selectsound from '../../assets/sound/sound1.aac'
-import ProfileIcon from "../auth/ProfilePage";
+import ProfileIcon from "../components/auth/ProfilePage";
 import { fillQuestionApi, formulaQuestionApi, mcqQuestionApi, tfQuestionApi } from "@/lib/api/questions";
 
 // const classes = [

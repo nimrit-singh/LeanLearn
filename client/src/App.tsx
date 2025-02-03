@@ -9,13 +9,13 @@ import AllRoutes from './routes/AllRoutes';
 
 
 function App() {
-  useEffect(() => {
-    // Log screen view event when the component mounts
-    logEvent(analytics, 'screen_view', {
-      screen_name: 'Home',
-      screen_class: 'HomeScreen',
-    });
-  }, []);
+  // useEffect(() => {
+  //   // Log screen view event when the component mounts
+  //   logEvent(analytics, 'screen_view', {
+  //     screen_name: 'Home',
+  //     screen_class: 'HomeScreen',
+  //   });
+  // }, []);
 
   return (
       <div className="min-h-screen">
