@@ -89,7 +89,7 @@ const [disable,setDisable]=useState(false);
       "answer" in question
     );
   };
-
+  const [finalquestion,setFinalquestion]=useState("");
   const [disabledSymbols, setDisabledSymbols] = useState(new Set());
   useEffect(() => {
     if (!selectedClass) {
@@ -151,11 +151,16 @@ const [disable,setDisable]=useState(false);
       "currentQuestionIndex",
       currentQuestionIndex.toString()
     );
-  }, [currentQuestionIndex]);
-
-  useEffect(() => {
+    
     setCompanionMessage("");
-  }, [currentQuestionIndex]);
+    const question = questions[currentQuestionIndex];
+    if (question) {
+      console.log(question);
+      setFinalquestion(question.question);
+    }
+    // setFinalquestion()
+  }, [questions,currentQuestionIndex]);
+
 
   const handleFormulaSelect = (type: "word" | "operator", value: string) => {
     setFormulaSequence(prev => [...prev, { type, value }]);
@@ -188,6 +193,10 @@ const [disable,setDisable]=useState(false);
       const currentQuestion = questions[currentQuestionIndex];
       if (isTFQuestion(currentQuestion)) {
         return [answer];
+      }
+      if (isFillQuestion(currentQuestion)){
+        console.log("question",currentQuestion.question)
+        // setFinalquestion(currentQuestion.question)
       }
       if (prev.includes(answer)) {
         return prev.filter((a) => a !== answer);
@@ -254,7 +263,7 @@ const [disable,setDisable]=useState(false);
       correct = selectedAnswers[0] === currentQuestion.answer;
       submittedAnswer = selectedAnswers[0];
     }
-
+    if(isFillQuestion(currentQuestion)){setFinalquestion(currentQuestion.question.replace('_____',selectedAnswers.map((q)=>q).join(',')))}
     if (correct) {
       correctAudio.play();
       setCorrectAnswersCount((prevCount) => prevCount + 1);
@@ -351,6 +360,7 @@ const [disable,setDisable]=useState(false);
   const handleSkip = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prev) => prev + 1);
+      // setFinalquestion(questions[currentQuestionIndex].question)
       setSelectedAnswers([]);
       setShowFeedback(false);
       setCompanionMessage("");
@@ -464,7 +474,7 @@ const [disable,setDisable]=useState(false);
 
   const renderQuestionOptions = () => {
     const currentQuestion = questions[currentQuestionIndex];
-    console.log("questions",questions,"index",currentQuestionIndex);
+    // console.log("questions",questions,"index",currentQuestionIndex);
     if (!currentQuestion) return null;
 
     if (isFormulaQuestion(currentQuestion)) {
@@ -513,6 +523,7 @@ const [disable,setDisable]=useState(false);
 
     if (isFillQuestion(currentQuestion)) {
       const validChoices = currentQuestion.choices.filter(isValidOption);
+      console.log(validChoices)
       return (
         <div className="grid grid-cols-2 gap-6">
           {validChoices.map((choice) =>
@@ -599,7 +610,6 @@ const [disable,setDisable]=useState(false);
       </div>
     );
   }
-
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col min-h-0 md:h-screen overflow-hidden">
@@ -689,7 +699,7 @@ const [disable,setDisable]=useState(false);
           <div className="max-w-4xl mx-auto w-full">
             <div className="mb-8">
               <div className="text-white text-xl">
-                {currentQuestion.question}
+                {finalquestion}
               </div>
             </div>
 
