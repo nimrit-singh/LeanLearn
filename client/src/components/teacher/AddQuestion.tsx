@@ -5,14 +5,12 @@ import SideBar from "../ui/SideBar";
 import { InlineMath } from "react-katex";
 import "katex/dist/katex.min.css";
 import { convertToLatex } from "./LatexConverter";
-
+import { CommonQty } from "@/types/utilsInteface";
+import { quantitiesApi } from "@/lib/api/utils";
 interface Choice {
   id: number;
   text: string;
   imageUrl?: string;
-}
-type commonQuantities= {
-  [key:string]:string
 }
 
 interface MCQQuestionData {
@@ -93,7 +91,7 @@ const AddQuestion: React.FC = () => {
   const [quantities, setQuantities] = useState<
     {
       name: string;
-      symbol: string;
+      symbol: string|"";
       value?: number;
       isUnknown?: boolean;
     }[]
@@ -108,21 +106,10 @@ const [formula, setFormula]=useState<{
   name: string;
   symbol: string;
 }[]>([])
-  const [addnew, setAddNew] = useState(true);
+  const [addnew, setAddNew] = useState(false);
   const [qname,setQname]=useState("");
   const [qsymbol,setQsymbol]=useState("");
-  const [commonQuantities,setCommonq] = useState({
-    Force: "F",
-    Mass: "m",
-    Acceleration: "a",
-    Velocity: "v",
-    Time: "t",
-    Distance: "s",
-    Energy: "E",
-    Power: "P",
-    Momentum: "p",
-    Gravity: "g",
-  });
+  const [commonQuantities,setCommonq] = useState<CommonQty[]>([]);
 
   const commonOperators = {Addition:"+",Subtraction: "-",Multiplication: "X",Division: "/",Equals: "=",
     "Left Paranthesis":"(","Right Paranthesis": ")"};
@@ -251,15 +238,34 @@ const [formula, setFormula]=useState<{
     const newOperators = operators.filter((_, i) => i !== index);
     setOperators(newOperators);
   };
- 
+  const fetchQuantities = async () => {
+    try {
+      const [quantiti] =
+        await Promise.all([
+          quantitiesApi.getAll()
+        ]);
 
+      setCommonq(quantiti);
+    } catch (error) {
+      console.error("Error fetching quantity:", error);
+    }
+   //   finally {
+   //    setLoading(false);
+   //  }
+  };
+   useEffect(() => {
+     
+ 
+       fetchQuantities();
+   }, []);
   const handleQuantitySelect = (index: number, quantityName: string) => {
     
     if (quantityName=="add new"){
       setAddNew(true);
       
-    }else{const symbol = commonQuantities[quantityName as keyof typeof commonQuantities];
-    // console.log(symbol)
+    }else{const symbol = commonQuantities.find(qty => qty.qty_name === quantityName)?.qty_symbol||" ";
+    console.log("symbol:",symbol)
+    console.log("commonq:",commonQuantities)
     // Update quantities
     const newQuantities = [...quantities];
     newQuantities[index] = {
@@ -280,7 +286,7 @@ const [formula, setFormula]=useState<{
     setFormula(newFormula);
   };
   
-  const handleOperatorSelect = (index: number, operatorName: string) => {
+ const handleOperatorSelect = (index: number, operatorName: string) => {
     const symbol = commonOperators[operatorName as keyof typeof commonOperators];
   
     // Update operators
@@ -304,7 +310,7 @@ const [formula, setFormula]=useState<{
   };
   
   
-  console.log(formula)
+  // console.log(formula)
   const handleChoiceImageUpload = (
     event: React.ChangeEvent<HTMLInputElement>,
     choiceId: number
@@ -405,11 +411,13 @@ const [formula, setFormula]=useState<{
                   className="bg-[#111111] text-white px-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-[#21B6F8]"
                 >
                   <option value="">Select Quantity</option>
-                  {Object.keys(commonQuantities).map((name) => (
-                    <option key={name} value={name}>
-                      {name}
+                  {
+                  commonQuantities.map((name) => (
+                    <option key={name.id} value={name.qty_name}>
+                      {name.qty_name}
                     </option>
-                  ))}
+                  ))
+                  }
                   <option value="add new">Add New</option>
                 </select>
                 <div className="flex items-center gap-2 text-white">
@@ -685,6 +693,11 @@ const [formula, setFormula]=useState<{
 
     return null;
   };
+  async function addNew(qtyname:string,qtysymbol:string){
+    const res =await quantitiesApi.create({qty_name:qtyname,qty_symbol:qtysymbol});
+    console.log("res1",res);
+    return res
+  }
 
   const handleSubmit = async () => {
     if (addnew){
@@ -694,13 +707,15 @@ const [formula, setFormula]=useState<{
         alert("Please fill all fields")
         return;
       }
-      if(commonQuantities.hasOwnProperty(qname)&&commonQuantities[qname]===qsymbol){
-        alert("Quantity already exists");
-        setIsLoading(false);
-        setAddNew(false)
-        return;
-      }
-      setCommonq(prev=>({...prev,  [qname]: qsymbol }));
+      // if(commonQuantities.hasOwnProperty(qname)&&commonQuantities[qname]===qsymbol){
+      //   alert("Quantity already exists");
+      //   setIsLoading(false);
+      //   setAddNew(false)
+      //   return;
+      // }
+     
+      await addNew(qname,qsymbol);
+      await fetchQuantities();
       console.log(commonQuantities)
       setIsLoading(false);
       setAddNew(false)
@@ -939,7 +954,7 @@ const [formula, setFormula]=useState<{
                 /></div> </label></div>
                
       <div className="flex flex-col gap-4">
-      <label className="text-white text-md ">Name of the Quantity
+      <label className="text-white text-md ">Symbol of the Quantity
    <div><input
                   type="text"
                   // value={choice.text}
@@ -981,7 +996,7 @@ const [formula, setFormula]=useState<{
                     Saving...
                   </div>
                 ) : (
-                  "Save Question"
+                  "Save Quantity"
                 )}
               </button>
             </div>
