@@ -263,7 +263,8 @@ const [formula, setFormula]=useState<{
     if (quantityName=="add new"){
       setAddNew(true);
       
-    }else{const symbol = commonQuantities.find(qty => qty.qty_name === quantityName)?.qty_symbol||" ";
+    }
+    else{const symbol = commonQuantities.find(qty => qty.qty_name === quantityName)?.qty_symbol||" ";
     console.log("symbol:",symbol)
     console.log("commonq:",commonQuantities)
     // Update quantities
@@ -284,7 +285,7 @@ const [formula, setFormula]=useState<{
   
     setQuantities(newQuantities);
     setFormula(newFormula);
-  };
+  }};
   
  const handleOperatorSelect = (index: number, operatorName: string) => {
     const symbol = commonOperators[operatorName as keyof typeof commonOperators];
@@ -307,7 +308,7 @@ const [formula, setFormula]=useState<{
   
     setOperators(newOperators);
     setFormula(newFormula);}
-  };
+  ;
   
   
   // console.log(formula)
