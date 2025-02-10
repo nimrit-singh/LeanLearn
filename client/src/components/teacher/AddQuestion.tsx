@@ -770,7 +770,7 @@ const [formula, setFormula]=useState<{
         };
         console.log("mcqData:",mcqData);
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/mcqquestion",
+          "https://lean-learn-backend-ai-ex3e.onrender.com/mcqquestion",
           {
             method: "POST",
             headers: {
@@ -818,7 +818,7 @@ const [formula, setFormula]=useState<{
           used: true,
         };
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/fillquestion",
+          "https://lean-learn-backend-ai-ex3e.onrender.com/fillquestion",
           {
             method: "POST",
             headers: {
@@ -844,7 +844,7 @@ const [formula, setFormula]=useState<{
         };
 
         const response = await fetch(
-          "https://lean-learn-backend-ai-do7a.onrender.com/tfquestion",
+          "https://lean-learn-backend-ai-ex3e.onrender.com/tfquestion",
           {
             method: "POST",
             headers: {

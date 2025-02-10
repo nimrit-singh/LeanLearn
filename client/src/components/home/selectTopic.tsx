@@ -22,6 +22,8 @@ import {
   formulaQuestionApi,
   aiApi,
 } from "../../lib/api/questions";
+import { quantitiesApi } from "@/lib/api/utils";
+import { CommonQty } from "@/types/utilsInteface";
 
 const companionImages = { 1: einstein, 2: newton, 3: galileo, 4: raman };
 const operators = ["+", "-", "X", "/", "=", "^"];
@@ -58,6 +60,7 @@ const [disable,setDisable]=useState(false);
     const storedIndex = localStorage.getItem("currentQuestionIndex");
     return storedIndex ? parseInt(storedIndex, 10) : 0;
   });
+  const [commonq,setCommonq]=useState<CommonQty[]>([]);
 
   const correctAudio = new Audio(correctSound);
   const incorrectAudio = new Audio(incorrectSound);
@@ -145,7 +148,26 @@ const [disable,setDisable]=useState(false);
 
     fetchQuestions();
   }, [topicId, selectedClass, navigate]);
+  const fetchQuantities = async () => {
+    try {
+      const [quantiti] =
+        await Promise.all([
+          quantitiesApi.getAll()
+        ]);
 
+      setCommonq(quantiti);
+    } catch (error) {
+      console.error("Error fetching quantity:", error);
+    }
+   //   finally {
+   //    setLoading(false);
+   //  }
+  };
+   useEffect(() => {
+     
+ 
+       fetchQuantities();
+   }, []);
   useEffect(() => {
     localStorage.setItem(
       "currentQuestionIndex",
@@ -158,7 +180,7 @@ const [disable,setDisable]=useState(false);
       console.log(question);
       setFinalquestion(question.question);
     }
-    // setFinalquestion()
+   
   }, [questions,currentQuestionIndex]);
 
 
@@ -398,6 +420,13 @@ const [disable,setDisable]=useState(false);
   };
 
   const renderFormulaInterface = (question: FormulaQuestion) => {
+    const getRandomQuantities = (arr:Array<CommonQty>, min:number, max:number) => {
+      const numItems = Math.floor(Math.random() * (max - min + 1)) + min;
+      return [...arr]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numItems);
+    };
+const randomQuantities = getRandomQuantities(commonq, 2, 3);
     return(
       <div className="space-y-6">
         <div className="bg-[#111111] p-6 rounded-lg">
@@ -431,6 +460,22 @@ const [disable,setDisable]=useState(false);
                } text-white transition-colors`}
              >
                {word.name}
+             </button>
+              ))}
+              {randomQuantities.map((word, index) => (
+               <button
+               key={index}
+               disabled={disabledSymbols.has(word.qty_name)}
+               onClick={() => {
+                 handleFormulaSelect("word", word.qty_name);
+               }}
+               className={`px-4 py-2 rounded ${
+                 disabledSymbols.has(word.qty_name) 
+                   ? 'hidden' 
+                   : 'bg-[#1A1A1A] hover:bg-[#00A3FF]'
+               } text-white transition-colors`}
+             >
+               {word.qty_name}
              </button>
               ))}
             </div>
@@ -592,7 +637,7 @@ const [disable,setDisable]=useState(false);
       </div>
     );
   }
-
+  
   const currentQuestion = questions[currentQuestionIndex];
 
   if (!currentQuestion) {
@@ -610,6 +655,7 @@ const [disable,setDisable]=useState(false);
       </div>
     );
   }
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-black">
       <div className="lg:w-[280px] w-full bg-[#101010] p-5 flex flex-col min-h-0 md:h-screen overflow-hidden">
