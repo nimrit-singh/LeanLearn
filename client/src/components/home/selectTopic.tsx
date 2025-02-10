@@ -420,13 +420,23 @@ const [disable,setDisable]=useState(false);
   };
 
   const renderFormulaInterface = (question: FormulaQuestion) => {
+    const filteredQuantities = commonq.filter(qty => 
+      !question.quantities.some(questionQty => 
+        questionQty.name === qty.qty_name
+      )
+    );
+    
+    // Then get random quantities from the filtered array
     const getRandomQuantities = (arr:Array<CommonQty>, min:number, max:number) => {
       const numItems = Math.floor(Math.random() * (max - min + 1)) + min;
       return [...arr]
         .sort(() => Math.random() - 0.5)
         .slice(0, numItems);
     };
-const randomQuantities = getRandomQuantities(commonq, 2, 3);
+    
+    // Get 2-3 random quantities from filtered array
+    const randomQuantities = getRandomQuantities(filteredQuantities, 2, 3);
+    
     return(
       <div className="space-y-6">
         <div className="bg-[#111111] p-6 rounded-lg">
